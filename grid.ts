@@ -29,6 +29,18 @@ export class Grid {
         ctx.drawImage(this.getImageForCell(x, y), x * this.pixelsPerCell, y * this.pixelsPerCell);
       }
     }
+    const drawGridLines = true; // Put this as a Game-level config option?
+    if(drawGridLines) {
+        for (let x = 0; x < this.columns; x++) {
+            ctx.moveTo(x * this.pixelsPerCell, 0)
+            ctx.lineTo(x * this.pixelsPerCell, this.rows * this.pixelsPerCell)
+        }
+        for (let y = 0; y < this.rows; y++) {
+            ctx.moveTo(0, y * this.pixelsPerCell)
+            ctx.lineTo(this.rows * this.pixelsPerCell, y * this.pixelsPerCell)
+        }
+        ctx.stroke();
+    }
   }
 
   private getImageForCell(x: number, y: number) {
