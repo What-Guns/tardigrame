@@ -62,7 +62,6 @@ let timeSinceLastWetDryCalc = 0;
 export function calculateWetDryCanals(cells: Array<Array<Cell>>, dt : number) : void {
   if(timeSinceLastWetDryCalc < 1000) {
     timeSinceLastWetDryCalc += dt;
-    console.log(timeSinceLastWetDryCalc)
     return;
   }
   timeSinceLastWetDryCalc -= 1000;
