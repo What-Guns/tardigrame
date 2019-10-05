@@ -1,4 +1,4 @@
 const Cell = {
-    BLANK: 0,
+  BLANK: 0,
 }
 export {Cell};
