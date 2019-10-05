@@ -1,19 +1,31 @@
 import {Grid} from './grid.js';
 import {Hud} from './hud.js';
 import {Tardigrade} from './tardigrade.js'
-import {Point} from './math.js';
+import {Point, Rect} from './math.js';
 import {Popover, RegretPopover} from './popover.js';
+
+export type Tool = 'WATER'|'PAN';
 
 export class Game {
   readonly grid = new Grid(this, 10, 10);
   readonly pawns = new Array<Tardigrade>();
   readonly hud = new Hud(this);
+
+  tool = 'PAN';
+
   popover : Popover;
 
   readonly mousePosition: Point = {x: 0, y: 0};
   isMouseClicked = false;
 
   availableWater = 20;
+
+  readonly viewport: Rect = {
+    x: 0,
+    y: 0,
+    width: 640,
+    height: 640,
+  }
 
   private readonly ctx: CanvasRenderingContext2D;
 
@@ -40,11 +52,11 @@ export class Game {
   }
 
   draw() {
-    const w = this.ctx.canvas.width;
-    const h = this.ctx.canvas.height;
-    this.ctx.clearRect(0, 0, w, h);
+    this.ctx.clearRect(0, 0, this.viewport.width, this.viewport.height);
     this.ctx.fillStyle = 'black';
-    this.ctx.fillRect(0, 0, w, h);
+    this.ctx.fillRect(0, 0, this.viewport.width, this.viewport.height);
+
+    this.ctx.setTransform(1, 0, 0, 1, -this.viewport.x, -this.viewport.y);
 
     this.grid.draw(this.ctx);
     for (let i = 0; i < 100; i++){

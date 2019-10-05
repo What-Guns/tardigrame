@@ -3,6 +3,11 @@ export interface Point {
   y: number;
 }
 
+export interface Rect extends Point {
+  width: number;
+  height: number;
+}
+
 export function direction(from: Point, to: Point) {
   return Math.atan2(to.y - from.y, to.x - from.x);
 }
