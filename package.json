@@ -1,0 +1,22 @@
+{
+  "name": "tardigrame",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000t\u0000a\u0000r\u0000d\u0000i\u0000g\u0000r\u0000a\u0000m\u0000e\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bassguitarbill/tardigrame.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bassguitarbill/tardigrame/issues"
+  },
+  "homepage": "https://github.com/bassguitarbill/tardigrame#readme",
+  "dependencies": {
+    "typescript": "^3.6.3"
+  }
+}
