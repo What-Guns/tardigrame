@@ -2,7 +2,7 @@ import {Cell, CellType} from './cell.js';
 import {loadImage} from './loader.js';
 import {Point} from './math.js';
 import {Game} from './game.js';
-import {waterImages, fullWaterImage} from './water.js';
+import {fullCanalImages, fullWaterImage/*, emptyCanalImages*/} from './water.js';
 
 export class Grid {
   readonly cells: Cell[][];
@@ -83,7 +83,7 @@ export class Grid {
           const cellBelow = this.cells[x] && this.cells[x][y+1] && this.cells[x][y+1].type === 'POOL' ? 1 : 0;
           const cellLeft = this.cells[x-1] && this.cells[x-1][y] && this.cells[x-1][y].type === 'POOL' ? 1 : 0;
           const cellRight = this.cells[x+1] && this.cells[x+1][y] && this.cells[x+1][y].type === 'POOL' ? 1 : 0;
-          image = waterImages[cellRight][cellLeft][cellBelow][cellAbove];
+          image = fullCanalImages[cellRight][cellLeft][cellBelow][cellAbove];
           if(cellAbove + cellLeft === 2 && this.cells[x-1] && this.cells[x-1][y-1] && this.cells[x-1][y-1].type === 'POOL') {
             drawAPool = true;
           }
