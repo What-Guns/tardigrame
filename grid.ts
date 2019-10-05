@@ -6,7 +6,8 @@ export class Grid {
   mouseX: number | null = null;
   mouseY: number | null = null;
 
-  readonly pixelsPerCell = 100;
+  readonly xPixelsPerCell = 64;
+  readonly yPixelsPerCell = 43;
 
   constructor(readonly rows: number, readonly columns: number) {
     this.rows = rows;
@@ -32,19 +33,25 @@ export class Grid {
         if(hoverCell && x === hoverCell.x && y === hoverCell.y) {
           ctx.filter = 'brightness(150%)';
         }
-        ctx.drawImage(this.getImageForCell(x, y), x * this.pixelsPerCell, y * this.pixelsPerCell);
+        ctx.drawImage(
+          this.getImageForCell(x, y),
+          x * this.xPixelsPerCell,
+          y * this.yPixelsPerCell,
+          this.xPixelsPerCell,
+          this.yPixelsPerCell
+        );
         ctx.filter = 'none';
       }
     }
     const drawGridLines = true; // Put this as a Game-level config option?
     if(drawGridLines) {
         for (let x = 0; x < this.columns; x++) {
-            ctx.moveTo(x * this.pixelsPerCell, 0)
-            ctx.lineTo(x * this.pixelsPerCell, this.rows * this.pixelsPerCell)
+            ctx.moveTo(x * this.xPixelsPerCell, 0)
+            ctx.lineTo(x * this.xPixelsPerCell, this.rows * this.yPixelsPerCell)
         }
         for (let y = 0; y < this.rows; y++) {
-            ctx.moveTo(0, y * this.pixelsPerCell)
-            ctx.lineTo(this.rows * this.pixelsPerCell, y * this.pixelsPerCell)
+            ctx.moveTo(0, y * this.yPixelsPerCell)
+            ctx.lineTo(this.rows * this.xPixelsPerCell, y * this.yPixelsPerCell)
         }
         ctx.stroke();
     }
@@ -55,8 +62,8 @@ export class Grid {
       return null;
     }
     return {
-      x: Math.floor(this.mouseX / this.pixelsPerCell),
-      y: Math.floor(this.mouseY / this.pixelsPerCell),
+      x: Math.floor(this.mouseX / this.xPixelsPerCell),
+      y: Math.floor(this.mouseY / this.yPixelsPerCell),
     }
   }
 
