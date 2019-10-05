@@ -20,8 +20,8 @@ export class Game {
   }
 
   mouseMove(ev: MouseEvent) {
-    this.grid.mouseX = ev.clientX;
-    this.grid.mouseY = ev.clientY;
+    this.grid.mouseX = ev.offsetX;
+    this.grid.mouseY = ev.offsetY;
   }
 
   mouseLeave() {
