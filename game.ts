@@ -24,6 +24,11 @@ export class Game {
     this.grid.mouseY = ev.offsetY;
   }
 
+  mouseUp(ev: MouseEvent) {
+    this.grid.mouseX = ev.offsetX;
+    this.grid.mouseY = ev.offsetY;
+  }
+
   mouseLeave() {
     this.grid.mouseX = null;
     this.grid.mouseY = null;
