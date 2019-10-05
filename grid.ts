@@ -13,6 +13,10 @@ export class Grid {
   private readonly offscreenCanvas: HTMLCanvasElement;
   private readonly offscreenCtx: CanvasRenderingContext2D;
 
+  // Set to true after changing cells,
+  // this triggers the off-screen canvas refresh.
+  private cellsChanged = true;
+
   constructor(readonly game: Game, readonly rows: number, readonly columns: number) {
     this.rows = rows;
     this.columns = columns;
@@ -34,8 +38,6 @@ export class Grid {
     for(let y = 0; y < this.rows; y++) {
       this.cells[2][y] = 'ROAD';
     }
-
-    this.updateOffscreenCanvas();
   }
 
   tick() {
@@ -43,6 +45,7 @@ export class Grid {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
+    if(this.cellsChanged) this.updateOffscreenCanvas();
     ctx.drawImage(this.offscreenCanvas, 0, 0);
     ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
     ctx.fillRect(this.hoveredCell.x * this.xPixelsPerCell,
@@ -53,7 +56,10 @@ export class Grid {
   }
 
   private updateOffscreenCanvas() {
+    this.cellsChanged = false;
     const ctx = this.offscreenCtx;
+
+    ctx.clearRect(0, 0, this.xPixelsPerCell * this.columns, this.yPixelsPerCell * this.rows);
 
     for(let x = 0; x < this.columns; x++) {
       for(let y = 0; y < this.rows; y++) {
@@ -68,16 +74,17 @@ export class Grid {
     }
 
     const drawGridLines = true; // Put this as a Game-level config option?
+    ctx.beginPath();
     if(drawGridLines) {
-        for (let x = 0; x < this.columns; x++) {
-            ctx.moveTo(x * this.xPixelsPerCell, 0)
-            ctx.lineTo(x * this.xPixelsPerCell, this.rows * this.yPixelsPerCell)
-        }
-        for (let y = 0; y < this.rows; y++) {
-            ctx.moveTo(0, y * this.yPixelsPerCell)
-            ctx.lineTo(this.rows * this.xPixelsPerCell, y * this.yPixelsPerCell)
-        }
-        ctx.stroke();
+      for (let x = 0; x < this.columns; x++) {
+        ctx.moveTo(x * this.xPixelsPerCell, 0)
+        ctx.lineTo(x * this.xPixelsPerCell, this.rows * this.yPixelsPerCell)
+      }
+      for (let y = 0; y < this.rows; y++) {
+        ctx.moveTo(0, y * this.yPixelsPerCell)
+        ctx.lineTo(this.rows * this.xPixelsPerCell, y * this.yPixelsPerCell)
+      }
+      ctx.stroke();
     }
   }
 
