@@ -42,6 +42,10 @@ export class Grid {
 
   tick() {
     this.updateHoveredCell();
+    if(this.game.isMouseClicked) {
+      this.cells[this.hoveredCell.x][this.hoveredCell.y] = 'POOL';
+      this.updateOffscreenCanvas();
+    }
   }
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -60,6 +64,7 @@ export class Grid {
     const ctx = this.offscreenCtx;
 
     ctx.clearRect(0, 0, this.xPixelsPerCell * this.columns, this.yPixelsPerCell * this.rows);
+    ctx.fillRect(0, 0, this.xPixelsPerCell * this.columns, this.yPixelsPerCell * this.rows);
 
     for(let x = 0; x < this.columns; x++) {
       for(let y = 0; y < this.rows; y++) {

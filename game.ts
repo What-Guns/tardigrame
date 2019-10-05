@@ -1,15 +1,23 @@
 import {Grid} from './grid.js';
 import {Point} from './math.js';
 import {Pawn} from './pawn.js'
+
 export class Game {
   readonly grid = new Grid(this, 10, 10);
   readonly mousePosition: Point = {x: 0, y: 0};
   readonly pawn = new Pawn(this, Math.random() * 10, Math.random() * 10, 'MOON_AGENT');
 
+  isMouseClicked = false;
+
   private readonly ctx: CanvasRenderingContext2D;
 
   constructor(canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext('2d')!;
+
+    canvas.addEventListener('mousemove', this.mouseMove.bind(this));
+    canvas.addEventListener('mouseup', () => this.isMouseClicked = false);
+    canvas.addEventListener('mousedown', () => this.isMouseClicked = true);
+    canvas.addEventListener('mouseout', () => this.isMouseClicked = false);
   }
 
   tick() {
@@ -31,8 +39,5 @@ export class Game {
   mouseMove(ev: MouseEvent) {
     this.mousePosition.x = ev.offsetX;
     this.mousePosition.y = ev.offsetY;
-  }
-
-  mouseUp() {
   }
 }

@@ -7,13 +7,6 @@ async function startTheGameAlready() {
   console.log(`Everything has loaded now`);
   const canvas = document.querySelector('canvas')!;
   const game = new Game(canvas);
-  canvas.addEventListener('mousemove', ev => {
-    game.mouseMove(ev);
-  })
-  canvas.addEventListener('mouseup', () => {
-    game.mouseUp();
-  });
-
   requestAnimationFrame(tick);
 
   function tick() {
