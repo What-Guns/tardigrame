@@ -84,7 +84,7 @@ export class Grid {
           const cellLeft = this.cells[x-1] && this.cells[x-1][y] && this.cells[x-1][y].type === 'POOL' ? 1 : 0;
           const cellRight = this.cells[x+1] && this.cells[x+1][y] && this.cells[x+1][y].type === 'POOL' ? 1 : 0;
           image = waterImages[cellRight][cellLeft][cellBelow][cellAbove];
-          if(cellBelow + cellRight === 2 && this.cells[x+1][y+1].type === 'POOL') {
+          if(cellAbove + cellLeft === 2 && this.cells[x-1] && this.cells[x-1][y-1] && this.cells[x-1][y-1].type === 'POOL') {
             drawAPool = true;
           }
         }
@@ -98,8 +98,8 @@ export class Grid {
         if(drawAPool) {
           ctx.drawImage(
             fullWaterImage,
-            (x + 0.5) * this.xPixelsPerCell,
-            (y + 0.5) * this.yPixelsPerCell,
+            (x - 0.5) * this.xPixelsPerCell,
+            (y - 0.5) * this.yPixelsPerCell,
             this.xPixelsPerCell,
             this.yPixelsPerCell
           );
