@@ -26,13 +26,13 @@ export class Grid {
     for (let x=0; x<columns; x++) {
       this.cells.push([]);
       for (let y=0; y<rows; y++) {
-        this.cells[x].push(Math.random() < 0.8 ? Cell.BLANK : Math.random() < 0.5 ? Cell.BIG_ROCK : Cell.POOL);
+        this.cells[x].push(Math.random() < 0.8 ? 'BLANK' : Math.random() < 0.5 ? 'BIG_ROCK' : 'POOL');
       }
     }
 
     // put a road somewhere
     for(let y = 0; y < this.rows; y++) {
-      this.cells[2][y] = Cell.ROAD
+      this.cells[2][y] = 'ROAD';
     }
 
     this.updateOffscreenCanvas();
@@ -58,7 +58,7 @@ export class Grid {
     for(let x = 0; x < this.columns; x++) {
       for(let y = 0; y < this.rows; y++) {
         ctx.drawImage(
-          this.getImageForCell(x, y),
+          gridImages[this.cells[x][y]],
           x * this.xPixelsPerCell,
           y * this.yPixelsPerCell,
           this.xPixelsPerCell,
@@ -85,21 +85,11 @@ export class Grid {
     this.hoveredCell.x = Math.floor(this.game.mousePosition.x / this.xPixelsPerCell);
     this.hoveredCell.y = Math.floor(this.game.mousePosition.y / this.yPixelsPerCell);
   }
-
-  private getImageForCell(x: number, y: number) {
-    const cell = this.cells[x][y];
-    switch(cell) {
-      case Cell.BLANK: return GridImages.empty1;
-      case Cell.POOL: return GridImages.pool1;
-      case Cell.BIG_ROCK: return GridImages.bigRock;
-      case Cell.ROAD: return GridImages.road;
-    }
-  }
 }
 
-const GridImages = {
-  pool1: loadImage('assets/pictures/pool1.png'),
-  empty1: loadImage('assets/pictures/empty1.png'),
-  bigRock: loadImage('assets/pictures/bigrock1.png'),
-  road: loadImage('assets/pictures/nsroad1.png'),
+const gridImages: {[key in Cell]: HTMLImageElement} = {
+  POOL: loadImage('assets/pictures/pool1.png'),
+  BLANK: loadImage('assets/pictures/empty1.png'),
+  BIG_ROCK: loadImage('assets/pictures/bigrock1.png'),
+  ROAD: loadImage('assets/pictures/nsroad1.png'),
 }

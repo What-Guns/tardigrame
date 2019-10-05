@@ -15,22 +15,15 @@ export class Pawn {
     this.x = x;
     this.y = y;
     this.pawnType = pawnType
-    }
-
-    draw(ctx: CanvasRenderingContext2D) {
-      ctx.drawImage(this.getImageForPawnType(this.pawnType), 16, 16);
-    }
-
-    private getImageForPawnType(pawnType: PawnType) {
-      switch(pawnType) {
-        case PawnType.WORKER_TARDIGRADE: return PawnImages.tardigrade;
-        case PawnType.CANNIBAL_TARIGRADE  :return PawnImages.tardigrade;
-        case PawnType.MOON_AGENT: return PawnImages.tardigrade;
-      }
-    }
   }
 
-  const PawnImages = {
-    tardigrade: loadImage('assets/pictures/tardy-tardigrade.png'),
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.drawImage(pawnImages[this.pawnType], 16, 16);
   }
-  
+}
+
+const pawnImages: {[key in PawnType]: HTMLImageElement} = {
+  CANNIBAL_TARIGRADE: loadImage('assets/pictures/tardy-tardigrade.png'),
+  MOON_AGENT: loadImage('assets/pictures/tardy-tardigrade.png'),
+  WORKER_TARDIGRADE: loadImage('assets/pictures/tardy-tardigrade.png'),
+};

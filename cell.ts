@@ -1,3 +1,1 @@
-export enum Cell {
-  BLANK, POOL, ROAD, BIG_ROCK
-};
+export type Cell = 'BLANK' | 'POOL' | 'ROAD' | 'BIG_ROCK';
