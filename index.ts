@@ -1,9 +1,10 @@
-import {Test} from './test.js';
-import {Grid} from './grid.js';
+import {Game} from './game.js';
 
-const instance = new Test(4);
+const game = new Game(document.querySelector('canvas')!);
 
-alert(instance.n);
+tick();
 
-const grid = new Grid(10, 10);
-alert(`${grid.rows} rows by ${grid.columns} is ${grid.cells} cells!`);
+function tick() {
+  game.draw();
+  requestAnimationFrame(tick);
+}

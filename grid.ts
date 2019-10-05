@@ -13,4 +13,15 @@ export class Grid {
             }
         }
     }
+
+    draw(ctx: CanvasRenderingContext2D) {
+      ctx.strokeStyle = 'white';
+      ctx.beginPath();
+      for(let y = 0; y < this.columns; y++) {
+        for(let x = 0; x < this.columns; x++) {
+          ctx.lineTo(Math.random() * 640, Math.random() * 640);
+        }
+      }
+      ctx.stroke();
+    }
 }
