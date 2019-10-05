@@ -1,21 +1,22 @@
 import {Grid} from './grid.js';
 import {Hud} from './hud.js';
 import {Tardigrade} from './tardigrade.js'
-import {Point, Rect} from './math.js';
+import {Point, Rect, addPoints} from './math.js';
 import {Popover, RegretPopover} from './popover.js';
 
 export type Tool = 'WATER'|'PAN';
 
 export class Game {
-  readonly grid = new Grid(this, 10, 10);
+  readonly grid = new Grid(this, 100, 100);
   readonly pawns = new Array<Tardigrade>();
   readonly hud = new Hud(this);
 
-  tool = 'PAN';
+  tool: Tool = 'PAN';
 
   popover : Popover;
 
-  readonly mousePosition: Point = {x: 0, y: 0};
+  readonly screenSpaceMousePosition: Point = {x: 0, y: 0};
+  readonly worldSpaceMousePosition: Point = {x: 0, y: 0};
   isMouseClicked = false;
 
   availableWater = 20;
@@ -25,7 +26,7 @@ export class Game {
     y: 0,
     width: 640,
     height: 640,
-  }
+  };
 
   private readonly ctx: CanvasRenderingContext2D;
 
@@ -62,6 +63,8 @@ export class Game {
     for (let i = 0; i < 100; i++){
       this.pawns[i].draw(this.ctx);
     }
+
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     
 
     this.hud.draw(this.ctx);
@@ -69,7 +72,14 @@ export class Game {
   }
 
   mouseMove(ev: MouseEvent) {
-    this.mousePosition.x = ev.offsetX;
-    this.mousePosition.y = ev.offsetY;
+    if(this.isMouseClicked && this.tool === 'PAN') {
+      this.viewport.x += this.screenSpaceMousePosition.x - ev.offsetX;
+      this.viewport.y += this.screenSpaceMousePosition.y - ev.offsetY;
+
+    }
+
+    this.screenSpaceMousePosition.x = ev.offsetX;
+    this.screenSpaceMousePosition.y = ev.offsetY;
+    addPoints(this.worldSpaceMousePosition, this.screenSpaceMousePosition, this.viewport);
   }
 }
