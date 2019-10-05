@@ -3,7 +3,7 @@ import { loadImage } from "./loader.js";
 // 0 is right, 1 is left, 2 is bottom, index 3 is top
 
 export const waterImages = [[[[
-  loadImage('assets/pictures/full canals v2/full_canals_0017_lonely'), //0000
+  loadImage('assets/pictures/full canals v2/full_canals_0017_lonely.png'), //0000
   loadImage('assets/pictures/full canals v2/full_canals__0010_endfromtop.png'), // 0001
 ],[
   loadImage('assets/pictures/full canals v2/full_canals__0011_endfrombottom.png'), // 0010

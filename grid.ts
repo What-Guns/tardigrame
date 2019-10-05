@@ -2,6 +2,7 @@ import {Cell, CellType} from './cell.js';
 import {loadImage} from './loader.js';
 import {Point} from './math.js';
 import {Game} from './game.js';
+import {waterImages} from './water.js';
 
 export class Grid {
   readonly cells: Cell[][];
@@ -74,8 +75,17 @@ export class Grid {
 
     for(let x = firstVisibleColumn; x < lastVisibleColumn; x++) {
       for(let y = firstVisibleRow; y < lastVisibleRow; y++) {
+        const cell = this.cells[x][y];
+        let image = gridImages[cell.type];
+        if(cell.type === 'POOL' && x>0 && x < this.columns - 1 && y>0 && y < this.rows - 1) {
+          const cellAbove = this.cells[x][y-1].type === 'POOL' ? 1 : 0;
+          const cellBelow = this.cells[x][y+1].type === 'POOL' ? 1 : 0;
+          const cellLeft = this.cells[x-1][y].type === 'POOL' ? 1 : 0;
+          const cellRight = this.cells[x+1][y].type === 'POOL' ? 1 : 0;
+          image = waterImages[cellRight][cellLeft][cellBelow][cellAbove];
+        }
         ctx.drawImage(
-          gridImages[this.cells[x][y].type],
+          image,
           x * this.xPixelsPerCell,
           y * this.yPixelsPerCell,
           this.xPixelsPerCell,
@@ -84,7 +94,7 @@ export class Grid {
       }
     }
 
-    const drawGridLines = true; // Put this as a Game-level config option?
+    const drawGridLines = false; // Put this as a Game-level config option?
     ctx.beginPath();
     if(drawGridLines) {
       for(let x = firstVisibleColumn; x < lastVisibleColumn; x++) {
