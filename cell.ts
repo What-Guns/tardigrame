@@ -2,11 +2,26 @@ import {Point} from './math';
 
 export const CONSTRUCTION_REQUIRED_FOR_CANAL = 10000;
 
-export interface Cell {
-  readonly point: Point;
-  type: CellType;
-  hydration: boolean;
-  amountConstructed: number;
+export const hydratedCells = new Set<Cell>();
+
+export class Cell {
+  type: CellType = 'BLANK';
+  _hydration = false;
+  amountConstructed = 0;
+
+  constructor(readonly point: Point) {}
+
+  get hydration() {
+    return this._hydration;
+  }
+
+  set hydration(hydrated: boolean) {
+    if(this._hydration !== hydrated) {
+      if(hydrated) hydratedCells.add(this);
+      else hydratedCells.delete(this);
+    }
+    this._hydration = hydrated;
+  }
 }
 
 export type CellType =

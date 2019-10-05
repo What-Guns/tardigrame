@@ -21,12 +21,10 @@ export class Grid {
     for (let x=0; x<columns; x++) {
       this.cells.push([]);
       for (let y=0; y<rows; y++) {
-        this.cells[x].push({
-          point: {x, y},
-          type: Math.random() < 0.4 ? 'BLANK' : Math.random() < 0.1 ? 'BIG_ROCK' : 'POOL',
-          hydration: false,
-          amountConstructed: 0,
-        });
+        const cell = new Cell({x, y});
+        this.cells[x].push(cell)
+        cell.type = Math.random() < 0.4 ? 'BLANK' : Math.random() < 0.1 ? 'BIG_ROCK' : 'POOL';
+        if(cell.type === 'POOL') cell.hydration = true;
       }
     }
 

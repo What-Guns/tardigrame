@@ -1,12 +1,12 @@
 import {loadImage} from './loader.js';
 import {Point, direction, distanceSquared} from './math.js';
 import {Game} from './game.js';
-import {CONSTRUCTION_REQUIRED_FOR_CANAL} from './cell.js';
+import {Cell, CONSTRUCTION_REQUIRED_FOR_CANAL, hydratedCells} from './cell.js';
 
 export const idleTardigrades = new Set<Tardigrade>();
 
 interface Task {
-  type: 'IDLE' | 'BUILDING_A_CANAL';
+  type: 'IDLE' | 'BUILDING_A_CANAL' | 'REHYDRATE';
   destination: Point;
 }
 
@@ -15,13 +15,14 @@ const DESTINATION_THRESHOLD = 0.01;
 export class Tardigrade {
   readonly point: Point;
 
+  currentCell!: Cell;
+
   private task: Task;
 
-  satiation: number = 0.4; // 0 is starved, 1 babby formed from gonad
-  thirst: number; // 0 is sated, 1 is all the way thirsty
-  // dehydrationSpeed : number = 0.0001; // thirst per tick
-  dehydrationSpeed : number = 0;
-  hydrationSpeed : number = 0.1; // antithirst per tick in water
+  satiation = 0.4; // 0 is starved, 1 babby formed from gonad
+  fluid = Math.random() * 0.5 + 0.5;
+  dehydrationSpeed : number = 0.0001; // thirst per millisecond
+  hydrationSpeed : number = 0.1; // antithirst per millisecond
 
   nutrientConsumptionRate: number = 0.1;
   starvationRate : number = 0;
@@ -35,20 +36,36 @@ export class Tardigrade {
       destination: {x, y},
       type: 'IDLE'
     }
-    this.satiation = 0;
-    this.thirst = Math.random();
     idleTardigrades.add(this);
+    this.currentCell = this.game.grid.getCell(this.point);
   }
 
   tick(dt: number) {
-    this.dehydrate(dt);
-    if(this.isDehydrated()) return;
-    this.move(dt);
+    if(!this.isDehydrated()) this.move(dt);
+    this.currentCell = this.game.grid.getCell(this.point);
 
-    this.performTask(dt);
+    if(this.fluid < 0.3 && this.task.type !== 'REHYDRATE') {
+      const nearestWater = Array.from(hydratedCells)
+        .map(cell => ({cell, dist2: distanceSquared(this.point, cell.point)}))
+        .sort((a, b) => a.dist2 - b.dist2)
+        .map(t => t.cell)[0];
+      const destination = nearestWater ? {x: nearestWater.point.x + 0.5, y: nearestWater.point.y + 0.5} : {x: 0, y: 0};
+      this.assignTask({
+        type: 'REHYDRATE',
+        destination,
+      });
+    }
+
+    if(!this.isDehydrated()) this.performTask(dt);
+
+    if(this.currentCell.type === 'POOL') {
+      this.fluid = Math.min(1, this.fluid + this.hydrationSpeed * dt);
+    } else {
+      this.fluid = Math.max(0, this.fluid - this.dehydrationSpeed * dt);
+    }
   }
 
-  performTask(dt: number) {
+  private performTask(dt: number) {
     if(this.task.type === 'IDLE' && distanceSquared(this.point, this.task.destination) <= DESTINATION_THRESHOLD) {
       this.task.destination.x = Math.random() * 10;
       this.task.destination.y = Math.random() * 10;
@@ -73,14 +90,8 @@ export class Tardigrade {
     }
   }
 
-  dehydrate(dt: number) {
-    if(!this.isDehydrated()) {
-      this.thirst -= this.dehydrationSpeed * dt;
-    }
-  }
-
   isDehydrated() {
-    return this.thirst <= 0;
+    return this.fluid <= 0;
   }
 
   isStarved() {
@@ -126,6 +137,19 @@ export class Tardigrade {
       ctx.lineTo(this.task.destination.x * this.game.grid.xPixelsPerCell, this.task.destination.y * this.game.grid.yPixelsPerCell);
       ctx.stroke();
     }
+
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'blue';
+    ctx.beginPath();
+    ctx.arc(
+      this.point.x * this.game.grid.xPixelsPerCell,
+      this.point.y * this.game.grid.yPixelsPerCell,
+      16,
+      0,
+      2 * Math.PI * this.fluid,
+      false
+    );
+    ctx.stroke();
   }
 
   assignTask(task: Task) {
