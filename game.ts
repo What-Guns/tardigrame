@@ -32,8 +32,11 @@ export class Game {
     // this.popover.show();
   }
 
-  tick() {
+  tick(dt: number) {
     this.grid.tick();
+    for(let i = 0; i < this.pawns.length; i++) {
+      this.pawns[i].tick(dt);
+    }
   }
 
   draw() {
