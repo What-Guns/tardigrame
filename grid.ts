@@ -10,10 +10,19 @@ export class Grid {
   readonly xPixelsPerCell = 64;
   readonly yPixelsPerCell = 64;
 
+  private readonly offscreenCanvas: HTMLCanvasElement;
+  private readonly offscreenCtx: CanvasRenderingContext2D;
+
   constructor(readonly game: Game, readonly rows: number, readonly columns: number) {
     this.rows = rows;
     this.columns = columns;
     this.cells = [];
+
+    this.offscreenCanvas = document.createElement('canvas');
+    this.offscreenCanvas.width = columns * this.xPixelsPerCell;
+    this.offscreenCanvas.height = rows * this.yPixelsPerCell;
+    this.offscreenCtx = this.offscreenCanvas.getContext('2d')!;
+
     for (let x=0; x<columns; x++) {
       this.cells.push([]);
       for (let y=0; y<rows; y++) {
@@ -25,6 +34,8 @@ export class Grid {
     for(let y = 0; y < this.rows; y++) {
       this.cells[2][y] = Cell.ROAD
     }
+
+    this.updateOffscreenCanvas();
   }
 
   tick() {
@@ -32,11 +43,20 @@ export class Grid {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
+    ctx.drawImage(this.offscreenCanvas, 0, 0);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.fillRect(this.hoveredCell.x * this.xPixelsPerCell,
+      this.hoveredCell.y * this.yPixelsPerCell,
+      this.xPixelsPerCell,
+      this.yPixelsPerCell
+    );
+  }
+
+  private updateOffscreenCanvas() {
+    const ctx = this.offscreenCtx;
+
     for(let x = 0; x < this.columns; x++) {
       for(let y = 0; y < this.rows; y++) {
-        if(x === this.hoveredCell.x && y === this.hoveredCell.y) {
-          ctx.filter = 'brightness(150%)';
-        }
         ctx.drawImage(
           this.getImageForCell(x, y),
           x * this.xPixelsPerCell,
@@ -44,9 +64,9 @@ export class Grid {
           this.xPixelsPerCell,
           this.yPixelsPerCell
         );
-        ctx.filter = 'none';
       }
     }
+
     const drawGridLines = true; // Put this as a Game-level config option?
     if(drawGridLines) {
         for (let x = 0; x < this.columns; x++) {
