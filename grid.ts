@@ -3,7 +3,8 @@ import {loadImage} from './loader.js';
 import {findIdleTardigrades} from './tardigrade.js';
 import {Point} from './math.js';
 import {Game} from './game.js';
-import {fullCanalImages, fullPoolImage/*, emptyCanalImages, emptyPoolImage*/} from './water.js';
+import {fullCanalImages, fullPoolImage,/*, emptyCanalImages, emptyPoolImage*/
+calculateWetDryCanals} from './water.js';
 
 export class Grid {
   readonly cells: Cell[][];
@@ -23,7 +24,7 @@ export class Grid {
         this.cells[x].push({
           point: {x, y},
           type: Math.random() < 0.4 ? 'BLANK' : Math.random() < 0.1 ? 'BIG_ROCK' : 'POOL',
-          hydration: 0,
+          hydration: false,
           amountConstructed: 0,
         });
       }
@@ -38,12 +39,13 @@ export class Grid {
     this.cells[Math.floor(Math.random() * 10)][Math.floor(Math.random() * 10)].type = 'WATER_SOURCE';
   }
 
-  tick() {
+  tick(dt : number) {
     this.updateHoveredCell();
     if(this.game.isMouseClicked && this.game.tool === 'WATER' && this.game.availableWater > 0) {
       const cell = this.getCell(this.hoveredCell);
       this.startBuildingACanal(cell);
     }
+    calculateWetDryCanals(this.cells, dt);
   }
 
   draw(ctx: CanvasRenderingContext2D) {

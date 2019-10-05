@@ -48,7 +48,7 @@ export class Game {
   }
 
   tick(dt: number) {
-    this.grid.tick();
+    this.grid.tick(dt);
     for(let i = 0; i < this.pawns.length; i++) {
       this.pawns[i].tick(dt);
     }

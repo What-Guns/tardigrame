@@ -1,4 +1,5 @@
 import { loadImage } from "./loader.js";
+import { Cell } from "./cell.js";
 
 // 0 is right, 1 is left, 2 is bottom, index 3 is top
 
@@ -54,5 +55,29 @@ export const emptyCanalImages = [[[[
   loadImage('assets/pictures/Empty Canals/empty_canals_0014_4way.png'), // 1111
 ]]]];
 
-export const fullPoolImage = loadImage('assets/pictures/full_canals/full_canals__0000_full.png')
-export const emptyPoolImage = loadImage('assets/pictures/Empty Canals/empty_canals_0016_bigsquare.png')
+export const fullPoolImage = loadImage('assets/pictures/full_canals/full_canals__0000_full.png');
+export const emptyPoolImage = loadImage('assets/pictures/Empty Canals/empty_canals_0016_bigsquare.png');
+
+let timeSinceLastWetDryCalc = 0;
+export function calculateWetDryCanals(cells: Array<Array<Cell>>, dt : number) : void {
+  if(timeSinceLastWetDryCalc < 1000) {
+    timeSinceLastWetDryCalc += dt;
+    console.log(timeSinceLastWetDryCalc)
+    return;
+  }
+  timeSinceLastWetDryCalc -= 1000;
+  for(let x=0; x<cells.length; x++) {
+    for(let y=0; y<cells[x].length; y++) {
+      const cell = cells[x][y];
+      if(cell.type !== 'POOL') {
+        break;
+      }
+      if(cells[x][y].hydration) {
+        break;
+      }
+      if(cells[x-1] && cells[x-1][y] && ((cells[x-1][y].type === 'POOL' && cells[x-1][y].hydration) || cells[x-1][y].type === 'WATER_SOURCE')) {
+        cell.hydration = true;
+      }
+    }
+  }
+}

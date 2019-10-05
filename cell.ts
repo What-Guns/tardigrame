@@ -5,7 +5,7 @@ export const CONSTRUCTION_REQUIRED_FOR_CANAL = 10000;
 export interface Cell {
   readonly point: Point;
   type: CellType;
-  hydration: number;
+  hydration: boolean;
   amountConstructed: number;
 }
 
