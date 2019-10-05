@@ -20,7 +20,7 @@ export class Grid {
       this.cells.push([]);
       for (let y=0; y<rows; y++) {
         this.cells[x].push({
-          type: Math.random() < 0.8 ? 'BLANK' : Math.random() < 0.1 ? 'BIG_ROCK' : 'POOL',
+          type: Math.random() < 0.4 ? 'BLANK' : Math.random() < 0.1 ? 'BIG_ROCK' : 'POOL',
           hydration: 0,
         });
       }
@@ -91,13 +91,17 @@ export class Grid {
         ctx.drawImage(
           image,
           x * this.xPixelsPerCell,
-          y * this.yPixelsPerCell
+          y * this.yPixelsPerCell,
+          this.xPixelsPerCell,
+          this.yPixelsPerCell
         );
         if(drawAPool) {
           ctx.drawImage(
             fullWaterImage,
             (x + 0.5) * this.xPixelsPerCell,
-            (y + 0.5) * this.yPixelsPerCell
+            (y + 0.5) * this.yPixelsPerCell,
+            this.xPixelsPerCell,
+            this.yPixelsPerCell
           );
         }
       }
@@ -124,7 +128,7 @@ export class Grid {
   }
 }
 
-const background = loadImage('assets/pictures/Tardigrade BG_tex.png');
+const background = loadImage('assets/pictures/Tardigrame_BG_tile_1600.png');
 
 const gridImages: {[key in CellType]: HTMLImageElement} = {
   POOL: loadImage('assets/pictures/full%20canals%20v2/full_canals__0007_lefttotop.png'),
