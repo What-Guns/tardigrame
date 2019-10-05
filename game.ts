@@ -35,7 +35,7 @@ export class Game {
     this.ctx = canvas.getContext('2d')!;
     canvas.addEventListener('mousemove', this.mouseMove.bind(this));
     canvas.addEventListener('mouseup', () => this.isMouseClicked = false);
-    canvas.addEventListener('mousedown', () => this.isMouseClicked = true);
+    canvas.addEventListener('mousedown', this.mouseDown.bind(this));
     canvas.addEventListener('mouseout', () => this.isMouseClicked = false);
     canvas.addEventListener('wheel', this.zoom.bind(this));
 
@@ -73,11 +73,14 @@ export class Game {
     this.popover.draw();
   }
 
+  mouseDown(ev: MouseEvent) {
+    if(ev.button === 0) this.isMouseClicked = true;
+  }
+
   mouseMove(ev: MouseEvent) {
     if(this.isMouseClicked && this.tool === 'PAN') {
       this.viewport.x += this.screenSpaceMousePosition.x - ev.offsetX;
       this.viewport.y += this.screenSpaceMousePosition.y - ev.offsetY;
-
     }
 
     this.screenSpaceMousePosition.x = ev.offsetX;
