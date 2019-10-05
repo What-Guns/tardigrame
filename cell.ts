@@ -13,10 +13,14 @@ export class Cell {
   constructor(readonly point: Point) {}
 
   get hydration() {
+    if(this.type !== 'POOL' && this.type !== 'WATER_SOURCE') return false;
     return this._hydration;
   }
 
   set hydration(hydrated: boolean) {
+    if(hydrated && this.type !== 'POOL' && this.type !== 'WATER_SOURCE') {
+      throw new Error('Only pools and water sources can be hydrated');
+    }
     if(this._hydration !== hydrated) {
       if(hydrated) hydratedCells.add(this);
       else hydratedCells.delete(this);
@@ -32,8 +36,11 @@ export class Cell {
     if(t !== this._type) {
       if(t === 'PLANNED_CANAL') cellsThatNeedWorkDone.add(this);
       else cellsThatNeedWorkDone.delete(this);
+
     }
     this._type = t;
+
+    if(t === 'WATER_SOURCE') this.hydration = true;
   }
 }
 
