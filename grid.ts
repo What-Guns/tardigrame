@@ -131,7 +131,7 @@ export class Grid {
 const background = loadImage('assets/pictures/Tardigrame_BG_tile_1600.png');
 
 const gridImages: {[key in CellType]: HTMLImageElement} = {
-  POOL: loadImage('assets/pictures/full%20canals%20v2/full_canals__0007_lefttotop.png'),
+  POOL: loadImage('assets/pictures/full_canals/full_canals__0007_lefttotop.png'),
   BLANK: loadImage('assets/pictures/empty1.png'),
   BIG_ROCK: loadImage('assets/pictures/bigrock1.png'),
   ROAD: loadImage('assets/pictures/nsroad1.png'),
