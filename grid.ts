@@ -4,7 +4,8 @@ import {findIdleTardigrades} from './tardigrade.js';
 import {Point} from './math.js';
 import {Game} from './game.js';
 import {fullCanalImages, fullPoolImage,/*, emptyCanalImages, emptyPoolImage*/
-calculateWetDryCanals} from './water.js';
+calculateWetDryCanals,
+emptyCanalImages} from './water.js';
 
 export class Grid {
   readonly cells: Cell[][];
@@ -27,6 +28,24 @@ export class Grid {
         if(cell.type === 'POOL') cell.hydration = true;
       }
     }
+
+    for (let x=5; x<15; x++) {
+      for (let y=5; y<15; y++) {
+        this.cells[x][y] = {
+          point: {x, y},
+          type: 'BLANK',
+          hydration: false,
+          amountConstructed: 0,
+        };
+      }
+    }
+
+    this.cells[9][9] = {
+      point: {x:9, y:9},
+      type: 'WATER_SOURCE',
+      hydration: true,
+      amountConstructed: 0,
+    };
 
     // put a road somewhere
     for(let y = 0; y < this.rows; y++) {
@@ -99,7 +118,8 @@ export class Grid {
           const cellBelow = this.cells[x] && this.cells[x][y+1] && this.cells[x][y+1].type === 'POOL' ? 1 : 0;
           const cellLeft = this.cells[x-1] && this.cells[x-1][y] && this.cells[x-1][y].type === 'POOL' ? 1 : 0;
           const cellRight = this.cells[x+1] && this.cells[x+1][y] && this.cells[x+1][y].type === 'POOL' ? 1 : 0;
-          image = fullCanalImages[cellRight][cellLeft][cellBelow][cellAbove];
+          const imagesToUse = cell.hydration ? fullCanalImages : emptyCanalImages;
+          image = imagesToUse[cellRight][cellLeft][cellBelow][cellAbove];
           if(cellAbove + cellLeft === 2 && this.cells[x-1] && this.cells[x-1][y-1] && this.cells[x-1][y-1].type === 'POOL') {
             drawAPool = true;
           }
