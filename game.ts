@@ -1,12 +1,19 @@
 import {Grid} from './grid.js';
+import {Point} from './math.js';
 
 export class Game {
-  readonly grid = new Grid(10, 10);
+  readonly grid = new Grid(this, 10, 10);
+
+  readonly mousePosition: Point = {x: 0, y: 0};
 
   private readonly ctx: CanvasRenderingContext2D;
 
   constructor(canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext('2d')!;
+  }
+
+  tick() {
+    this.grid.tick();
   }
 
   draw() {
@@ -20,17 +27,10 @@ export class Game {
   }
 
   mouseMove(ev: MouseEvent) {
-    this.grid.mouseX = ev.offsetX;
-    this.grid.mouseY = ev.offsetY;
+    this.mousePosition.x = ev.offsetX;
+    this.mousePosition.y = ev.offsetY;
   }
 
-  mouseUp(ev: MouseEvent) {
-    this.grid.mouseX = ev.offsetX;
-    this.grid.mouseY = ev.offsetY;
-  }
-
-  mouseLeave() {
-    this.grid.mouseX = null;
-    this.grid.mouseY = null;
+  mouseUp() {
   }
 }

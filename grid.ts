@@ -1,15 +1,16 @@
 import {Cell} from './cell.js';
 import {loadImage} from './loader.js';
+import {Point} from './math.js';
+import {Game} from './game.js';
 
 export class Grid {
-  cells: Cell[][];
-  mouseX: number | null = null;
-  mouseY: number | null = null;
+  readonly cells: Cell[][];
+  readonly hoveredCell: Point = {x: 0, y: 0};
 
   readonly xPixelsPerCell = 64;
   readonly yPixelsPerCell = 64;
 
-  constructor(readonly rows: number, readonly columns: number) {
+  constructor(readonly game: Game, readonly rows: number, readonly columns: number) {
     this.rows = rows;
     this.columns = columns;
     this.cells = [];
@@ -26,11 +27,14 @@ export class Grid {
     }
   }
 
+  tick() {
+    this.updateHoveredCell();
+  }
+
   draw(ctx: CanvasRenderingContext2D) {
-    const hoverCell = this.getHoveredCell();
     for(let x = 0; x < this.columns; x++) {
       for(let y = 0; y < this.rows; y++) {
-        if(hoverCell && x === hoverCell.x && y === hoverCell.y) {
+        if(x === this.hoveredCell.x && y === this.hoveredCell.y) {
           ctx.filter = 'brightness(150%)';
         }
         ctx.drawImage(
@@ -57,14 +61,9 @@ export class Grid {
     }
   }
 
-  getHoveredCell() {
-    if (!this.mouseX || !this.mouseY) {
-      return null;
-    }
-    return {
-      x: Math.floor(this.mouseX / this.xPixelsPerCell),
-      y: Math.floor(this.mouseY / this.yPixelsPerCell),
-    }
+  private updateHoveredCell() {
+    this.hoveredCell.x = Math.floor(this.game.mousePosition.x / this.xPixelsPerCell);
+    this.hoveredCell.y = Math.floor(this.game.mousePosition.y / this.yPixelsPerCell);
   }
 
   private getImageForCell(x: number, y: number) {

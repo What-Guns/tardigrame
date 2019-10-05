@@ -9,17 +9,15 @@ async function startTheGameAlready() {
   const game = new Game(canvas);
   canvas.addEventListener('mousemove', ev => {
     game.mouseMove(ev);
-  });
-  canvas.addEventListener('mouseleave', () => {
-    game.mouseLeave();
-  });
-  canvas.addEventListener('mouseup', ev => {
-    game.mouseUp(ev);
+  })
+  canvas.addEventListener('mouseup', () => {
+    game.mouseUp();
   });
 
-  tick();
+  requestAnimationFrame(tick);
 
   function tick() {
+    game.tick();
     game.draw();
     requestAnimationFrame(tick);
   }
