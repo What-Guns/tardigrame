@@ -24,3 +24,11 @@ export function addPoints(out: Point, a: Point, b: Point) {
 export function isPointInBox(pointX: number, pointY: number, boxX: number, boxY: number, boxWidth: number, boxHeight: number) {
   return pointX > boxX && pointX < (boxX + boxWidth) && pointY > boxY && pointY < (boxY + boxHeight);
 }
+
+export function findNearestVeryExpensive<T extends {point: Point}>(items: T[], near: Point, howMany: number) {
+  return Array.from(items)
+    .map(item => ({item, dist2: distanceSquared(near, item.point)}))
+    .sort((a, b) => a.dist2 - b.dist2)
+    .slice(0, howMany)
+    .map(item => item.item);
+}

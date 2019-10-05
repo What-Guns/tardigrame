@@ -81,7 +81,7 @@ export class Grid {
     if(cell.type !== 'BLANK') return;
     cell.type = 'PLANNED_CANAL';
     this.game.availableWater--;
-    for(const t of findIdleTardigrades(cell.point, 5)) {
+    for(const t of findIdleTardigrades(cell, 5)) {
       t.assignTask({
         destination: {x: cell.point.x + 0.5, y: cell.point.y + 0.5},
         type: "BUILDING_A_CANAL"

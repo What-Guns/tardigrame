@@ -1,12 +1,13 @@
-import {Point} from './math';
+import {Point} from './math.js';
 
 export const CONSTRUCTION_REQUIRED_FOR_CANAL = 10000;
 
 export const hydratedCells = new Set<Cell>();
+export const cellsThatNeedWorkDone = new Set<Cell>();
 
 export class Cell {
-  type: CellType = 'BLANK';
-  _hydration = false;
+  private _type: CellType = 'BLANK';
+  private _hydration = false;
   amountConstructed = 0;
 
   constructor(readonly point: Point) {}
@@ -21,6 +22,18 @@ export class Cell {
       else hydratedCells.delete(this);
     }
     this._hydration = hydrated;
+  }
+
+  get type() {
+    return this._type;
+  }
+
+  set type(t: CellType) {
+    if(t !== this._type) {
+      if(t === 'PLANNED_CANAL') cellsThatNeedWorkDone.add(this);
+      else cellsThatNeedWorkDone.delete(this);
+    }
+    this._type = t;
   }
 }
 

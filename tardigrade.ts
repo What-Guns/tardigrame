@@ -1,7 +1,7 @@
 import {loadImage} from './loader.js';
-import {Point, direction, distanceSquared} from './math.js';
+import {Point, direction, distanceSquared, findNearestVeryExpensive} from './math.js';
 import {Game} from './game.js';
-import {Cell, CONSTRUCTION_REQUIRED_FOR_CANAL, hydratedCells} from './cell.js';
+import {Cell, CONSTRUCTION_REQUIRED_FOR_CANAL, hydratedCells, cellsThatNeedWorkDone} from './cell.js';
 
 export const idleTardigrades = new Set<Tardigrade>();
 
@@ -21,8 +21,8 @@ export class Tardigrade {
 
   satiation = 0.4; // 0 is starved, 1 babby formed from gonad
   fluid = Math.random() * 0.5 + 0.5;
-  dehydrationSpeed : number = 0.0001; // thirst per millisecond
-  hydrationSpeed : number = 0.1; // antithirst per millisecond
+  dehydrationSpeed : number = 0.00005; // thirst per millisecond
+  hydrationSpeed : number = 0.0001; // antithirst per millisecond
 
   nutrientConsumptionRate: number = 0.1;
   starvationRate : number = 0;
@@ -62,31 +62,6 @@ export class Tardigrade {
       this.fluid = Math.min(1, this.fluid + this.hydrationSpeed * dt);
     } else {
       this.fluid = Math.max(0, this.fluid - this.dehydrationSpeed * dt);
-    }
-  }
-
-  private performTask(dt: number) {
-    if(this.task.type === 'IDLE' && distanceSquared(this.point, this.task.destination) <= DESTINATION_THRESHOLD) {
-      this.task.destination.x = Math.random() * 10;
-      this.task.destination.y = Math.random() * 10;
-      return;
-    }
-
-    if(
-      this.task.type === 'BUILDING_A_CANAL'
-      && Math.abs(this.point.x - this.task.destination.x) < 0.5
-      && Math.abs(this.point.y - this.task.destination.y) < 0.5
-    ) {
-      const cell = this.game.grid.getCell(this.task.destination);
-      cell.amountConstructed += dt;
-
-      if(cell.amountConstructed >= CONSTRUCTION_REQUIRED_FOR_CANAL) {
-        cell.type = 'POOL';
-      }
-
-      if(cell.type !== 'PLANNED_CANAL') {
-        this.assignTask({type: 'IDLE', destination: {...this.point}});
-      }
     }
   }
 
@@ -160,15 +135,56 @@ export class Tardigrade {
       idleTardigrades.delete(this);
     }
   }
+
+  private performTask(dt: number) {
+    if(this.task.type === 'IDLE') {
+      if(distanceSquared(this.point, this.task.destination) <= DESTINATION_THRESHOLD) {
+        this.task.destination.x = Math.random() * 10;
+        this.task.destination.y = Math.random() * 10;
+        return;
+      }
+    } else if(this.task.type === 'BUILDING_A_CANAL') {
+      const targetCell = this.game.grid.getCell(this.task.destination);
+      if(targetCell.type !== 'PLANNED_CANAL') {
+        this.findSomethingToDo();
+        return;
+      }
+
+      const myCell = this.game.grid.getCell(this.point);
+      if(myCell === targetCell) {
+        const cell = this.game.grid.getCell(this.task.destination);
+        cell.amountConstructed += dt;
+
+        if(cell.amountConstructed >= CONSTRUCTION_REQUIRED_FOR_CANAL) {
+          cell.type = 'POOL';
+        }
+
+        if(cell.type !== 'PLANNED_CANAL') {
+          this.findSomethingToDo();
+        }
+      }
+    } else if(this.task.type === 'REHYDRATE') {
+      if(this.fluid >= 1) this.findSomethingToDo();
+    }
+  }
+
+  private findSomethingToDo() {
+    const cell = findNearestVeryExpensive(Array.from(cellsThatNeedWorkDone), this.point, 1)[0];
+    if(cell) {
+      this.assignTask({
+        destination: {x: cell.point.x + 0.5, y: cell.point.y + 0.5},
+        type: "BUILDING_A_CANAL"
+      });
+    } else {
+      this.assignTask({type: 'IDLE', destination: {...this.point}});
+    }
+  }
 }
 
 const image = loadImage('assets/pictures/tardy-tardigrade.png');
 const deadImage = loadImage('assets/pictures/deadigrade.png');
 
-export function findIdleTardigrades(near: Point, howMany: number) {
-  return Array.from(idleTardigrades)
-    .map(tardigrade => ({tardigrade, dist2: distanceSquared(near, tardigrade.point)}))
-    .sort((a, b) => a.dist2 - b.dist2)
-    .slice(0, howMany)
-    .map(t => t.tardigrade);
+export function findIdleTardigrades(cell: Cell, howMany: number) {
+  const point = {x: cell.point.x + 0.5, y: cell.point.y + 0.5};
+  return findNearestVeryExpensive(Array.from(idleTardigrades), point, howMany);
 }
