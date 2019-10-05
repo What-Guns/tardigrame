@@ -1,3 +1,3 @@
 export enum Cell {
-  BLANK, POOL,
+  BLANK, POOL, ROAD, BIG_ROCK
 };
