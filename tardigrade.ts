@@ -72,8 +72,8 @@ export class Tardigrade {
   draw(ctx: CanvasRenderingContext2D) {
     ctx.drawImage(
       this.isDehydrated() ? deadImage : image,
-      this.point.x * this.game.grid.xPixelsPerCell,
-      this.point.y * this.game.grid.yPixelsPerCell
+      this.point.x * this.game.grid.xPixelsPerCell - image.width/2,
+      this.point.y * this.game.grid.yPixelsPerCell - image.height/2
     );
   }
 
