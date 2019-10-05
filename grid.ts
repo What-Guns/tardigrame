@@ -1,5 +1,6 @@
-import {Cell, CellType} from './cell.js';
+import {Cell, CellType, CONSTRUCTION_REQUIRED_FOR_CANAL} from './cell.js';
 import {loadImage} from './loader.js';
+import {findIdleTardigrades} from './tardigrade.js';
 import {Point} from './math.js';
 import {Game} from './game.js';
 import {fullCanalImages, fullPoolImage/*, emptyCanalImages, emptyPoolImage*/} from './water.js';
@@ -20,8 +21,10 @@ export class Grid {
       this.cells.push([]);
       for (let y=0; y<rows; y++) {
         this.cells[x].push({
+          point: {x, y},
           type: Math.random() < 0.4 ? 'BLANK' : Math.random() < 0.1 ? 'BIG_ROCK' : 'POOL',
           hydration: 0,
+          amountConstructed: 0,
         });
       }
     }
@@ -30,15 +33,16 @@ export class Grid {
     for(let y = 0; y < this.rows; y++) {
       this.cells[2][y].type = 'ROAD';
     }
+
+    // put a water source somewhere
+    this.cells[Math.floor(Math.random() * 10)][Math.floor(Math.random() * 10)].type = 'WATER_SOURCE';
   }
 
   tick() {
     this.updateHoveredCell();
     if(this.game.isMouseClicked && this.game.tool === 'WATER' && this.game.availableWater > 0) {
-      this.game.availableWater--;
       const cell = this.getCell(this.hoveredCell);
-      cell.type = 'POOL';
-      cell.hydration = 1.0;
+      this.startBuildingACanal(cell);
     }
   }
 
@@ -53,11 +57,23 @@ export class Grid {
   }
 
   getCell(point: Point) {
-    return this.cells[point.x][point.y];
+    return this.cells[Math.floor(point.x)][Math.floor(point.y)];
   }
 
   setCellType(point: Point, type: CellType) {
     this.cells[point.x][point.y].type = type;
+  }
+
+  private startBuildingACanal(cell: Cell) {
+    if(cell.type !== 'BLANK') return;
+    cell.type = 'PLANNED_CANAL';
+    this.game.availableWater--;
+    for(const t of findIdleTardigrades(cell.point, 5)) {
+      t.assignTask({
+        destination: {x: cell.point.x + 0.5, y: cell.point.y + 0.5},
+        type: "BUILDING_A_CANAL"
+      });
+    }
   }
 
   private drawBackground(ctx: CanvasRenderingContext2D) {
@@ -95,6 +111,7 @@ export class Grid {
           this.xPixelsPerCell,
           this.yPixelsPerCell
         );
+
         if(drawAPool) {
           ctx.drawImage(
             fullPoolImage,
@@ -104,10 +121,26 @@ export class Grid {
             this.yPixelsPerCell
           );
         }
+
+        if(cell.type === 'PLANNED_CANAL') {
+          ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.arc(
+            (x + 0.5) * this.xPixelsPerCell,
+            (y + 0.5) * this.yPixelsPerCell,
+            Math.min(this.xPixelsPerCell, this.yPixelsPerCell) / 3,
+            0,
+            2 * Math.PI * cell.amountConstructed / CONSTRUCTION_REQUIRED_FOR_CANAL,
+            false);
+          ctx.stroke();
+        }
       }
     }
 
-    const drawGridLines = false; // Put this as a Game-level config option?
+    const drawGridLines = true; // Put this as a Game-level config option?
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 1;
     ctx.beginPath();
     if(drawGridLines) {
       for(let x = firstVisibleColumn; x < lastVisibleColumn; x++) {
@@ -135,4 +168,6 @@ const gridImages: {[key in CellType]: HTMLImageElement} = {
   BLANK: loadImage('assets/pictures/empty1.png'),
   BIG_ROCK: loadImage('assets/pictures/bigrock1.png'),
   ROAD: loadImage('assets/pictures/nsroad1.png'),
+  PLANNED_CANAL: loadImage('assets/pictures/futureCanal.png'),
+  WATER_SOURCE: loadImage('assets/pictures/full_canals/full_canals__0000_full.png'),
 }

@@ -62,7 +62,7 @@ export class Game {
     this.ctx.setTransform(this.viewport.scale, 0, 0, this.viewport.scale, -this.viewport.x, -this.viewport.y);
 
     this.grid.draw(this.ctx);
-    for (let i = 0; i < 100; i++){
+    for (let i = 0; i < this.pawns.length; i++){
       this.pawns[i].draw(this.ctx);
     }
 
