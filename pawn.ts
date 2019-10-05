@@ -1,19 +1,14 @@
 import { PawnType } from "./pawnType.js";
 // import { fillWithImage } from "./loader.js";
 import {loadImage} from './loader.js';
+import {Point} from './math.js';
+import {Game} from './game.js';
 
 
 export class Pawn {
-
-  // @fillWithImage('assets/pictures/tardy-tardigrade.png')
-  // private static tardigradeImage: HTMLImageElement;
-
-  x:number
-  y:number
-  pawnType: PawnType
-  constructor(x: number, y: number, pawnType: PawnType) {
-    this.x = x;
-    this.y = y;
+  readonly point: Point;
+  constructor(readonly game: Game, x: number, y: number, public pawnType: PawnType) {
+    this.point = {x, y};
     this.pawnType = pawnType
   }
 
