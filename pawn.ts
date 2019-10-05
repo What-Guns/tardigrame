@@ -3,6 +3,7 @@ import { PawnType } from "./pawnType.js";
 import {loadImage} from './loader.js';
 import {Point} from './math.js';
 import {Game} from './game.js';
+import { Grid } from "./grid.js";
 
 
 export class Pawn {
@@ -13,7 +14,8 @@ export class Pawn {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.drawImage(pawnImages[this.pawnType], 16, 16);
+
+    ctx.drawImage(pawnImages[this.pawnType], this.point.x * this.game.grid.xPixelsPerCell, this.point.y * this.game.grid.yPixelsPerCell);
   }
 }
 
