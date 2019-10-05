@@ -58,7 +58,7 @@ export class Tardigrade {
 
     if(!this.isDehydrated()) this.performTask(dt);
 
-    if(this.currentCell.type === 'POOL') {
+    if(this.currentCell.hydration) {
       this.fluid = Math.min(1, this.fluid + this.hydrationSpeed * dt);
     } else {
       this.fluid = Math.max(0, this.fluid - this.dehydrationSpeed * dt);
