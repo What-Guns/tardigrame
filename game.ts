@@ -91,6 +91,7 @@ export class Game {
   }
 
   zoom(ev: WheelEvent) {
+    if(this.tool !== 'PAN') return;
     this.viewport.x += this.viewport.width / 2;
     this.viewport.y += this.viewport.height / 2;
     this.viewport.x /= this.viewport.scale;
