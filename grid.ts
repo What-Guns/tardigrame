@@ -78,11 +78,11 @@ export class Grid {
         const cell = this.cells[x][y];
         let image = gridImages[cell.type];
         let drawAPool = false;
-        if(cell.type === 'POOL' && x>0 && x < this.columns - 1 && y>0 && y < this.rows - 1) {
-          const cellAbove = this.cells[x][y-1].type === 'POOL' ? 1 : 0;
-          const cellBelow = this.cells[x][y+1].type === 'POOL' ? 1 : 0;
-          const cellLeft = this.cells[x-1][y].type === 'POOL' ? 1 : 0;
-          const cellRight = this.cells[x+1][y].type === 'POOL' ? 1 : 0;
+        if(cell.type === 'POOL') {
+          const cellAbove = this.cells[x] && this.cells[x][y-1] && this.cells[x][y-1].type === 'POOL' ? 1 : 0;
+          const cellBelow = this.cells[x] && this.cells[x][y+1] && this.cells[x][y+1].type === 'POOL' ? 1 : 0;
+          const cellLeft = this.cells[x-1] && this.cells[x-1][y] && this.cells[x-1][y].type === 'POOL' ? 1 : 0;
+          const cellRight = this.cells[x+1] && this.cells[x+1][y] && this.cells[x+1][y].type === 'POOL' ? 1 : 0;
           image = waterImages[cellRight][cellLeft][cellBelow][cellAbove];
           if(cellBelow + cellRight === 2 && this.cells[x+1][y+1].type === 'POOL') {
             drawAPool = true;
