@@ -1,8 +1,14 @@
 import {Game} from './game.js';
+import {Tardigrade} from './tardigrade.js'
+import {liveTardigrades} from './tardigrade.js'
+import {tunTardigrades} from './tardigrade.js'
 
 export class Hud {
-  constructor(private readonly game: Game) {
 
+  liveT : Set<Tardigrade> = liveTardigrades 
+  tunT : Set<Tardigrade> = tunTardigrades 
+
+  constructor(private readonly game: Game) {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -17,5 +23,10 @@ export class Hud {
     ctx.lineWidth = 2;
     ctx.strokeText(message, 10, 10);
     ctx.fillText(message, 10, 10);
+
+    const stateCountMessage =`Alive: ${this.liveT.size} Tun: ${this.tunT.size}`
+    ctx.strokeText(stateCountMessage, 10, 30)
+    ctx.fillText(stateCountMessage, 10, 30)
+
   }
 }

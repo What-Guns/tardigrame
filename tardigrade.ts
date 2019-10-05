@@ -4,11 +4,16 @@ import {Game} from './game.js';
 import {Cell, CONSTRUCTION_REQUIRED_FOR_CANAL, hydratedCells, cellsThatNeedWorkDone} from './cell.js';
 
 export const idleTardigrades = new Set<Tardigrade>();
+export const liveTardigrades = new Set<Tardigrade>();
+export const tunTardigrades = new Set<Tardigrade>();
+export const deadTardigrades = new Set<Tardigrade>();
 
 interface Task {
   type: 'IDLE' | 'BUILDING_A_CANAL' | 'REHYDRATE';
   destination: Point;
 }
+
+type State = 'LIVE' | 'TUN' | 'DEAD'
 
 const DESTINATION_THRESHOLD = 0.01;
 
@@ -26,6 +31,8 @@ export class Tardigrade {
 
   nutrientConsumptionRate: number = 0.1;
   starvationRate : number = 0;
+  state : State = 'LIVE';
+
 
   // in grid cells per second
   readonly speed = 0.2;
@@ -37,6 +44,8 @@ export class Tardigrade {
       type: 'IDLE'
     }
     idleTardigrades.add(this);
+    this.state = 'LIVE';
+    liveTardigrades.add(this)
     this.currentCell = this.game.grid.getCell(this.point);
   }
 
@@ -65,11 +74,53 @@ export class Tardigrade {
     }
   }
 
+<<<<<<< HEAD
+=======
+  private performTask(dt: number) {
+    if(this.task.type === 'IDLE' && distanceSquared(this.point, this.task.destination) <= DESTINATION_THRESHOLD) {
+      this.task.destination.x = Math.random() * 10;
+      this.task.destination.y = Math.random() * 10;
+      return;
+    }
+
+    if(
+      this.task.type === 'BUILDING_A_CANAL'
+      && Math.abs(this.point.x - this.task.destination.x) < 0.5
+      && Math.abs(this.point.y - this.task.destination.y) < 0.5
+    ) {
+      const cell = this.game.grid.getCell(this.task.destination);
+      cell.amountConstructed += dt;
+
+      if(cell.amountConstructed >= CONSTRUCTION_REQUIRED_FOR_CANAL) {
+        cell.type = 'POOL';
+      }
+
+      if(cell.type !== 'PLANNED_CANAL') {
+        this.assignTask({type: 'IDLE', destination: {...this.point}});
+      }
+    }
+  }
+
+  isTunAndRehydrated(){
+    if (this.state === 'TUN' && this.fluid > 0 )
+    {
+      tunTardigrades.delete(this);
+      liveTardigrades.add(this);
+    }
+  }
+
+>>>>>>> live and tun counts
   isDehydrated() {
+    this.state = 'TUN'
+    liveTardigrades.delete(this);
+    tunTardigrades.add(this);
     return this.fluid <= 0;
   }
 
   isStarved() {
+    this.state = 'TUN'
+    liveTardigrades.delete(this);
+    tunTardigrades.add(this);
     return this.satiation <= 0
   }
 
@@ -137,6 +188,7 @@ export class Tardigrade {
     }
   }
 
+<<<<<<< HEAD
   private performTask(dt: number) {
     if(this.task.type === 'IDLE') {
       if(distanceSquared(this.point, this.task.destination) <= DESTINATION_THRESHOLD) {
@@ -180,6 +232,8 @@ export class Tardigrade {
       this.assignTask({type: 'IDLE', destination: {...this.point}});
     }
   }
+=======
+>>>>>>> live and tun counts
 }
 
 const image = loadImage('assets/pictures/tardy-tardigrade.png');
