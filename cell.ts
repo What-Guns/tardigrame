@@ -1,4 +1,3 @@
-const Cell = {
-  BLANK: 0,
-}
-export {Cell};
+export enum Cell {
+  BLANK, POOL,
+};
