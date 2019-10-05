@@ -31,21 +31,15 @@ export class Grid {
 
     for (let x=5; x<15; x++) {
       for (let y=5; y<15; y++) {
-        this.cells[x][y] = {
-          point: {x, y},
-          type: 'BLANK',
-          hydration: false,
-          amountConstructed: 0,
-        };
+        this.cells[x][y] = new Cell({x, y})
+        this.cells[x][y].type = 'BLANK';
+        this.cells[x][y].hydration = false;
       }
     }
 
-    this.cells[9][9] = {
-      point: {x:9, y:9},
-      type: 'WATER_SOURCE',
-      hydration: true,
-      amountConstructed: 0,
-    };
+    this.cells[9][9] = new Cell({x:9, y:9});
+    this.cells[9][9].type = 'WATER_SOURCE';
+    this.cells[9][9].hydration = true;
 
     // put a road somewhere
     for(let y = 0; y < this.rows; y++) {
