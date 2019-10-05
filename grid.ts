@@ -42,9 +42,11 @@ export class Grid {
 
   tick() {
     this.updateHoveredCell();
-    if(this.game.isMouseClicked) {
-      this.cells[this.hoveredCell.x][this.hoveredCell.y] = 'POOL';
-      this.updateOffscreenCanvas();
+    if(this.game.isMouseClicked
+        && this.getCellType(this.hoveredCell) !== 'POOL'
+        && this.game.availableWater > 0) {
+      this.game.availableWater--;
+      this.setCellType(this.hoveredCell, 'POOL');
     }
   }
 
@@ -57,6 +59,15 @@ export class Grid {
       this.xPixelsPerCell,
       this.yPixelsPerCell
     );
+  }
+
+  getCellType(point: Point) {
+    return this.cells[point.x][point.y];
+  }
+
+  setCellType(point: Point, type: Cell) {
+    this.cells[point.x][point.y] = type;
+    this.cellsChanged = true;
   }
 
   private updateOffscreenCanvas() {

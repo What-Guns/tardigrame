@@ -3,7 +3,6 @@ import { PawnType } from "./pawnType.js";
 import {loadImage} from './loader.js';
 import {Point} from './math.js';
 import {Game} from './game.js';
-import { Grid } from "./grid.js";
 
 
 export class Pawn {
