@@ -18,4 +18,14 @@ export class Game {
 
     this.grid.draw(this.ctx);
   }
+
+  mouseMove(ev: MouseEvent) {
+    this.grid.mouseX = ev.clientX;
+    this.grid.mouseY = ev.clientY;
+  }
+
+  mouseLeave() {
+    this.grid.mouseX = null;
+    this.grid.mouseY = null;
+  }
 }

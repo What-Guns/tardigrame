@@ -3,6 +3,8 @@ import {loadImage} from './loader.js';
 
 export class Grid {
   cells: Cell[][];
+  mouseX: number | null = null;
+  mouseY: number | null = null;
 
   readonly pixelsPerCell = 100;
 
@@ -24,9 +26,14 @@ export class Grid {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
+    const hoverCell = this.getHoveredCell();
     for(let x = 0; x < this.columns; x++) {
       for(let y = 0; y < this.rows; y++) {
+        if(hoverCell && x === hoverCell.x && y === hoverCell.y) {
+          ctx.filter = 'brightness(150%)';
+        }
         ctx.drawImage(this.getImageForCell(x, y), x * this.pixelsPerCell, y * this.pixelsPerCell);
+        ctx.filter = 'none';
       }
     }
     const drawGridLines = true; // Put this as a Game-level config option?
@@ -40,6 +47,16 @@ export class Grid {
             ctx.lineTo(this.rows * this.pixelsPerCell, y * this.pixelsPerCell)
         }
         ctx.stroke();
+    }
+  }
+
+  getHoveredCell() {
+    if (!this.mouseX || !this.mouseY) {
+      return null;
+    }
+    return {
+      x: Math.floor(this.mouseX / this.pixelsPerCell),
+      y: Math.floor(this.mouseY / this.pixelsPerCell),
     }
   }
 

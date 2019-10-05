@@ -5,7 +5,14 @@ async function startTheGameAlready() {
   console.log('Waiting for everything to load');
   await isLoaded();
   console.log(`Everything has loaded now`);
-  const game = new Game(document.querySelector('canvas')!);
+  const canvas = document.querySelector('canvas')!;
+  const game = new Game(canvas);
+  canvas.addEventListener('mousemove', ev => {
+    game.mouseMove(ev);
+  })
+  canvas.addEventListener('mouseleave', () => {
+    game.mouseLeave();
+  });
 
   tick();
 
