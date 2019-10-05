@@ -27,3 +27,5 @@ export const waterImages = [[[[
   loadImage('assets/pictures/full canals v2/full_canals__0013_bottomexit.png'), // 1110
   loadImage('assets/pictures/full canals v2/full_canals__0014_4way.png'), // 1111
 ]]]];
+
+export const fullWaterImage = loadImage('assets/pictures/full canals v2/full_canals__0000_full.png')

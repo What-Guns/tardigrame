@@ -2,7 +2,7 @@ import {Cell, CellType} from './cell.js';
 import {loadImage} from './loader.js';
 import {Point} from './math.js';
 import {Game} from './game.js';
-import {waterImages} from './water.js';
+import {waterImages, fullWaterImage} from './water.js';
 
 export class Grid {
   readonly cells: Cell[][];
@@ -20,7 +20,7 @@ export class Grid {
       this.cells.push([]);
       for (let y=0; y<rows; y++) {
         this.cells[x].push({
-          type: Math.random() < 0.8 ? 'BLANK' : Math.random() < 0.5 ? 'BIG_ROCK' : 'POOL',
+          type: Math.random() < 0.8 ? 'BLANK' : Math.random() < 0.1 ? 'BIG_ROCK' : 'POOL',
           hydration: 0,
         });
       }
@@ -77,20 +77,29 @@ export class Grid {
       for(let y = firstVisibleRow; y < lastVisibleRow; y++) {
         const cell = this.cells[x][y];
         let image = gridImages[cell.type];
+        let drawAPool = false;
         if(cell.type === 'POOL' && x>0 && x < this.columns - 1 && y>0 && y < this.rows - 1) {
           const cellAbove = this.cells[x][y-1].type === 'POOL' ? 1 : 0;
           const cellBelow = this.cells[x][y+1].type === 'POOL' ? 1 : 0;
           const cellLeft = this.cells[x-1][y].type === 'POOL' ? 1 : 0;
           const cellRight = this.cells[x+1][y].type === 'POOL' ? 1 : 0;
           image = waterImages[cellRight][cellLeft][cellBelow][cellAbove];
+          if(cellBelow + cellRight === 2 && this.cells[x+1][y+1].type === 'POOL') {
+            drawAPool = true;
+          }
         }
         ctx.drawImage(
           image,
           x * this.xPixelsPerCell,
-          y * this.yPixelsPerCell,
-          this.xPixelsPerCell,
-          this.yPixelsPerCell
+          y * this.yPixelsPerCell
         );
+        if(drawAPool) {
+          ctx.drawImage(
+            fullWaterImage,
+            (x + 0.5) * this.xPixelsPerCell,
+            (y + 0.5) * this.yPixelsPerCell
+          );
+        }
       }
     }
 
