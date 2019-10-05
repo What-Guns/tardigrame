@@ -3,7 +3,7 @@ import { PawnType } from "./pawnType.js";
 import {loadImage} from './loader.js';
 
 
-export class Character {
+export class Pawn {
 
   // @fillWithImage('assets/pictures/tardy-tardigrade.png')
   // private static tardigradeImage: HTMLImageElement;
