@@ -28,7 +28,7 @@ export class Tardigrade {
   starvationRate : number = 0;
 
   // in grid cells per second
-  readonly speed = 0.1;
+  readonly speed = 0.2;
 
   constructor(readonly game: Game, x: number, y: number) {
     this.point = {x, y};
