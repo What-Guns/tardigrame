@@ -60,7 +60,8 @@ export class Grid {
 
   private drawBackground(ctx: CanvasRenderingContext2D) {
     ctx.clearRect(0, 0, this.xPixelsPerCell * this.columns, this.yPixelsPerCell * this.rows);
-    ctx.fillRect(0, 0, this.xPixelsPerCell * this.columns, this.yPixelsPerCell * this.rows);
+    //ctx.fillRect(0, 0, this.xPixelsPerCell * this.columns, this.yPixelsPerCell * this.rows);
+    ctx.drawImage(background, -100, -100, this.xPixelsPerCell * this.columns, this.yPixelsPerCell * this.rows);
 
     const firstVisibleColumn = Math.max(0, Math.floor((this.game.viewport.x / this.game.viewport.scale) / this.xPixelsPerCell));
     const firstVisibleRow = Math.max(0, Math.floor((this.game.viewport.y / this.game.viewport.scale) / this.yPixelsPerCell));
@@ -103,8 +104,10 @@ export class Grid {
   }
 }
 
+const background = loadImage('assets/pictures/Tardigrade BG_tex.png');
+
 const gridImages: {[key in Cell]: HTMLImageElement} = {
-  POOL: loadImage('assets/pictures/pool1.png'),
+  POOL: loadImage('assets/pictures/full%20canals%20v2/full_canals__0007_lefttotop.png'),
   BLANK: loadImage('assets/pictures/empty1.png'),
   BIG_ROCK: loadImage('assets/pictures/bigrock1.png'),
   ROAD: loadImage('assets/pictures/nsroad1.png'),
