@@ -1,7 +1,10 @@
 import {Grid} from './grid.js';
+import {loadImage} from './loader.js';
 
 export class Game {
   readonly grid = new Grid(10, 10);
+  regret : boolean = false;
+  regretImage : HTMLImageElement = loadImage('assets/pictures/regret.png')
 
   private readonly ctx: CanvasRenderingContext2D;
 
@@ -17,6 +20,9 @@ export class Game {
     this.ctx.fillRect(0, 0, w, h);
 
     this.grid.draw(this.ctx);
+    if(this.regret) {
+      this.ctx.drawImage(this.regretImage, 80, 280);
+    }
   }
 
   mouseMove(ev: MouseEvent) {

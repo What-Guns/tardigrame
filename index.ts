@@ -9,9 +9,12 @@ async function startTheGameAlready() {
   const game = new Game(canvas);
   canvas.addEventListener('mousemove', ev => {
     game.mouseMove(ev);
-  })
+  });
   canvas.addEventListener('mouseleave', () => {
     game.mouseLeave();
+  });
+  canvas.addEventListener('mouseup', () => {
+    game.regret = true;
   });
 
   tick();
