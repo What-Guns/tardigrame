@@ -1,20 +1,17 @@
-import { PawnType } from "./pawnType.js";
-// import { fillWithImage } from "./loader.js";
 import {loadImage} from './loader.js';
 import {Point, direction, distanceSquared} from './math.js';
 import {Game} from './game.js';
 
-export class Pawn {
+export class Tardigrade {
   readonly point: Point;
   readonly destination: Point;
 
   // in grid cells per second
   readonly speed = 0.1;
 
-  constructor(readonly game: Game, x: number, y: number, public pawnType: PawnType) {
+  constructor(readonly game: Game, x: number, y: number) {
     this.point = {x, y};
     this.destination = {x, y};
-    this.pawnType = pawnType
   }
 
   tick(dt: number) {
@@ -31,7 +28,7 @@ export class Pawn {
 
   draw(ctx: CanvasRenderingContext2D) {
     ctx.drawImage(
-      pawnImages[this.pawnType],
+      image,
       this.point.x * this.game.grid.xPixelsPerCell,
       this.point.y * this.game.grid.yPixelsPerCell
     );
@@ -43,8 +40,4 @@ export class Pawn {
   }
 }
 
-const pawnImages: {[key in PawnType]: HTMLImageElement} = {
-  CANNIBAL_TARIGRADE: loadImage('assets/pictures/tardy-tardigrade.png'),
-  MOON_AGENT: loadImage('assets/pictures/tardy-tardigrade.png'),
-  WORKER_TARDIGRADE: loadImage('assets/pictures/tardy-tardigrade.png'),
-};
+const image = loadImage('assets/pictures/tardy-tardigrade.png');

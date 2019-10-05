@@ -1,12 +1,12 @@
 import {Grid} from './grid.js';
 import {Hud} from './hud.js';
-import {Pawn} from './pawn.js'
+import {Tardigrade} from './tardigrade.js'
 import {Point} from './math.js';
 import {Popover, RegretPopover} from './popover.js';
 
 export class Game {
   readonly grid = new Grid(this, 10, 10);
-  readonly pawns = new Array<Pawn>();
+  readonly pawns = new Array<Tardigrade>();
   readonly hud = new Hud(this);
   popover : Popover;
 
@@ -25,7 +25,7 @@ export class Game {
     canvas.addEventListener('mouseout', () => this.isMouseClicked = false);
 
     for (let i = 0; i < 100; i++){
-      this.pawns.push(new Pawn(this, Math.random() * 10, Math.random() * 10, 'MOON_AGENT'));
+      this.pawns.push(new Tardigrade(this, Math.random() * 10, Math.random() * 10));
     }
 
     this.popover = RegretPopover(this.ctx);
