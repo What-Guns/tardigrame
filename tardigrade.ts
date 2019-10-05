@@ -74,32 +74,30 @@ export class Tardigrade {
     }
   }
 
-<<<<<<< HEAD
-=======
-  private performTask(dt: number) {
-    if(this.task.type === 'IDLE' && distanceSquared(this.point, this.task.destination) <= DESTINATION_THRESHOLD) {
-      this.task.destination.x = Math.random() * 10;
-      this.task.destination.y = Math.random() * 10;
-      return;
-    }
+  // private performTask(dt: number) {
+  //   if(this.task.type === 'IDLE' && distanceSquared(this.point, this.task.destination) <= DESTINATION_THRESHOLD) {
+  //     this.task.destination.x = Math.random() * 10;
+  //     this.task.destination.y = Math.random() * 10;
+  //     return;
+  //   }
 
-    if(
-      this.task.type === 'BUILDING_A_CANAL'
-      && Math.abs(this.point.x - this.task.destination.x) < 0.5
-      && Math.abs(this.point.y - this.task.destination.y) < 0.5
-    ) {
-      const cell = this.game.grid.getCell(this.task.destination);
-      cell.amountConstructed += dt;
+  //   if(
+  //     this.task.type === 'BUILDING_A_CANAL'
+  //     && Math.abs(this.point.x - this.task.destination.x) < 0.5
+  //     && Math.abs(this.point.y - this.task.destination.y) < 0.5
+  //   ) {
+  //     const cell = this.game.grid.getCell(this.task.destination);
+  //     cell.amountConstructed += dt;
 
-      if(cell.amountConstructed >= CONSTRUCTION_REQUIRED_FOR_CANAL) {
-        cell.type = 'POOL';
-      }
+  //     if(cell.amountConstructed >= CONSTRUCTION_REQUIRED_FOR_CANAL) {
+  //       cell.type = 'POOL';
+  //     }
 
-      if(cell.type !== 'PLANNED_CANAL') {
-        this.assignTask({type: 'IDLE', destination: {...this.point}});
-      }
-    }
-  }
+  //     if(cell.type !== 'PLANNED_CANAL') {
+  //       this.assignTask({type: 'IDLE', destination: {...this.point}});
+  //     }
+  //   }
+  // }
 
   isTunAndRehydrated(){
     if (this.state === 'TUN' && this.fluid > 0 )
@@ -109,7 +107,6 @@ export class Tardigrade {
     }
   }
 
->>>>>>> live and tun counts
   isDehydrated() {
     this.state = 'TUN'
     liveTardigrades.delete(this);
@@ -188,7 +185,6 @@ export class Tardigrade {
     }
   }
 
-<<<<<<< HEAD
   private performTask(dt: number) {
     if(this.task.type === 'IDLE') {
       if(distanceSquared(this.point, this.task.destination) <= DESTINATION_THRESHOLD) {
@@ -232,8 +228,6 @@ export class Tardigrade {
       this.assignTask({type: 'IDLE', destination: {...this.point}});
     }
   }
-=======
->>>>>>> live and tun counts
 }
 
 const image = loadImage('assets/pictures/tardy-tardigrade.png');
