@@ -3,9 +3,7 @@ import {loadImage} from './loader.js';
 import {findIdleTardigrades} from './tardigrade.js';
 import {Point} from './math.js';
 import {Game} from './game.js';
-import {fullCanalImages, fullPoolImage,/*, emptyCanalImages, emptyPoolImage*/
-calculateWetDryCanals,
-emptyCanalImages} from './water.js';
+import {fullCanalImages, fullPoolImage, calculateWetDryCanals, emptyCanalImages, emptyPoolImage} from './water.js';
 
 export class Grid {
   readonly cells: Cell[][];
@@ -128,7 +126,7 @@ export class Grid {
 
         if(drawAPool) {
           ctx.drawImage(
-            fullPoolImage,
+            cell.hydration ? fullPoolImage : emptyPoolImage,
             (x - 0.5) * this.xPixelsPerCell,
             (y - 0.5) * this.yPixelsPerCell,
             this.xPixelsPerCell,
