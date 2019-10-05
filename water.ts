@@ -54,4 +54,5 @@ export const emptyCanalImages = [[[[
   loadImage('assets/pictures/Empty Canals/empty_canals_0014_4way.png'), // 1111
 ]]]];
 
-export const fullWaterImage = loadImage('assets/pictures/full canals v2/full_canals__0000_full.png')
+export const fullPoolImage = loadImage('assets/pictures/full canals v2/full_canals__0000_full.png')
+export const emptyPoolImage = loadImage('assets/pictures/Empty Canals/empty_canals_0016_bigsquare.png')
