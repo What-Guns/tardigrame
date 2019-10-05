@@ -1,4 +1,4 @@
-import {Cell} from 'cell.js';
+import {Cell} from './cell.js';
 
 export class Grid {
     cells: Array<Array<number>>;
