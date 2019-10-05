@@ -1,4 +1,5 @@
 import { loadImage } from "./loader.js";
+import {isPointInBox} from './math.js';
 
 export class PopoverButton {
   readonly cb: (ev: MouseEvent) => void;
@@ -6,11 +7,18 @@ export class PopoverButton {
     readonly popover: Popover,
     readonly x: number,
     readonly y: number,
+    readonly width: number,
+    readonly height: number,
     readonly image: HTMLImageElement,
     readonly ctx : CanvasRenderingContext2D,
     readonly callback: (ev: MouseEvent) => void
   ) {
-    this.cb = (ev: MouseEvent) => {this.callback(ev); popover.hide()}
+    this.cb = (ev: MouseEvent) => {
+      if(isPointInBox(ev.offsetX, ev.offsetY, x, y, width, height)) {
+        this.callback(ev);
+        popover.hide()
+      }
+    }
     ctx.canvas.addEventListener('mouseup', this.cb);
   }
 
@@ -72,10 +80,10 @@ const images: {[key in PopoverType]: HTMLImageElement} = {
 export const RegretPopover = (ctx : CanvasRenderingContext2D) => {
   const p = new Popover('REGRET', ctx);
   p.buttons.push(new PopoverButton(
-    p, 130, 219, defaultButton, ctx, () => {}
+    p, 130, 219, 159, 35, defaultButton, ctx, () => {}
   ));
   p.buttons.push(new PopoverButton(
-    p, 360, 219, sorryButton, ctx, () => {}
+    p, 360, 219, 159, 35, sorryButton, ctx, () => {}
   ));
   return p;
 }
