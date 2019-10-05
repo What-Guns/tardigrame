@@ -7,7 +7,7 @@ export class Grid {
   mouseY: number | null = null;
 
   readonly xPixelsPerCell = 64;
-  readonly yPixelsPerCell = 43;
+  readonly yPixelsPerCell = 64;
 
   constructor(readonly rows: number, readonly columns: number) {
     this.rows = rows;

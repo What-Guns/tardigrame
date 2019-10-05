@@ -1,7 +1,7 @@
 import {Grid} from './grid.js';
 
 export class Game {
-  readonly grid = new Grid(15, 10);
+  readonly grid = new Grid(10, 10);
 
   private readonly ctx: CanvasRenderingContext2D;
 
