@@ -11,7 +11,7 @@ export function loadImage(url: string): HTMLImageElement {
 }
 
 export function fillWithImage(url: string): PropertyDecorator {
-  return function(target: any, propertyKey: string) {
+  return function(target: any, propertyKey: string|symbol) {
     target[propertyKey] = loadImage(url);
   }
 }
