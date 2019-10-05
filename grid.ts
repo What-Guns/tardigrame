@@ -62,10 +62,10 @@ export class Grid {
     ctx.clearRect(0, 0, this.xPixelsPerCell * this.columns, this.yPixelsPerCell * this.rows);
     ctx.fillRect(0, 0, this.xPixelsPerCell * this.columns, this.yPixelsPerCell * this.rows);
 
-    const firstVisibleColumn = Math.max(0, Math.floor(this.game.viewport.x / this.xPixelsPerCell));
-    const firstVisibleRow = Math.max(0, Math.floor(this.game.viewport.y / this.yPixelsPerCell));
-    const numVisibleColumns = Math.floor(this.game.viewport.width / this.xPixelsPerCell) + 1;
-    const numVisibleRows = Math.floor(this.game.viewport.height / this.yPixelsPerCell) + 1;
+    const firstVisibleColumn = Math.max(0, Math.floor((this.game.viewport.x / this.game.viewport.scale) / this.xPixelsPerCell));
+    const firstVisibleRow = Math.max(0, Math.floor((this.game.viewport.y / this.game.viewport.scale) / this.yPixelsPerCell));
+    const numVisibleColumns = Math.ceil((this.game.viewport.width / this.game.viewport.scale) / this.xPixelsPerCell) + 1;
+    const numVisibleRows = Math.ceil((this.game.viewport.height / this.game.viewport.scale) / this.yPixelsPerCell) + 1;
 
     const lastVisibleColumn = Math.min(this.columns, firstVisibleColumn + numVisibleColumns);
     const lastVisibleRow = Math.min(this.rows, firstVisibleRow + numVisibleRows);

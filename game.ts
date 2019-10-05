@@ -1,7 +1,7 @@
 import {Grid} from './grid.js';
 import {Hud} from './hud.js';
 import {Tardigrade} from './tardigrade.js'
-import {Point, Rect, addPoints} from './math.js';
+import {Point} from './math.js';
 import {Popover, RegretPopover} from './popover.js';
 
 export type Tool = 'WATER'|'PAN';
@@ -21,11 +21,12 @@ export class Game {
 
   availableWater = 20;
 
-  readonly viewport: Rect = {
+  readonly viewport = {
     x: 0,
     y: 0,
     width: 640,
     height: 640,
+    scale: 1.0,
   };
 
   private readonly ctx: CanvasRenderingContext2D;
@@ -36,6 +37,7 @@ export class Game {
     canvas.addEventListener('mouseup', () => this.isMouseClicked = false);
     canvas.addEventListener('mousedown', () => this.isMouseClicked = true);
     canvas.addEventListener('mouseout', () => this.isMouseClicked = false);
+    canvas.addEventListener('wheel', this.zoom.bind(this));
 
     for (let i = 0; i < 100; i++){
       this.pawns.push(new Tardigrade(this, Math.random() * 10, Math.random() * 10));
@@ -57,7 +59,7 @@ export class Game {
     this.ctx.fillStyle = 'black';
     this.ctx.fillRect(0, 0, this.viewport.width, this.viewport.height);
 
-    this.ctx.setTransform(1, 0, 0, 1, -this.viewport.x, -this.viewport.y);
+    this.ctx.setTransform(this.viewport.scale, 0, 0, this.viewport.scale, -this.viewport.x, -this.viewport.y);
 
     this.grid.draw(this.ctx);
     for (let i = 0; i < 100; i++){
@@ -80,6 +82,23 @@ export class Game {
 
     this.screenSpaceMousePosition.x = ev.offsetX;
     this.screenSpaceMousePosition.y = ev.offsetY;
-    addPoints(this.worldSpaceMousePosition, this.screenSpaceMousePosition, this.viewport);
+
+    this.worldSpaceMousePosition.x = (ev.offsetX + this.viewport.x) / this.viewport.scale;
+    this.worldSpaceMousePosition.y = (ev.offsetY + this.viewport.y) / this.viewport.scale;
+  }
+
+  zoom(ev: WheelEvent) {
+    this.viewport.x += this.viewport.width / 2;
+    this.viewport.y += this.viewport.height / 2;
+    this.viewport.x /= this.viewport.scale;
+    this.viewport.y /= this.viewport.scale;
+    this.viewport.scale += ev.deltaY * - 0.01;
+    this.viewport.scale = Math.max(0.5, this.viewport.scale);
+    this.viewport.x *= this.viewport.scale;
+    this.viewport.y *= this.viewport.scale;
+    this.viewport.x -= this.viewport.width / 2;
+    this.viewport.y -= this.viewport.height / 2;
+
+    this.mouseMove(ev);
   }
 }
