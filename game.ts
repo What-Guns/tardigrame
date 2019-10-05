@@ -4,7 +4,7 @@ import {Pawn} from './pawn.js'
 export class Game {
   readonly grid = new Grid(this, 10, 10);
   readonly mousePosition: Point = {x: 0, y: 0};
-  readonly pawn = new Pawn(Math.random() * 10, Math.random() * 10, 'MOON_AGENT');
+  readonly pawn = new Pawn(this, Math.random() * 10, Math.random() * 10, 'MOON_AGENT');
 
   private readonly ctx: CanvasRenderingContext2D;
 
