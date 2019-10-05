@@ -1,10 +1,12 @@
 import {Grid} from './grid.js';
-import {Point} from './math.js';
+import {Hud} from './hud.js';
 import {Pawn} from './pawn.js'
+import {Point} from './math.js';
 
 export class Game {
   readonly grid = new Grid(this, 10, 10);
   readonly pawns = new Array<Pawn>();
+  readonly hud = new Hud(this);
 
   readonly mousePosition: Point = {x: 0, y: 0};
   isMouseClicked = false;
@@ -42,6 +44,7 @@ export class Game {
     }
     
 
+    this.hud.draw(this.ctx);
   }
 
   mouseMove(ev: MouseEvent) {
