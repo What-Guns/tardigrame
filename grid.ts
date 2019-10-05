@@ -1,4 +1,4 @@
-import {Cell} from './cell.js';
+import {Cell, CellType} from './cell.js';
 import {loadImage} from './loader.js';
 import {Point} from './math.js';
 import {Game} from './game.js';
@@ -18,25 +18,26 @@ export class Grid {
     for (let x=0; x<columns; x++) {
       this.cells.push([]);
       for (let y=0; y<rows; y++) {
-        this.cells[x].push(Math.random() < 0.8 ? 'BLANK' : Math.random() < 0.5 ? 'BIG_ROCK' : 'POOL');
+        this.cells[x].push({
+          type: Math.random() < 0.8 ? 'BLANK' : Math.random() < 0.5 ? 'BIG_ROCK' : 'POOL',
+          hydration: 0,
+        });
       }
     }
 
     // put a road somewhere
     for(let y = 0; y < this.rows; y++) {
-      this.cells[2][y] = 'ROAD';
+      this.cells[2][y].type = 'ROAD';
     }
   }
 
   tick() {
     this.updateHoveredCell();
-    if(
-      this.game.isMouseClicked
-      && this.game.tool === 'WATER'
-      && this.getCellType(this.hoveredCell) !== 'POOL'
-      && this.game.availableWater > 0) {
+    if(this.game.isMouseClicked && this.game.tool === 'WATER' && this.game.availableWater > 0) {
       this.game.availableWater--;
-      this.setCellType(this.hoveredCell, 'POOL');
+      const cell = this.getCell(this.hoveredCell);
+      cell.type = 'POOL';
+      cell.hydration = 1.0;
     }
   }
 
@@ -50,12 +51,12 @@ export class Grid {
     );
   }
 
-  getCellType(point: Point) {
+  getCell(point: Point) {
     return this.cells[point.x][point.y];
   }
 
-  setCellType(point: Point, type: Cell) {
-    this.cells[point.x][point.y] = type;
+  setCellType(point: Point, type: CellType) {
+    this.cells[point.x][point.y].type = type;
   }
 
   private drawBackground(ctx: CanvasRenderingContext2D) {
@@ -74,7 +75,7 @@ export class Grid {
     for(let x = firstVisibleColumn; x < lastVisibleColumn; x++) {
       for(let y = firstVisibleRow; y < lastVisibleRow; y++) {
         ctx.drawImage(
-          gridImages[this.cells[x][y]],
+          gridImages[this.cells[x][y].type],
           x * this.xPixelsPerCell,
           y * this.yPixelsPerCell,
           this.xPixelsPerCell,
@@ -106,7 +107,7 @@ export class Grid {
 
 const background = loadImage('assets/pictures/Tardigrade BG_tex.png');
 
-const gridImages: {[key in Cell]: HTMLImageElement} = {
+const gridImages: {[key in CellType]: HTMLImageElement} = {
   POOL: loadImage('assets/pictures/full%20canals%20v2/full_canals__0007_lefttotop.png'),
   BLANK: loadImage('assets/pictures/empty1.png'),
   BIG_ROCK: loadImage('assets/pictures/bigrock1.png'),
