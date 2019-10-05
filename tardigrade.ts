@@ -88,12 +88,11 @@ export class Tardigrade {
 
   move(dt: number) {
     const dir = direction(this.point, this.task.destination);
-    const dx = Math.cos(dir) * this.speed * dt / 1000;
-    const dy = Math.sin(dir) * this.speed * dt / 1000;
     const distSquared = distanceSquared(this.point, this.task.destination);
     if(distSquared > DESTINATION_THRESHOLD) {
-      this.point.x += dx;
-      this.point.y += dy;
+      const movement = Math.min(this.speed * dt / 1000, Math.sqrt(distSquared));
+      this.point.x += Math.cos(dir) * movement;
+      this.point.y += Math.sin(dir) * movement;
     }
   }
 
@@ -104,7 +103,7 @@ export class Tardigrade {
       this.point.y * this.game.grid.yPixelsPerCell - image.height/2
     );
 
-    if(this.task.type !== 'IDLE') {
+    if(this.task.type !== 'IDLE' && (window as any).DEBUG_DRAW_PATHS) {
       ctx.strokeStyle = 'red';
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -113,18 +112,20 @@ export class Tardigrade {
       ctx.stroke();
     }
 
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = 'blue';
-    ctx.beginPath();
-    ctx.arc(
-      this.point.x * this.game.grid.xPixelsPerCell,
-      this.point.y * this.game.grid.yPixelsPerCell,
-      16,
-      0,
-      2 * Math.PI * this.fluid,
-      false
-    );
-    ctx.stroke();
+    if((window as any).DEBUG_DRAW_THIRST) {
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'blue';
+      ctx.beginPath();
+      ctx.arc(
+        this.point.x * this.game.grid.xPixelsPerCell,
+        this.point.y * this.game.grid.yPixelsPerCell,
+        16,
+        0,
+        2 * Math.PI * this.fluid,
+        false
+      );
+      ctx.stroke();
+    }
   }
 
   assignTask(task: Task) {
