@@ -1,10 +1,10 @@
 import {Grid} from './grid.js';
 import {Hud} from './hud.js';
 import {Tardigrade} from './tardigrade.js'
-import {Point} from './math.js';
+import {Point, findNearestVeryExpensive} from './math.js';
 import {Popover, RegretPopover} from './popover.js';
 
-export type Tool = 'WATER'|'PAN';
+export type Tool = 'WATER'|'PAN'|'DEBUG_INSPECT_TARDIGRADE';
 
 export class Game {
   readonly grid = new Grid(this, 100, 100);
@@ -75,6 +75,11 @@ export class Game {
 
   mouseDown(ev: MouseEvent) {
     if(ev.button === 0) this.isMouseClicked = true;
+    if(this.tool === 'DEBUG_INSPECT_TARDIGRADE') {
+      const nearest = findNearestVeryExpensive(this.pawns, this.worldSpaceMousePosition, 1)[0];
+      console.log(nearest);
+      debugger;
+    }
   }
 
   mouseMove(ev: MouseEvent) {

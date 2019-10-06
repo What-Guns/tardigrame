@@ -1,4 +1,4 @@
-import {Cell, CellType, CONSTRUCTION_REQUIRED_FOR_CANAL} from './cell.js';
+import {Cell, CellType, CONSTRUCTION_REQUIRED_FOR_CANAL, hydratedCells} from './cell.js';
 import {loadImage} from './loader.js';
 import {findIdleTardigrades} from './tardigrade.js';
 import {Point} from './math.js';
@@ -27,23 +27,6 @@ export class Grid {
       }
     }
 
-    for (let x=5; x<15; x++) {
-      for (let y=5; y<15; y++) {
-        this.cells[x][y] = new Cell({x, y})
-        this.cells[x][y].type = 'BLANK';
-        this.cells[x][y].hydration = false;
-      }
-    }
-
-    this.cells[9][9] = new Cell({x:9, y:9});
-    this.cells[9][9].type = 'WATER_SOURCE';
-    this.cells[9][9].hydration = true;
-
-    // put a road somewhere
-    for(let y = 0; y < this.rows; y++) {
-      this.cells[2][y].type = 'ROAD';
-    }
-
     // put a water source somewhere
     this.cells[Math.floor(Math.random() * 10)][Math.floor(Math.random() * 10)].type = 'WATER_SOURCE';
   }
@@ -65,6 +48,15 @@ export class Grid {
       this.xPixelsPerCell,
       this.yPixelsPerCell
     );
+
+    if((window as any).DEBUG_DRAW_HYDRATION) {
+      for(const cell of hydratedCells) {
+        ctx.fillStyle = 'rgba(0, 0, 255, 0.5)';
+        ctx.fillRect(cell.point.x * 64 + 10,
+          cell.point.y  * 64 + 10,
+          44, 44);
+      }
+    }
   }
 
   getCell(point: Point) {

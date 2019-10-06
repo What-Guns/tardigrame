@@ -21,10 +21,8 @@ export class Cell {
     if(hydrated && this.type !== 'POOL' && this.type !== 'WATER_SOURCE') {
       throw new Error('Only pools and water sources can be hydrated');
     }
-    if(this._hydration !== hydrated) {
-      if(hydrated) hydratedCells.add(this);
-      else hydratedCells.delete(this);
-    }
+    if(hydrated) hydratedCells.add(this);
+    else hydratedCells.delete(this);
     this._hydration = hydrated;
   }
 

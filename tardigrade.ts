@@ -188,9 +188,7 @@ export class Tardigrade {
   private performTask(dt: number) {
     if(this.task.type === 'IDLE') {
       if(distanceSquared(this.point, this.task.destination) <= DESTINATION_THRESHOLD) {
-        this.task.destination.x = Math.random() * 10;
-        this.task.destination.y = Math.random() * 10;
-        return;
+        this.findSomethingToDo();
       }
     } else if(this.task.type === 'BUILDING_A_CANAL') {
       const targetCell = this.game.grid.getCell(this.task.destination);
@@ -225,7 +223,13 @@ export class Tardigrade {
         type: "BUILDING_A_CANAL"
       });
     } else {
-      this.assignTask({type: 'IDLE', destination: {...this.point}});
+      this.assignTask({
+        type: 'IDLE',
+        destination: {
+          x: Math.min(Math.max(this.point.x + Math.random() * 10 - 5, 0), this.game.grid.columns),
+          y: Math.min(Math.max(this.point.y + Math.random() * 10 - 5, 0), this.game.grid.rows),
+        }
+      });
     }
   }
 }
