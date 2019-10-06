@@ -11,7 +11,10 @@ async function startTheGameAlready() {
   console.log(`Everything has loaded now`);
   const canvas = document.querySelector('canvas')!;
   const game = new Game(canvas);
+  sizeCanvas();
   requestAnimationFrame(tick);
+
+  addEventListener('resize', sizeCanvas);
 
   function tick(timestamp: number) {
     if(lastTick !== 0) {
@@ -45,6 +48,14 @@ async function startTheGameAlready() {
       }
     })
   }
+
+  function sizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    game.viewport.width = canvas.width;
+    game.viewport.height = canvas.height;
+  }
 }
 
 startTheGameAlready();
+
