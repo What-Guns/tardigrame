@@ -6,12 +6,6 @@ let lastTick = 0;
 // any tick longer than this will be split into smaller ticks
 const BIG_TICK = 500;
 
-let paused = false;
-
-document.addEventListener('visibilitychange', () => {
-  paused = document.hidden;
-});
-
 type Debug = 'GRIDLINES'|'PATHS';
 
 async function startTheGameAlready() {
@@ -28,7 +22,7 @@ async function startTheGameAlready() {
   function tick(timestamp: number) {
     if(lastTick !== 0) {
       let dt = timestamp - lastTick;
-      while(dt > 0 && !paused) {
+      while(dt > 0 && !game.isPaused()) {
         game.tick(Math.min(BIG_TICK, dt));
         dt = Math.max(0, dt - BIG_TICK);
       }

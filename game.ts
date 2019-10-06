@@ -40,6 +40,9 @@ export class Game {
 
   private readonly ctx: CanvasRenderingContext2D;
 
+  paused = false;
+  notInGameWindow = false;
+
   constructor(canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext('2d')!;
     this.grid = new Grid(this, 100, 100, this.ctx);
@@ -50,6 +53,15 @@ export class Game {
       height: 640,
       scale: 1.0,
     };
+
+    document.addEventListener('visibilitychange', () => {
+      console.log('vis change', document.hidden)
+      this.notInGameWindow = document.hidden;
+    });
+
+    document.addEventListener('keyup', (ev : KeyboardEvent) => {
+      if(ev.key === 'p') this.paused = !this.paused;
+    });
 
     // set up all of the mouse stuff
     canvas.addEventListener('mousemove', this.mouseMove.bind(this));
@@ -172,5 +184,9 @@ export class Game {
     this.viewport.y -= this.viewport.height / 2;
 
     this.mouseMove(ev);
+  }
+
+  isPaused() {
+    return this.paused || this.notInGameWindow;
   }
 }
