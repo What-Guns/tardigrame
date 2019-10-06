@@ -84,7 +84,7 @@ export class Tardigrade {
   updateResources(dt: number) {
     if(this.currentCell.hydration) {
       this.fluid = Math.min(1, this.fluid + this.hydrationSpeed * dt);
-    } else {
+    } else if (this.currentCell.type !== 'MOSS') {
       this.fluid = Math.max(0, this.fluid - this.dehydrationSpeed * dt);
     }
 
