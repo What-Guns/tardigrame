@@ -152,7 +152,7 @@ export class Tardigrade {
   }
 }
 
-const image = loadImage('assets/pictures/tardy-tardigrade.png');
+const image = loadImage('assets/pictures/Tardigrade GIfs/Tardigrade_orig.gif');
 const deadImage = loadImage('assets/pictures/deadigrade.png');
 
 function findIdleTardigrades(cell: Cell, howMany: number) {
