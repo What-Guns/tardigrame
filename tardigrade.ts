@@ -164,15 +164,15 @@ export class Tardigrade {
   private drawHud(ctx: CanvasRenderingContext2D) {
     const mouseDistSquared = distanceSquared(this.point, this.game.worldSpaceMousePosition) * this.game.viewport.scale;
 
+    ctx.lineWidth = 2 / this.game.viewport.scale;
     if(mouseDistSquared < 4) {
       ctx.globalAlpha = mouseDistSquared < 1 ? 1 : (4 - (mouseDistSquared - 1)) / 3;
-      ctx.lineWidth = 2;
       ctx.strokeStyle = 'blue';
       ctx.beginPath();
       ctx.arc(
         this.point.x * this.game.grid.xPixelsPerCell,
         this.point.y * this.game.grid.yPixelsPerCell,
-        16,
+        16 / this.game.viewport.scale,
         0,
         2 * Math.PI * this.fluid,
         false
@@ -183,7 +183,7 @@ export class Tardigrade {
       ctx.arc(
         this.point.x * this.game.grid.xPixelsPerCell,
         this.point.y * this.game.grid.yPixelsPerCell,
-        14,
+        14 / this.game.viewport.scale,
         0,
         2 * Math.PI * this.moss,
         false
