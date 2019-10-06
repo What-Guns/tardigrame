@@ -1,5 +1,6 @@
 import { loadImage } from "./loader.js";
 import { Cell } from "./cell.js";
+import { playSound, createSoundLibrary } from "./audio.js";
 
 // 0 is right, 1 is left, 2 is bottom, index 3 is top
 
@@ -58,13 +59,17 @@ export const emptyCanalImages = [[[[
 export const fullPoolImage = loadImage('assets/pictures/full_canals/full_canals__0000_full.png');
 export const emptyPoolImage = loadImage('assets/pictures/Empty Canals/empty_canals_0016_bigsquare.png');
 
+const sounds = createSoundLibrary({splash: 'assets/audio/splash.ogg'});
+
 let timeSinceLastWetDryCalc = 0;
 export function calculateWetDryCanals(cells: Array<Array<Cell>>, dt : number) : void {
-  if(timeSinceLastWetDryCalc < 400) {
+  if(timeSinceLastWetDryCalc < 250) {
     timeSinceLastWetDryCalc += dt;
     return;
   }
-  timeSinceLastWetDryCalc -= 400;
+  timeSinceLastWetDryCalc -= 250;
+
+  let playSplash = false;
   for(let x=0; x<cells.length; x++) {
     for(let y=0; y<cells[x].length; y++) {
       const cell = cells[x][y];
@@ -74,19 +79,19 @@ export function calculateWetDryCanals(cells: Array<Array<Cell>>, dt : number) : 
       if(cells[x][y].hydration) {
         continue;
       }
-      if(cells[x-1] && cells[x-1][y] && ((cells[x-1][y].type === 'POOL' && cells[x-1][y].hydration) || cells[x-1][y].type === 'WATER_SOURCE')) {
+      const above = cells[x-1] && cells[x-1][y] && ((cells[x-1][y].type === 'POOL' && cells[x-1][y].hydration) || cells[x-1][y].type === 'WATER_SOURCE'); 
+      const below = cells[x+1] && cells[x+1][y] && ((cells[x+1][y].type === 'POOL' && cells[x+1][y].hydration) || cells[x+1][y].type === 'WATER_SOURCE'); 
+      const left = cells[x] && cells[x][y-1] && ((cells[x][y-1].type === 'POOL' && cells[x][y-1].hydration) || cells[x][y-1].type === 'WATER_SOURCE');
+      const right = cells[x] && cells[x][y+1] && ((cells[x][y+1].type === 'POOL' && cells[x][y+1].hydration) || cells[x][y+1].type === 'WATER_SOURCE');
+      if(above || below || left || right) {
         cell.hydration = true;
-        break;
-      } else if(cells[x+1] && cells[x+1][y] && ((cells[x+1][y].type === 'POOL' && cells[x+1][y].hydration) || cells[x+1][y].type === 'WATER_SOURCE')) {
-        cell.hydration = true;
-        break;
-      } else if(cells[x] && cells[x][y-1] && ((cells[x][y-1].type === 'POOL' && cells[x][y-1].hydration) || cells[x][y-1].type === 'WATER_SOURCE')) {
-        cell.hydration = true;
-        break;
-      } else if(cells[x] && cells[x][y+1] && ((cells[x][y+1].type === 'POOL' && cells[x][y+1].hydration) || cells[x][y+1].type === 'WATER_SOURCE')) {
-        cell.hydration = true;
+        playSplash = true;
         break;
       };
     }
+  }
+
+  if(playSplash) {
+    playSound(sounds['splash']);
   }
 }
