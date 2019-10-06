@@ -121,7 +121,10 @@ export class Tardigrade {
       ctx.stroke();
     }
 
-    if(this.game.debugDrawResources) {
+    const mouseDistSquared = distanceSquared(this.point, this.game.worldSpaceMousePosition);
+
+    if(mouseDistSquared < 4) {
+      ctx.globalAlpha = mouseDistSquared < 1 ? 1 : (4 - (mouseDistSquared - 1)) / 3;
       ctx.lineWidth = 2;
       ctx.strokeStyle = 'blue';
       ctx.beginPath();
@@ -145,6 +148,7 @@ export class Tardigrade {
         false
       );
       ctx.stroke();
+      ctx.globalAlpha = 1;
     }
   }
 
