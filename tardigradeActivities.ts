@@ -247,7 +247,9 @@ export class ObtainBatteryActivity implements TardigradeActivity {
   }
 
   isValid() {
-    return this.tardigrade.game.batteries.indexOf(this.battery) !== -1;
+    if(this.tardigrade.game.batteries.indexOf(this.battery) === -1) return false;
+    if(distanceSquared(this.battery.point, BATTERY_DESTINATION) < 1) return false;
+    return true;
   }
 
   perform(dt: number) {
