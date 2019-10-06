@@ -150,7 +150,7 @@ export class Game {
     this.viewport.x /= this.viewport.scale;
     this.viewport.y /= this.viewport.scale;
     this.viewport.scale += ev.deltaY * - 0.01;
-    this.viewport.scale = Math.max(0.5, this.viewport.scale);
+    this.viewport.scale = Math.max(0.25, this.viewport.scale);
     this.viewport.x *= this.viewport.scale;
     this.viewport.y *= this.viewport.scale;
     this.viewport.x -= this.viewport.width / 2;
