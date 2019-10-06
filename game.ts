@@ -5,8 +5,6 @@ import {Point, distanceSquared, addPoints, assignPoint} from './math.js';
 import {Popover, RegretPopover} from './popover.js';
 import {liveTardigrades} from './tardigrade.js'
 
-export type Tool = 'WATER'|'PAN'|'MOSS'|'DEBUG_INSPECT_TARDIGRADE';
-
 export interface Viewport {
   x: number;
   y: number;
