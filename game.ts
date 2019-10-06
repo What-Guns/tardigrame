@@ -51,6 +51,8 @@ export class Game {
       height: 640,
       scale: 1.0,
     };
+
+    // set up all of the mouse stuff
     canvas.addEventListener('mousemove', this.mouseMove.bind(this));
     canvas.addEventListener('mousedown', ({button}) => {
       if(button === 0) assignPoint(this.screenSpaceMousePotisionAtLeftClick, this.screenSpaceMousePosition);
@@ -79,6 +81,15 @@ export class Game {
       y: this.grid.rows / 2 + Math.random() * 6 - 3,
     }).type = 'WATER_SOURCE';
 
+    // put some water sources in the corners of the map.
+    for(let x = 0; x < 1; x += 0.9) {
+      for(let y = 0; y < 1; y += 0.9) {
+        this.grid.getCell({
+          x: this.grid.columns * (x + Math.random() * 0.1),
+          y: this.grid.rows * (y + Math.random() * 0.1)
+        }).type = 'WATER_SOURCE';
+      }
+    }
     this.popover = RegretPopover(this.ctx);
     // this.popover.show();
   }

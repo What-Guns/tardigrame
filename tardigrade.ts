@@ -83,7 +83,7 @@ export class Tardigrade {
     } else {
       this.fluid = Math.max(0, this.fluid - this.dehydrationSpeed * dt);
     }
-    if(this.fluid < 0.3 && !(this.activity instanceof RehydrateActivity)) {
+    if(this.fluid < this.activity.thirstThreshold) {
       this.activity = new RehydrateActivity(this);
     }
   }

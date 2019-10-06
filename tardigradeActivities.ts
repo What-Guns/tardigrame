@@ -10,6 +10,9 @@ export interface TardigradeActivity {
   perform(dt: number): void;
   readonly destination: Point;
   readonly animations: Array<HTMLImageElement>;
+
+  // a tardigrade with less fluid than this will abandon this activity
+  thirstThreshold: number;
 }
 
 export class IdleActivity implements TardigradeActivity {
@@ -17,7 +20,8 @@ export class IdleActivity implements TardigradeActivity {
   readonly animations = [
     loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-1.png.png'),
     loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-2.png.png'),
-  ]
+  ];
+
   constructor(readonly tardigrade: Tardigrade) {
     const {x, y} = tardigrade.point;
     idleTardigrades.add(tardigrade);
@@ -27,10 +31,14 @@ export class IdleActivity implements TardigradeActivity {
       y: Math.min(Math.max(y + Math.random() * 10 - 5, 0), game.grid.rows),
     };
   }
+
   isValid() {
     return distanceSquared(this.tardigrade.point, this.destination) > 0.01;
   }
+
   perform() {}
+
+  thirstThreshold = 0.6;
 }
 
 export class BuildActivity implements TardigradeActivity {
@@ -63,6 +71,8 @@ export class BuildActivity implements TardigradeActivity {
         break;
     }
   }
+
+  thirstThreshold = 0.4;
 }
 
 export class RehydrateActivity implements TardigradeActivity {
@@ -91,6 +101,8 @@ export class RehydrateActivity implements TardigradeActivity {
   }
 
   perform() {}
+
+  thirstThreshold = -Infinity;
 }
 
 /**
