@@ -3,6 +3,15 @@ import {isLoaded} from './loader.js';
 
 let lastTick = 0;
 
+// any tick longer than this will be split into smaller ticks
+const BIG_TICK = 500;
+
+let paused = false;
+
+document.addEventListener('visibilitychange', () => {
+  paused = document.hidden;
+});
+
 type Debug = 'GRIDLINES'|'PATHS';
 
 async function startTheGameAlready() {
@@ -18,8 +27,11 @@ async function startTheGameAlready() {
 
   function tick(timestamp: number) {
     if(lastTick !== 0) {
-      const dt = timestamp - lastTick;
-      game.tick(dt);
+      let dt = timestamp - lastTick;
+      while(dt > 0 && !paused) {
+        game.tick(Math.min(BIG_TICK, dt));
+        dt = Math.max(0, dt - BIG_TICK);
+      }
       game.draw();
     }
 
