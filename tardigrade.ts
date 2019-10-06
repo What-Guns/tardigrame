@@ -142,6 +142,8 @@ export class Tardigrade {
       this.point.x += Math.cos(dir) * movement;
       this.point.y += Math.sin(dir) * movement;
     }
+    this.point.x = Math.min(Math.max(0, this.point.x), this.game.grid.columns);
+    this.point.y = Math.min(Math.max(0, this.point.y), this.game.grid.rows);
   }
 
   draw(ctx: CanvasRenderingContext2D) {
