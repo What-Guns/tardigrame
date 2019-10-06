@@ -110,7 +110,11 @@ export class Grid {
   private drawBackground(ctx: CanvasRenderingContext2D) {
     ctx.clearRect(0, 0, this.xPixelsPerCell * this.columns, this.yPixelsPerCell * this.rows);
     //ctx.fillRect(0, 0, this.xPixelsPerCell * this.columns, this.yPixelsPerCell * this.rows);
-    ctx.drawImage(background, 0, 0, this.xPixelsPerCell * this.columns, this.yPixelsPerCell * this.rows);
+    for(let x=0; x < this.xPixelsPerCell * this.columns / background.width; x++) {
+      for(let y=0; y < this.yPixelsPerCell * this.rows / background.height; y++) {
+        ctx.drawImage(background, x * background.width, y*background.height)
+      }
+    }
 
     const firstVisibleColumn = Math.max(0, Math.floor((this.game.viewport.x / this.game.viewport.scale) / this.xPixelsPerCell));
     const firstVisibleRow = Math.max(0, Math.floor((this.game.viewport.y / this.game.viewport.scale) / this.yPixelsPerCell));
