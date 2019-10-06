@@ -78,12 +78,13 @@ export class Game {
       //Moon Laser Destroy the Earth
       this.numberToNextGen = generationFive
     } else if (liveTardigrades.size >= generationThree){
-      //Mine ice
+      //Mine ice for water
       this.numberToNextGen = generationFour
     } else if (liveTardigrades.size >= generationTwo){
       //Build moss
       this.numberToNextGen = generationThree;
     } else if (liveTardigrades.size > 0){
+      //Build canals
       this.numberToNextGen = generationTwo;
     } else if (liveTardigrades.size == 0){
       //Ded
