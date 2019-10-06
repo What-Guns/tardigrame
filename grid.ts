@@ -140,10 +140,10 @@ export class Grid {
         let image = gridImages[cell.type];
         let drawAPool = false;
         if(cell.type === 'POOL') {
-          const cellAbove = this.cells[x] && this.cells[x][y-1] && this.cells[x][y-1].type === 'POOL' ? 1 : 0;
-          const cellBelow = this.cells[x] && this.cells[x][y+1] && this.cells[x][y+1].type === 'POOL' ? 1 : 0;
-          const cellLeft = this.cells[x-1] && this.cells[x-1][y] && this.cells[x-1][y].type === 'POOL' ? 1 : 0;
-          const cellRight = this.cells[x+1] && this.cells[x+1][y] && this.cells[x+1][y].type === 'POOL' ? 1 : 0;
+          const cellAbove = this.cells[x] && this.cells[x][y-1] && (this.cells[x][y-1].type === 'POOL' || this.cells[x][y-1].type === 'WATER_SOURCE') ? 1 : 0;
+          const cellBelow = this.cells[x] && this.cells[x][y+1] && (this.cells[x][y+1].type === 'POOL' || this.cells[x][y+1].type === 'WATER_SOURCE') ? 1 : 0;
+          const cellLeft = this.cells[x-1] && this.cells[x-1][y] && (this.cells[x-1][y].type === 'POOL' || this.cells[x-1][y].type === 'WATER_SOURCE') ? 1 : 0;
+          const cellRight = this.cells[x+1] && this.cells[x+1][y] && (this.cells[x+1][y].type === 'POOL' || this.cells[x+1][y].type === 'WATER_SOURCE') ? 1 : 0;
           const imagesToUse = cell.hydration ? fullCanalImages : emptyCanalImages;
           image = imagesToUse[cellRight][cellLeft][cellBelow][cellAbove];
           if(cellAbove + cellLeft === 2 && this.cells[x-1] && this.cells[x-1][y-1] && this.cells[x-1][y-1].type === 'POOL') {
