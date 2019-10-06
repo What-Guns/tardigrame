@@ -27,7 +27,7 @@ export class Tardigrade {
     this._activity = a;
   }
 
-  moss = 0.4; // 0 is starved, 1 babby formed from gonad
+  moss = 0.9; // 0 is starved, 1 babby formed from gonad
   fluid = Math.random() * 0.5 + 0.5;
   dehydrationSpeed = 0.00005; // thirst per millisecond
   hydrationSpeed = 0.0001; // antithirst per millisecond
