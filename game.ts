@@ -32,7 +32,6 @@ export class Game {
   readonly screenSpaceMousePosition: Point = {x: 0, y: 0};
   readonly worldSpaceMousePosition: Point = {x: 0, y: 0};
 
-  availableWater = 20;
   debugDrawPaths = false;
 
   numberToNextGen : number = generationTwo;

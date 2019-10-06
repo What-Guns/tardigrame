@@ -8,8 +8,6 @@ export class Hud {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    const message = `Available water: ${this.game.availableWater}`;
-    ctx.fillStyle = 'black';
     ctx.font = '24px system-ui';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
@@ -17,12 +15,10 @@ export class Hud {
     ctx.fillStyle = 'black';
     ctx.strokeStyle = 'white';
     ctx.lineWidth = 2;
-    ctx.strokeText(message, 10, 10);
-    ctx.fillText(message, 10, 10);
 
     const stateCountMessage =`Alive: ${liveTardigrades.size} Tun: ${tunTardigrades.size}`
-    ctx.strokeText(stateCountMessage, 10, 30)
-    ctx.fillText(stateCountMessage, 10, 30)
+    ctx.strokeText(stateCountMessage, 10, 10)
+    ctx.fillText(stateCountMessage, 10, 10)
 
     const toNextGenMessage =`Number to next generation: ${this.game.numberToNextGen}`
     ctx.strokeText(toNextGenMessage, 1000, 10)

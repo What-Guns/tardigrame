@@ -90,7 +90,6 @@ export class Grid {
   private startBuildingACanal(cell: Cell) {
     if(cell.type !== 'BLANK') return;
     cell.type = 'PLANNED_CANAL';
-    this.game.availableWater--;
     Tardigrade.assignTardigradesToBuild(cell);
   }
 
