@@ -11,6 +11,7 @@ export class Grid {
 
   readonly xPixelsPerCell = 64;
   readonly yPixelsPerCell = 64;
+  drawGridLines = false;
 
   constructor(readonly game: Game, readonly rows: number, readonly columns: number) {
     this.rows = rows;
@@ -142,11 +143,10 @@ export class Grid {
       }
     }
 
-    const drawGridLines = true; // Put this as a Game-level config option?
     ctx.strokeStyle = 'black';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    if(drawGridLines) {
+    if(this.drawGridLines) {
       for(let x = firstVisibleColumn; x < lastVisibleColumn; x++) {
         ctx.moveTo(x * this.xPixelsPerCell, 0)
         ctx.lineTo(x * this.xPixelsPerCell, this.rows * this.yPixelsPerCell)

@@ -3,6 +3,8 @@ import {isLoaded} from './loader.js';
 
 let lastTick = 0;
 
+type Debug = 'GRIDLINES';
+
 async function startTheGameAlready() {
   console.log('Waiting for everything to load');
   await isLoaded();
@@ -29,6 +31,19 @@ async function startTheGameAlready() {
     control.addEventListener('change', () => {
       game.tool = control.value as Tool;
     });
+  }
+
+  const debugControls = Array.from(
+    document.querySelectorAll<HTMLInputElement>('[data-debug]'));
+
+  for(const debug of debugControls) {
+    debug.addEventListener('change', () => {
+      switch(debug.value as Debug) {
+        case 'GRIDLINES':
+          game.grid.drawGridLines = !game.grid.drawGridLines;
+          break;
+      }
+    })
   }
 }
 
