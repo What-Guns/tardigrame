@@ -21,12 +21,14 @@ export interface TardigradeActivity {
   readonly hungerThreshold: number;
 }
 
+const idleAnimations = [
+  loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-1.png.png'),
+  loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-2.png.png'),
+];
+
 export class IdleActivity implements TardigradeActivity {
   readonly destination: Point;
-  readonly animations = [
-    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-1.png.png'),
-    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-2.png.png'),
-  ];
+  readonly animations = idleAnimations
 
   constructor(readonly tardigrade: Tardigrade) {
     const {x, y} = tardigrade.point;
@@ -53,10 +55,7 @@ export class IdleActivity implements TardigradeActivity {
 
 export class BuildActivity implements TardigradeActivity {
   readonly destination = {x: 0, y: 0};
-  readonly animations = [
-    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-1.png.png'),
-    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-2.png.png'),
-  ]
+  readonly animations = idleAnimations;
 
   constructor(
     private readonly builder: Tardigrade,
@@ -83,9 +82,9 @@ export class BuildActivity implements TardigradeActivity {
 export abstract class ObtainResourceAnimation implements TardigradeActivity {
   readonly goal?: Cell;
   readonly destination: Point;
-  readonly abstract animations: HTMLImageElement[];
   readonly abstract thirstThreshold: number;
   readonly abstract hungerThreshold: number;
+  readonly animations = idleAnimations;
 
   constructor(protected readonly tardigrade: Tardigrade, desireableCells: Cell[]) {
     const nearestWater = desireableCells

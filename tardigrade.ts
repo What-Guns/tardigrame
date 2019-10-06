@@ -126,7 +126,7 @@ export class Tardigrade {
   updateAnimations(dt: number) {
     const cycleLength = this.activity.animations.length * this.animationRate;
     this.animationState += dt;
-    if(this.animationState > cycleLength) {
+    while(this.animationState > cycleLength) {
       this.animationState -= cycleLength;
     }
   }
