@@ -99,6 +99,12 @@ export class Grid {
     }
     if(!foundWater) return;
     cell.type = 'PLANNED_MOSS';
+    for(const t of findIdleTardigrades(cell, 2)) {
+      t.assignTask({
+        destination: {x: cell.point.x + 0.5, y: cell.point.y + 0.5},
+        type: 'PLANTING_MOSS'
+      });
+    }
   }
 
   private drawBackground(ctx: CanvasRenderingContext2D) {
