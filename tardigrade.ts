@@ -2,7 +2,7 @@ import {loadImage} from './loader.js';
 import {Point, direction, distanceSquared, findNearestVeryExpensive} from './math.js';
 import {Game} from './game.js';
 import {Cell, cellsThatNeedWorkDone} from './cell.js';
-import {TardigradeActivity, IdleActivity, RehydrateActivity, idleTardigrades, BuildActivity} from './tardigradeActivities.js';
+import {TardigradeActivity, IdleActivity, EatActivity, RehydrateActivity, idleTardigrades, BuildActivity} from './tardigradeActivities.js';
 
 export const liveTardigrades = new Set<Tardigrade>();
 export const tunTardigrades = new Set<Tardigrade>();
@@ -18,21 +18,24 @@ export class Tardigrade {
   currentCell!: Cell;
 
   private _activity: TardigradeActivity;
-  set activity(a : TardigradeActivity) {
-    this._activity = a;
-  }
+
   get activity() {
     return this._activity;
   }
 
+  set activity(a : TardigradeActivity) {
+    this._activity = a;
+  }
+
   moss = 0.4; // 0 is starved, 1 babby formed from gonad
   fluid = Math.random() * 0.5 + 0.5;
-  dehydrationSpeed : number = 0.00005; // thirst per millisecond
-  hydrationSpeed : number = 0.0001; // antithirst per millisecond
+  dehydrationSpeed = 0.00005; // thirst per millisecond
+  hydrationSpeed = 0.0001; // antithirst per millisecond
+  eatSpeed = 0.0001;
 
-  nutrientConsumptionRate: number = 0.1;
-  starvationRate : number = 0;
-  state : State = 'LIVE';
+  nutrientConsumptionRate = 0.1;
+  starvationRate = 0;
+  state: State = 'LIVE';
   animationState = 0;
   animationRate = (Math.random() * 500) + 500;
 
@@ -57,7 +60,7 @@ export class Tardigrade {
 
   tick(dt: number) {
     this.move(dt);
-    this.updateHydration(dt);
+    this.updateResources(dt);
     this.updateState();
     this.updateActivity(dt);
     this.updateAnimations(dt);
@@ -77,14 +80,21 @@ export class Tardigrade {
     this.currentCell = this.game.grid.getCell(this.point);
   }
 
-  updateHydration(dt: number) {
+  updateResources(dt: number) {
     if(this.currentCell.hydration) {
       this.fluid = Math.min(1, this.fluid + this.hydrationSpeed * dt);
     } else {
       this.fluid = Math.max(0, this.fluid - this.dehydrationSpeed * dt);
     }
+
+    if(this.currentCell.type === 'MOSS') {
+      this.moss = Math.min(1, this.moss + this.eatSpeed * dt);
+    }
+
     if(this.fluid < this.activity.thirstThreshold) {
       this.activity = new RehydrateActivity(this);
+    } else if(this.moss < this.activity.hungerThreshold) {
+      this.activity = new EatActivity(this);
     }
   }
 

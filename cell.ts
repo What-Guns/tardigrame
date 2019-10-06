@@ -65,7 +65,7 @@ export class Cell {
       this.type = 'POOL';
     }
 
-    if(this.type === 'PLANNED_MOSS' && this.amountConstructed > 1000) {
+    if(this.type === 'PLANNED_MOSS' && this.amountConstructed > 20000) {
       this.type = 'MOSS';
     }
   }

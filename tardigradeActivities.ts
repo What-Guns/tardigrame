@@ -1,4 +1,4 @@
-import {Cell, cellsThatNeedWorkDone, hydratedCells} from './cell.js';
+import {Cell, cellsThatNeedWorkDone, hydratedCells, mossyCells} from './cell.js';
 import {Point, distanceSquared, addPoints} from './math.js';
 import {Tardigrade} from './tardigrade.js';
 import { loadImage } from './loader.js';
@@ -12,7 +12,10 @@ export interface TardigradeActivity {
   readonly animations: Array<HTMLImageElement>;
 
   // a tardigrade with less fluid than this will abandon this activity
-  thirstThreshold: number;
+  readonly thirstThreshold: number;
+
+  // a tardigrade with less moss than this will abandon this activity
+  readonly hungerThreshold: number;
 }
 
 export class IdleActivity implements TardigradeActivity {
@@ -39,6 +42,8 @@ export class IdleActivity implements TardigradeActivity {
   perform() {}
 
   thirstThreshold = 0.6;
+
+  hungerThreshold = 0.3;
 }
 
 export class BuildActivity implements TardigradeActivity {
@@ -62,29 +67,24 @@ export class BuildActivity implements TardigradeActivity {
   perform(dt: number) {
     if(this.builder.game.grid.getCell(this.builder.point) !== this.targetCell) return;
 
-    switch(this.targetCell.type) {
-      case 'PLANNED_CANAL':
-        this.targetCell.addConstruction(dt);
-        break;
-      case 'PLANNED_MOSS':
-        this.targetCell.type = 'MOSS';
-        break;
-    }
+    this.builder.moss = Math.max(0, this.builder.moss - dt * 0.000025);
+    this.targetCell.addConstruction(dt);
   }
 
   thirstThreshold = 0.4;
+
+  hungerThreshold = 0.1;
 }
 
-export class RehydrateActivity implements TardigradeActivity {
+export abstract class ObtainResourceAnimation implements TardigradeActivity {
   readonly goal?: Cell;
   readonly destination: Point;
-  readonly animations = [
-    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-1.png.png'),
-    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-2.png.png'),
-  ]
+  readonly abstract animations: HTMLImageElement[];
+  readonly abstract thirstThreshold: number;
+  readonly abstract hungerThreshold: number;
 
-  constructor(private readonly tardigrade: Tardigrade) {
-    const nearestWater = Array.from(hydratedCells)
+  constructor(protected readonly tardigrade: Tardigrade, desireableCells: Cell[]) {
+    const nearestWater = desireableCells
       .map(cell => ({cell, dist2: distanceSquared(tardigrade.point, cell.point)}))
       .sort((a, b) => a.dist2 - b.dist2)
       .map(t => t.cell)[0];
@@ -95,14 +95,50 @@ export class RehydrateActivity implements TardigradeActivity {
     idleTardigrades.delete(tardigrade);
   }
 
+  perform() {}
+
+  abstract isValid(): boolean;
+}
+
+export class RehydrateActivity extends ObtainResourceAnimation {
+  readonly animations = [
+    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-1.png.png'),
+    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-2.png.png'),
+  ]
+
+  constructor(tardigrade: Tardigrade) {
+    super(tardigrade, Array.from(hydratedCells));
+  }
+
   isValid() {
     if(!this.goal) return false;
     return this.goal.hydration && this.tardigrade.fluid < 1;
   }
 
-  perform() {}
-
   thirstThreshold = -Infinity;
+
+  hungerThreshold = 0;
+}
+
+export class EatActivity extends ObtainResourceAnimation {
+  readonly animations = [
+    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-1.png.png'),
+    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-2.png.png'),
+  ]
+
+  constructor(tardigrade: Tardigrade) {
+    super(tardigrade, Array.from(mossyCells));
+  }
+
+  isValid() {
+    if(!this.goal) return false;
+    return this.goal.type === 'MOSS' && this.tardigrade.moss < 1;
+  }
+
+  // moss is near water, so this can be pretty low
+  thirstThreshold = 0.15;
+
+  hungerThreshold = -Infinity;
 }
 
 /**

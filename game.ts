@@ -75,11 +75,18 @@ export class Game {
       this.pawns.push(new Tardigrade(this, x, y));
     }
 
-    // put a water source somewhere near the middle of the game.
+    // put a water source somewhere near the middle of the game, and some moss next to it.
+    const waterSource = 
     this.grid.getCell({
       x: this.grid.columns / 2 + Math.random() * 6 - 3,
       y: this.grid.rows / 2 + Math.random() * 6 - 3,
-    }).type = 'WATER_SOURCE';
+    });
+    waterSource.type = 'WATER_SOURCE';
+    this.grid.getCell({
+      x: waterSource.point.x + 1,
+      y: waterSource.point.y
+    }).type = 'MOSS';
+
 
     // put some water sources in the corners of the map.
     for(let x = 0; x < 1; x += 0.9) {
