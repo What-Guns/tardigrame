@@ -12,7 +12,7 @@ export interface TardigradeActivity {
 
 export class IdleActivity implements TardigradeActivity {
   readonly destination: Point;
-  constructor(tardigrade: Tardigrade) {
+  constructor(readonly tardigrade: Tardigrade) {
     const {x, y} = tardigrade.point;
     idleTardigrades.add(tardigrade);
     const game = tardigrade.game;
@@ -21,7 +21,9 @@ export class IdleActivity implements TardigradeActivity {
       y: Math.min(Math.max(y + Math.random() * 10 - 5, 0), game.grid.rows),
     };
   }
-  isValid() { return true; }
+  isValid() {
+    return distanceSquared(this.tardigrade.point, this.destination) > 0.01;
+  }
   perform() {}
 }
 
