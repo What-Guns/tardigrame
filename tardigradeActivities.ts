@@ -1,17 +1,23 @@
 import {Cell, cellsThatNeedWorkDone, hydratedCells} from './cell.js';
 import {Point, distanceSquared, addPoints} from './math.js';
 import {Tardigrade} from './tardigrade.js';
+import { loadImage } from './loader.js';
 
 export const idleTardigrades = new Set<Tardigrade>();
 
 export interface TardigradeActivity {
   isValid(): boolean;
   perform(dt: number): void;
-  readonly destination: Point
+  readonly destination: Point;
+  readonly animations: Array<HTMLImageElement>;
 }
 
 export class IdleActivity implements TardigradeActivity {
   readonly destination: Point;
+  readonly animations = [
+    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-1.png.png'),
+    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-2.png.png'),
+  ]
   constructor(readonly tardigrade: Tardigrade) {
     const {x, y} = tardigrade.point;
     idleTardigrades.add(tardigrade);
@@ -29,6 +35,10 @@ export class IdleActivity implements TardigradeActivity {
 
 export class BuildActivity implements TardigradeActivity {
   readonly destination = {x: 0, y: 0};
+  readonly animations = [
+    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-1.png.png'),
+    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-2.png.png'),
+  ]
 
   constructor(
     private readonly builder: Tardigrade,
@@ -58,6 +68,10 @@ export class BuildActivity implements TardigradeActivity {
 export class RehydrateActivity implements TardigradeActivity {
   readonly goal?: Cell;
   readonly destination: Point;
+  readonly animations = [
+    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-1.png.png'),
+    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-2.png.png'),
+  ]
 
   constructor(private readonly tardigrade: Tardigrade) {
     const nearestWater = Array.from(hydratedCells)

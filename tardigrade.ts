@@ -17,7 +17,13 @@ export class Tardigrade {
 
   currentCell!: Cell;
 
-  private activity: TardigradeActivity;
+  private _activity: TardigradeActivity;
+  set activity(a : TardigradeActivity) {
+    this._activity = a;
+  }
+  get activity() {
+    return this._activity;
+  }
 
   moss = 0.4; // 0 is starved, 1 babby formed from gonad
   fluid = Math.random() * 0.5 + 0.5;
@@ -27,6 +33,8 @@ export class Tardigrade {
   nutrientConsumptionRate: number = 0.1;
   starvationRate : number = 0;
   state : State = 'LIVE';
+  animationState = 0;
+  animationRate = (Math.random() * 500) + 500;
 
   // in grid cells per second
   readonly speed = 0.2;
@@ -40,7 +48,7 @@ export class Tardigrade {
 
   constructor(readonly game: Game, x: number, y: number) {
     this.point = {x, y};
-    this.activity = new IdleActivity(this);
+    this._activity = new IdleActivity(this);
     idleTardigrades.add(this);
     this.state = 'LIVE';
     liveTardigrades.add(this)
@@ -52,6 +60,7 @@ export class Tardigrade {
     this.updateHydration(dt);
     this.updateState();
     this.updateActivity(dt);
+    this.updateAnimations(dt);
   }
 
   move(dt: number) {
@@ -95,9 +104,18 @@ export class Tardigrade {
     }
   }
 
+  updateAnimations(dt: number) {
+    const cycleLength = this.activity.animations.length * this.animationRate;
+    this.animationState += dt;
+    if(this.animationState > cycleLength) {
+      this.animationState -= cycleLength;
+    }
+  }
+
   draw(ctx: CanvasRenderingContext2D) {
+    const image = this.chooseImageToDraw()
     ctx.drawImage(
-      this.state === 'LIVE' ? image : deadImage,
+      image,
       this.point.x * this.game.grid.xPixelsPerCell - image.width/2,
       this.point.y * this.game.grid.yPixelsPerCell - image.height/2
     );
@@ -142,6 +160,11 @@ export class Tardigrade {
     }
   }
 
+  chooseImageToDraw() : HTMLImageElement {
+    if(this.state === 'DEAD') return deadImage;
+    return this.activity.animations[Math.floor(this.animationState / this.animationRate)];
+  }
+
   private findSomethingToDo() {
     const cell = findNearestVeryExpensive(Array.from(cellsThatNeedWorkDone), this.point, 1)[0];
     if(cell) {
@@ -152,7 +175,6 @@ export class Tardigrade {
   }
 }
 
-const image = loadImage('assets/pictures/tardy-tardigrade.png');
 const deadImage = loadImage('assets/pictures/deadigrade.png');
 
 function findIdleTardigrades(cell: Cell, howMany: number) {
