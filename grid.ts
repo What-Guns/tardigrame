@@ -100,7 +100,7 @@ export class Grid {
     const offset = {x: 0, y: 0};
     let foundWater = false;
     for(offset.y = -1; offset.y <= 1; offset.y++) {
-      for(offset.x = -1; offset.x <= -1; offset.x++) {
+      for(offset.x = -1; offset.x <= 1; offset.x++) {
         addPoints(searchPoint, cell.point, offset);
         const neighbor = this.getCell(searchPoint);
         if(neighbor.hydration) {
