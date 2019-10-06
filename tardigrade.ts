@@ -2,7 +2,7 @@ import {loadImage} from './loader.js';
 import {Point, direction, distanceSquared, findNearestVeryExpensive} from './math.js';
 import {Game} from './game.js';
 import {Cell, cellsThatNeedWorkDone} from './cell.js';
-import {TardigradeActivity, IdleActivity, EatActivity, RehydrateActivity, idleTardigrades, BuildActivity} from './tardigradeActivities.js';
+import {TardigradeActivity, IdleActivity, EatActivity, RehydrateActivity, idleTardigrades, BuildActivity, ReproduceActivity} from './tardigradeActivities.js';
 
 export const liveTardigrades = new Set<Tardigrade>();
 export const tunTardigrades = new Set<Tardigrade>();
@@ -50,6 +50,12 @@ export class Tardigrade {
     }
   }
 
+  static assignTardigradeToReproduce(cell: Cell) {
+    for(const t of findIdleTardigrades(cell, 1)) {
+      t.activity = new ReproduceActivity(t, cell);
+    }
+  }
+
   constructor(readonly game: Game, x: number, y: number) {
     this.point = {x, y};
     this._activity = new IdleActivity(this);
@@ -89,7 +95,8 @@ export class Tardigrade {
     }
 
     if(this.currentCell.type === 'MOSS') {
-      this.moss = Math.min(1, this.moss + this.eatSpeed * dt);
+      const maxEat = Math.min(this.eatSpeed * dt, 1 - this.moss)
+      this.moss += this.currentCell.consumeMoss(maxEat);
     }
 
     if(this.fluid < this.activity.thirstThreshold) {

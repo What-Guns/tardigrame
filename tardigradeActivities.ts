@@ -140,6 +140,44 @@ export class EatActivity extends ObtainResourceAnimation {
   hungerThreshold = -Infinity;
 }
 
+const REPRODUCTION_TIME = 10;
+
+export class ReproduceActivity implements TardigradeActivity {
+  readonly animations = [
+    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-1.png.png'),
+    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-2.png.png'),
+  ];
+
+  readonly destination: Point;
+
+  hungerThreshold = 0.1;
+  thirstThreshold = 0.1;
+
+  private progress = 0;
+
+  constructor(readonly tardigrade: Tardigrade, readonly goal: Cell) {
+    this.destination = createPointInCellPoint(goal.point);
+    idleTardigrades.delete(tardigrade);
+  }
+
+  isValid() {
+    return this.progress < REPRODUCTION_TIME && this.goal.type === 'MOSS';
+  }
+
+  perform(dt: number) {
+    if(this.tardigrade.game.grid.getCell(this.tardigrade.point) !== this.goal) return false;
+    this.progress += this.goal.consumeMoss(dt / 1000);
+    if(this.progress > REPRODUCTION_TIME) {
+      const game = this.tardigrade.game;
+      const {x, y} = this.tardigrade.point;
+      game.pawns.push(new Tardigrade(game, x, y));
+    }
+    // yeah it's weird that we don't consider this "strenuous",
+    // but we consume a bunch more moss above instead.
+    return false;
+  }
+}
+
 /**
  * Cell coordinates are the upper-left corner.
  * Given a point that represents the origin of a cell, this function

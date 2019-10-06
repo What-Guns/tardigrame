@@ -6,7 +6,11 @@ export const hydratedCells = new Set<Cell>();
 export const mossyCells = new Set<Cell>();
 export const cellsThatNeedWorkDone = new Set<Cell>();
 
+export const INITIAL_MOSS = 25;
+
 export class Cell {
+  moss = 0;
+
   private _type: CellType = 'BLANK';
   private _hydration = false;
 
@@ -43,6 +47,7 @@ export class Cell {
 
     if(t === 'MOSS') {
       mossyCells.add(this);
+      this.moss = INITIAL_MOSS;
     } else {
       mossyCells.delete(this);
     }
@@ -68,6 +73,15 @@ export class Cell {
     if(this.type === 'PLANNED_MOSS' && this.amountConstructed > 20000) {
       this.type = 'MOSS';
     }
+  }
+
+  consumeMoss(amount: number) {
+    if(this.type !== 'MOSS') throw new Error(`No moss to eat on ${this.type}`);
+
+    const amountConsumed = Math.min(amount, this.moss);
+    this.moss -= amountConsumed;
+    if(this.moss <= 0) this.type = 'BIG_ROCK';
+    return amountConsumed;
   }
 }
 

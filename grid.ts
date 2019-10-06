@@ -1,4 +1,4 @@
-import {Cell, CellType, CONSTRUCTION_REQUIRED_FOR_CANAL, hydratedCells} from './cell.js';
+import {Cell, CellType, CONSTRUCTION_REQUIRED_FOR_CANAL, hydratedCells, INITIAL_MOSS} from './cell.js';
 import {loadImage} from './loader.js';
 import {Tardigrade} from './tardigrade.js';
 import {Point, addPoints} from './math.js';
@@ -56,6 +56,9 @@ export class Grid {
         break;
       case 'BIG_ROCK':
         this.startMossingUpARock(cell);
+        break;
+      case 'MOSS':
+        Tardigrade.assignTardigradeToReproduce(cell);
         break;
       case 'PLANNED_CANAL':
         cell.type = 'BLANK';
@@ -182,6 +185,20 @@ export class Grid {
             Math.min(this.xPixelsPerCell, this.yPixelsPerCell) / 3,
             0,
             2 * Math.PI * cell.amountConstructed / CONSTRUCTION_REQUIRED_FOR_CANAL,
+            false);
+          ctx.stroke();
+        }
+
+        if(cell.type === 'MOSS') {
+          ctx.strokeStyle = 'coral';
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.arc(
+            (x + 0.5) * this.xPixelsPerCell,
+            (y + 0.5) * this.yPixelsPerCell,
+            Math.min(this.xPixelsPerCell, this.yPixelsPerCell) / 3,
+            0,
+            2 * Math.PI * cell.moss / INITIAL_MOSS,
             false);
           ctx.stroke();
         }
