@@ -21,6 +21,7 @@ export class Game {
 
   availableWater = 20;
   debugDrawThirst = false;
+  debugDrawPaths = false;
 
   readonly viewport = {
     x: 0,

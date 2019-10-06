@@ -153,7 +153,7 @@ export class Tardigrade {
       this.point.y * this.game.grid.yPixelsPerCell - image.height/2
     );
 
-    if(this.task.type !== 'IDLE' && (window as any).DEBUG_DRAW_PATHS) {
+    if(this.task.type !== 'IDLE' && this.game.debugDrawPaths) {
       ctx.strokeStyle = 'red';
       ctx.lineWidth = 2;
       ctx.beginPath();
