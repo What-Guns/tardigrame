@@ -210,10 +210,10 @@ const background = loadImage('assets/pictures/Tardigrame_BG_tile_1600.png');
 const gridImages: {[key in CellType]: HTMLImageElement} = {
   POOL: loadImage('assets/pictures/full_canals/full_canals__0007_lefttotop.png'),
   BLANK: loadImage('assets/pictures/empty1.png'),
-  BIG_ROCK: loadImage('assets/pictures/bigrock1.png'),
+  BIG_ROCK: loadImage('assets/pictures/Rocks_and_moss/just_a_rock.png'),
   ROAD: loadImage('assets/pictures/nsroad1.png'),
   PLANNED_CANAL: loadImage('assets/pictures/futureCanal.png'),
   WATER_SOURCE: loadImage('assets/pictures/full_canals/full_canals__0000_full.png'),
-  MOSS: loadImage('assets/pictures/mossrock.png'),
-  PLANNED_MOSS: loadImage('assets/pictures/futureMoss.png'),
+  MOSS: loadImage('assets/pictures/Rocks_and_moss/rock_lotsa_moss.png'),
+  PLANNED_MOSS: loadImage('assets/pictures/Rocks_and_moss/rock_little_moss.png'),
 }
