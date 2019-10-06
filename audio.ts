@@ -2,7 +2,7 @@ import { loadAudioIntoBuffer } from "./loader.js";
 
 export const audioContext = new AudioContext();
 const gainNode = new GainNode(audioContext);
-gainNode.gain.value = 0;
+gainNode.gain.value = 0.1;
 gainNode.connect(audioContext.destination);
 
 export function playSound(buffer: AudioBuffer) : void {
