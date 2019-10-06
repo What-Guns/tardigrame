@@ -6,8 +6,6 @@ let lastTick = 0;
 // any tick longer than this will be split into smaller ticks
 const BIG_TICK = 500;
 
-type Debug = 'GRIDLINES'|'PATHS';
-
 async function startTheGameAlready() {
   console.log('Waiting for everything to load');
   await isLoaded();
@@ -31,24 +29,6 @@ async function startTheGameAlready() {
 
     lastTick = timestamp;
     requestAnimationFrame(tick);
-  }
-
-
-  const debugControls = Array.from(
-    document.querySelectorAll<HTMLInputElement>('[data-debug]'));
-
-  for(const debug of debugControls) {
-    debug.addEventListener('change', (ev) => {
-      if(!ev || !ev.target || !(ev.target instanceof HTMLInputElement)) return;
-      switch(debug.value as Debug) {
-        case 'GRIDLINES':
-          game.grid.drawGridLines = ev.target.checked;
-          break;
-        case 'PATHS':
-          game.debugDrawPaths = ev.target.checked;
-          break;
-      }
-    })
   }
 
   function sizeCanvas() {

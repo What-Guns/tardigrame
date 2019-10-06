@@ -158,16 +158,11 @@ export class Tardigrade {
       this.point.y * this.game.grid.yPixelsPerCell - image.height/2
     );
 
-    if(!(this.activity instanceof activities.IdleActivity) && this.game.debugDrawPaths) {
-      ctx.strokeStyle = 'red';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(this.point.x * this.game.grid.xPixelsPerCell, this.point.y * this.game.grid.yPixelsPerCell);
-      ctx.lineTo(this.activity.destination.x * this.game.grid.xPixelsPerCell, this.activity.destination.y * this.game.grid.yPixelsPerCell);
-      ctx.stroke();
-    }
+    this.drawHud(ctx);
+  }
 
-    const mouseDistSquared = distanceSquared(this.point, this.game.worldSpaceMousePosition);
+  private drawHud(ctx: CanvasRenderingContext2D) {
+    const mouseDistSquared = distanceSquared(this.point, this.game.worldSpaceMousePosition) * this.game.viewport.scale;
 
     if(mouseDistSquared < 4) {
       ctx.globalAlpha = mouseDistSquared < 1 ? 1 : (4 - (mouseDistSquared - 1)) / 3;
@@ -195,6 +190,15 @@ export class Tardigrade {
       );
       ctx.stroke();
       ctx.globalAlpha = 1;
+    }
+
+    if(!(this.activity instanceof activities.IdleActivity) && mouseDistSquared < 0.05) {
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(this.point.x * this.game.grid.xPixelsPerCell, this.point.y * this.game.grid.yPixelsPerCell);
+      ctx.lineTo(this.activity.destination.x * this.game.grid.xPixelsPerCell, this.activity.destination.y * this.game.grid.yPixelsPerCell);
+      ctx.stroke();
     }
   }
 
