@@ -13,6 +13,7 @@ export interface TardigradeActivity {
 
   readonly destination: Point;
   readonly animations: Array<HTMLImageElement>;
+  readonly tunImage: HTMLImageElement;
 
   /** a tardigrade with less fluid than this will abandon this activity */
   readonly thirstThreshold: number;
@@ -25,30 +26,36 @@ const idleAnimations = [
   loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-1.png.png'),
   loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-2.png.png'),
 ];
+const tunIdle = loadImage('assets/pictures/Tardigrade_animations/tun/tardigrade_orig-1_tun.png');
 
 const buildAnimations = [
   loadImage('assets/pictures/Tardigrade_animations/tardi_build1.png'),
   loadImage('assets/pictures/Tardigrade_animations/tardi_build2.png'),
 ];
+const tunBuild = loadImage('assets/pictures/Tardigrade_animations/tun/tardi_build1_tun.png');
 
 const eatAnimations = [
   loadImage('assets/pictures/Tardigrade_animations/tardi_eat1.png'),
   loadImage('assets/pictures/Tardigrade_animations/tardi_eat2.png'),
 ];
+const tunEat = loadImage('assets/pictures/Tardigrade_animations/tun/tardi_eat1_tun.png');
 
 const rehydrateAnimations = [
   loadImage('assets/pictures/Tardigrade_animations/tardi_drink1.png'),
   loadImage('assets/pictures/Tardigrade_animations/tardi_drink2.png'),
 ];
+const tunRehydrate = loadImage('assets/pictures/Tardigrade_animations/tun/tardi_drink1_tun.png');
 
 const reproduceAnimations = [
   loadImage('assets/pictures/Tardigrade_animations/tardi_babby1.png'),
   loadImage('assets/pictures/Tardigrade_animations/tardi_babby2.png'),
 ];
+const tunReproduce = loadImage('assets/pictures/Tardigrade_animations/tun/tardi_babby1_tun.png');
 
 export class IdleActivity implements TardigradeActivity {
   readonly destination: Point;
   readonly animations = idleAnimations
+  readonly tunImage = tunIdle;
 
   constructor(readonly tardigrade: Tardigrade) {
     const {x, y} = tardigrade.point;
@@ -76,6 +83,7 @@ export class IdleActivity implements TardigradeActivity {
 export class BuildActivity implements TardigradeActivity {
   readonly destination = {x: 0, y: 0};
   readonly animations = buildAnimations;
+  readonly tunImage = tunBuild;
 
   constructor(
     private readonly builder: Tardigrade,
@@ -105,6 +113,7 @@ export abstract class ObtainResourceAnimation implements TardigradeActivity {
   readonly abstract thirstThreshold: number;
   readonly abstract hungerThreshold: number;
   readonly animations = idleAnimations;
+  readonly tunImage = tunIdle;
 
   constructor(protected readonly tardigrade: Tardigrade, desireableCells: Cell[]) {
     const nearestWater = desireableCells
@@ -126,7 +135,8 @@ export abstract class ObtainResourceAnimation implements TardigradeActivity {
 }
 
 export class RehydrateActivity extends ObtainResourceAnimation {
-  animations = rehydrateAnimations;
+  readonly animations = rehydrateAnimations;
+  readonly tunImage = tunRehydrate;
 
   constructor(tardigrade: Tardigrade) {
     super(tardigrade, Array.from(hydratedCells));
@@ -143,7 +153,8 @@ export class RehydrateActivity extends ObtainResourceAnimation {
 }
 
 export class EatActivity extends ObtainResourceAnimation {
-  animations = eatAnimations;
+  readonly animations = eatAnimations;
+  readonly tunImage = tunEat;
 
   constructor(tardigrade: Tardigrade) {
     super(tardigrade, Array.from(mossyCells));
@@ -164,6 +175,7 @@ const REPRODUCTION_TIME = 10;
 
 export class ReproduceActivity implements TardigradeActivity {
   readonly animations = reproduceAnimations;
+  readonly tunImage = tunReproduce;
 
   readonly destination: Point;
 

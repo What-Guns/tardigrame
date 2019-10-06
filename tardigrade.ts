@@ -1,4 +1,3 @@
-import {loadImage} from './loader.js';
 import {Point, direction, distanceSquared, findNearestVeryExpensive} from './math.js';
 import {Game} from './game.js';
 import {Cell, cellsThatNeedWorkDone} from './cell.js';
@@ -187,7 +186,7 @@ export class Tardigrade {
   }
 
   chooseImageToDraw() : HTMLImageElement {
-    if(this.state === 'DEAD' || this.state === 'TUN') return deadImage;
+    if(this.state === 'DEAD' || this.state === 'TUN') return this.activity.tunImage;
     return this.activity.animations[Math.floor(this.animationState / this.animationRate)];
   }
 
@@ -200,8 +199,6 @@ export class Tardigrade {
     }
   }
 }
-
-const deadImage = loadImage('assets/pictures/deadigrade.png');
 
 function findIdleTardigrades(cell: Cell, howMany: number) {
   const point = {x: cell.point.x + 0.5, y: cell.point.y + 0.5};
