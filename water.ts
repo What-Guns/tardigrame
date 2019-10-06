@@ -60,11 +60,11 @@ export const emptyPoolImage = loadImage('assets/pictures/Empty Canals/empty_cana
 
 let timeSinceLastWetDryCalc = 0;
 export function calculateWetDryCanals(cells: Array<Array<Cell>>, dt : number) : void {
-  if(timeSinceLastWetDryCalc < 1000) {
+  if(timeSinceLastWetDryCalc < 400) {
     timeSinceLastWetDryCalc += dt;
     return;
   }
-  timeSinceLastWetDryCalc -= 1000;
+  timeSinceLastWetDryCalc -= 400;
   for(let x=0; x<cells.length; x++) {
     for(let y=0; y<cells[x].length; y++) {
       const cell = cells[x][y];
@@ -76,12 +76,16 @@ export function calculateWetDryCanals(cells: Array<Array<Cell>>, dt : number) : 
       }
       if(cells[x-1] && cells[x-1][y] && ((cells[x-1][y].type === 'POOL' && cells[x-1][y].hydration) || cells[x-1][y].type === 'WATER_SOURCE')) {
         cell.hydration = true;
+        break;
       } else if(cells[x+1] && cells[x+1][y] && ((cells[x+1][y].type === 'POOL' && cells[x+1][y].hydration) || cells[x+1][y].type === 'WATER_SOURCE')) {
         cell.hydration = true;
+        break;
       } else if(cells[x] && cells[x][y-1] && ((cells[x][y-1].type === 'POOL' && cells[x][y-1].hydration) || cells[x][y-1].type === 'WATER_SOURCE')) {
         cell.hydration = true;
+        break;
       } else if(cells[x] && cells[x][y+1] && ((cells[x][y+1].type === 'POOL' && cells[x][y+1].hydration) || cells[x][y+1].type === 'WATER_SOURCE')) {
         cell.hydration = true;
+        break;
       };
     }
   }

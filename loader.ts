@@ -1,3 +1,5 @@
+import {audioContext} from './audio.js';
+
 let loaded = Promise.resolve();
 
 export function loadImage(url: string): HTMLImageElement {
