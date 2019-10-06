@@ -1,6 +1,6 @@
 import {Cell, CellType, CONSTRUCTION_REQUIRED_FOR_CANAL, hydratedCells} from './cell.js';
 import {loadImage} from './loader.js';
-import {findIdleTardigrades} from './tardigrade.js';
+import {Tardigrade} from './tardigrade.js';
 import {Point} from './math.js';
 import {Game} from './game.js';
 import {fullCanalImages, fullPoolImage, calculateWetDryCanals, emptyCanalImages, emptyPoolImage} from './water.js';
@@ -78,12 +78,7 @@ export class Grid {
     if(cell.type !== 'BLANK') return;
     cell.type = 'PLANNED_CANAL';
     this.game.availableWater--;
-    for(const t of findIdleTardigrades(cell, 5)) {
-      t.assignTask({
-        destination: {x: cell.point.x + 0.5, y: cell.point.y + 0.5},
-        type: "BUILDING_A_CANAL"
-      });
-    }
+    Tardigrade.assignTardigradesToBuild(cell);
   }
 
   private startMossingUpARock(cell: Cell) {
@@ -99,12 +94,7 @@ export class Grid {
     }
     if(!foundWater) return;
     cell.type = 'PLANNED_MOSS';
-    for(const t of findIdleTardigrades(cell, 2)) {
-      t.assignTask({
-        destination: {x: cell.point.x + 0.5, y: cell.point.y + 0.5},
-        type: 'PLANTING_MOSS'
-      });
-    }
+    Tardigrade.assignTardigradesToBuild(cell);
   }
 
   private drawBackground(ctx: CanvasRenderingContext2D) {

@@ -9,7 +9,12 @@ export const cellsThatNeedWorkDone = new Set<Cell>();
 export class Cell {
   private _type: CellType = 'BLANK';
   private _hydration = false;
-  amountConstructed = 0;
+
+  private _amountConstructed = 0;
+
+  get amountConstructed() {
+    return this._amountConstructed;
+  }
 
   constructor(readonly point: Point) {}
 
@@ -46,6 +51,22 @@ export class Cell {
       cellsThatNeedWorkDone.add(this);
     } else {
       cellsThatNeedWorkDone.delete(this);
+    }
+  }
+
+  addConstruction(amount: number) {
+    if(this.type !== 'PLANNED_CANAL' && this.type !== 'PLANNED_MOSS') {
+      throw new Error(`Someone is trying to build on ${this.type}`);
+    }
+
+    this._amountConstructed += amount;
+
+    if(this.type === 'PLANNED_CANAL' && this.amountConstructed > 10000) {
+      this.type = 'POOL';
+    }
+
+    if(this.type === 'PLANNED_MOSS' && this.amountConstructed > 1000) {
+      this.type = 'MOSS';
     }
   }
 }

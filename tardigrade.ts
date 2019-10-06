@@ -1,17 +1,12 @@
 import {loadImage} from './loader.js';
 import {Point, direction, distanceSquared, findNearestVeryExpensive} from './math.js';
 import {Game} from './game.js';
-import {Cell, CONSTRUCTION_REQUIRED_FOR_CANAL, hydratedCells, cellsThatNeedWorkDone} from './cell.js';
+import {Cell, cellsThatNeedWorkDone} from './cell.js';
+import {TardigradeActivity, IdleActivity, RehydrateActivity, idleTardigrades, BuildActivity} from './tardigradeActivities.js';
 
-export const idleTardigrades = new Set<Tardigrade>();
 export const liveTardigrades = new Set<Tardigrade>();
 export const tunTardigrades = new Set<Tardigrade>();
 export const deadTardigrades = new Set<Tardigrade>();
-
-interface Task {
-  type: 'IDLE' | 'BUILDING_A_CANAL' | 'PLANTING_MOSS' | 'REHYDRATE';
-  destination: Point;
-}
 
 type State = 'LIVE' | 'TUN' | 'DEAD'
 
@@ -22,7 +17,7 @@ export class Tardigrade {
 
   currentCell!: Cell;
 
-  private task: Task;
+  private activity: TardigradeActivity;
 
   moss = 0.4; // 0 is starved, 1 babby formed from gonad
   fluid = Math.random() * 0.5 + 0.5;
@@ -36,12 +31,16 @@ export class Tardigrade {
   // in grid cells per second
   readonly speed = 0.2;
 
+  static assignTardigradesToBuild(cell: Cell) {
+    const count = cell.type === 'PLANNED_MOSS' ? 2 : 5;
+    for(const t of findIdleTardigrades(cell, count)) {
+      t.activity = new BuildActivity(t, cell);
+    }
+  }
+
   constructor(readonly game: Game, x: number, y: number) {
     this.point = {x, y};
-    this.task = {
-      destination: {x, y},
-      type: 'IDLE'
-    }
+    this.activity = new IdleActivity(this);
     idleTardigrades.add(this);
     this.state = 'LIVE';
     liveTardigrades.add(this)
@@ -49,53 +48,16 @@ export class Tardigrade {
   }
 
   tick(dt: number) {
-    if(!this.isDehydrated()) this.move(dt);
-    this.currentCell = this.game.grid.getCell(this.point);
-
-    if(this.isDehydrated()){
-      this.state = 'TUN'
-      liveTardigrades.delete(this);
-      tunTardigrades.add(this);
-    }
-
-    if(this.isStarved()){
-      this.state = 'TUN'
-      liveTardigrades.delete(this);
-      tunTardigrades.add(this);
-    }
-
-    if(this.fluid < 0.3 && this.task.type !== 'REHYDRATE') {
-      const nearestWater = Array.from(hydratedCells)
-        .map(cell => ({cell, dist2: distanceSquared(this.point, cell.point)}))
-        .sort((a, b) => a.dist2 - b.dist2)
-        .map(t => t.cell)[0];
-      const destination = nearestWater ? {x: nearestWater.point.x + 0.5, y: nearestWater.point.y + 0.5} : {x: 0, y: 0};
-      this.assignTask({
-        type: 'REHYDRATE',
-        destination,
-      });
-    }
-
-    if(!this.isDehydrated()) this.performTask(dt);
-
-    if(this.currentCell.hydration) {
-      this.fluid = Math.min(1, this.fluid + this.hydrationSpeed * dt);
-    } else {
-      this.fluid = Math.max(0, this.fluid - this.dehydrationSpeed * dt);
-    }
-  }
-
-  isDehydrated() {
-    return this.fluid <= 0;
-  }
-
-  isStarved() {
-    return this.moss <= 0
+    this.move(dt);
+    this.updateHydration(dt);
+    this.updateState();
+    this.updateActivity(dt);
   }
 
   move(dt: number) {
-    const dir = direction(this.point, this.task.destination);
-    const distSquared = distanceSquared(this.point, this.task.destination);
+    if(this.state !== 'LIVE') return;
+    const dir = direction(this.point, this.activity.destination);
+    const distSquared = distanceSquared(this.point, this.activity.destination);
     if(distSquared > DESTINATION_THRESHOLD) {
       const movement = Math.min(this.speed * dt / 1000, Math.sqrt(distSquared));
       this.point.x += Math.cos(dir) * movement;
@@ -103,21 +65,49 @@ export class Tardigrade {
     }
     this.point.x = Math.min(Math.max(0, this.point.x), this.game.grid.columns);
     this.point.y = Math.min(Math.max(0, this.point.y), this.game.grid.rows);
+    this.currentCell = this.game.grid.getCell(this.point);
+  }
+
+  updateHydration(dt: number) {
+    if(this.currentCell.hydration) {
+      this.fluid = Math.min(1, this.fluid + this.hydrationSpeed * dt);
+    } else {
+      this.fluid = Math.max(0, this.fluid - this.dehydrationSpeed * dt);
+    }
+    if(this.fluid < 0.3 && !(this.activity instanceof RehydrateActivity)) {
+      this.activity = new RehydrateActivity(this);
+    }
+  }
+
+  updateState() {
+    if(this.state !== 'TUN' && (this.fluid <= 0 || this.moss <= 0)){
+      this.state = 'TUN'
+      liveTardigrades.delete(this);
+      tunTardigrades.add(this);
+    }
+  }
+
+  updateActivity(dt: number) {
+    if(this.activity.isValid()) {
+      this.activity.perform(dt);
+    } else {
+      this.findSomethingToDo();
+    }
   }
 
   draw(ctx: CanvasRenderingContext2D) {
     ctx.drawImage(
-      this.isDehydrated() ? deadImage : image,
+      this.state === 'LIVE' ? image : deadImage,
       this.point.x * this.game.grid.xPixelsPerCell - image.width/2,
       this.point.y * this.game.grid.yPixelsPerCell - image.height/2
     );
 
-    if(this.task.type !== 'IDLE' && this.game.debugDrawPaths) {
+    if(!(this.activity instanceof IdleActivity) && this.game.debugDrawPaths) {
       ctx.strokeStyle = 'red';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(this.point.x * this.game.grid.xPixelsPerCell, this.point.y * this.game.grid.yPixelsPerCell);
-      ctx.lineTo(this.task.destination.x * this.game.grid.xPixelsPerCell, this.task.destination.y * this.game.grid.yPixelsPerCell);
+      ctx.lineTo(this.activity.destination.x * this.game.grid.xPixelsPerCell, this.activity.destination.y * this.game.grid.yPixelsPerCell);
       ctx.stroke();
     }
 
@@ -152,61 +142,12 @@ export class Tardigrade {
     }
   }
 
-  assignTask(task: Task) {
-    this.task = task;
-    if(task.type === 'IDLE') {
-      idleTardigrades.add(this);
-    } else {
-      idleTardigrades.delete(this);
-    }
-  }
-
-  private performTask(dt: number) {
-    if(this.task.type === 'IDLE') {
-      if(distanceSquared(this.point, this.task.destination) <= DESTINATION_THRESHOLD) {
-        this.findSomethingToDo();
-      }
-    } else if(this.task.type === 'BUILDING_A_CANAL' || this.task.type === 'PLANTING_MOSS') {
-      const targetCell = this.game.grid.getCell(this.task.destination);
-      if(!cellsThatNeedWorkDone.has(targetCell)) {
-        this.findSomethingToDo();
-        return;
-      }
-
-      const myCell = this.game.grid.getCell(this.point);
-      if(myCell === targetCell) {
-        myCell.amountConstructed += dt;
-
-        if(myCell.type === 'PLANNED_CANAL' && myCell.amountConstructed >= CONSTRUCTION_REQUIRED_FOR_CANAL) {
-          myCell.type = 'POOL';
-          this.findSomethingToDo();
-        }
-
-        if(myCell.type === 'PLANNED_MOSS') {
-          myCell.type = 'MOSS';
-          this.findSomethingToDo();
-        }
-      }
-    } else if(this.task.type === 'REHYDRATE') {
-      if(this.fluid >= 1) this.findSomethingToDo();
-    }
-  }
-
   private findSomethingToDo() {
     const cell = findNearestVeryExpensive(Array.from(cellsThatNeedWorkDone), this.point, 1)[0];
     if(cell) {
-      this.assignTask({
-        destination: {x: cell.point.x + 0.5, y: cell.point.y + 0.5},
-        type: cell.type === 'PLANNED_CANAL' ? 'BUILDING_A_CANAL' : 'PLANTING_MOSS',
-      });
+      this.activity = new BuildActivity(this, cell);
     } else {
-      this.assignTask({
-        type: 'IDLE',
-        destination: {
-          x: Math.min(Math.max(this.point.x + Math.random() * 10 - 5, 0), this.game.grid.columns),
-          y: Math.min(Math.max(this.point.y + Math.random() * 10 - 5, 0), this.game.grid.rows),
-        }
-      });
+      this.activity = new IdleActivity(this);
     }
   }
 }
@@ -214,7 +155,7 @@ export class Tardigrade {
 const image = loadImage('assets/pictures/tardy-tardigrade.png');
 const deadImage = loadImage('assets/pictures/deadigrade.png');
 
-export function findIdleTardigrades(cell: Cell, howMany: number) {
+function findIdleTardigrades(cell: Cell, howMany: number) {
   const point = {x: cell.point.x + 0.5, y: cell.point.y + 0.5};
   return findNearestVeryExpensive(Array.from(idleTardigrades), point, howMany);
 }
