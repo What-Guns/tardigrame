@@ -3,7 +3,19 @@ import {Hud} from './hud.js';
 import {Tardigrade} from './tardigrade.js'
 import {Point, distanceSquared, addPoints, assignPoint} from './math.js';
 import {Popover, RegretPopover} from './popover.js';
+import {liveTardigrades} from './tardigrade.js'
 
+<<<<<<< HEAD
+=======
+export type Tool = 'WATER'|'PAN'|'MOSS'|'DEBUG_INSPECT_TARDIGRADE';
+
+export const generationOne : number = 10;
+export const generationTwo : number = Math.ceil(Math.pow(generationOne, 1.5))
+export const generationThree : number = Math.ceil(Math.pow(generationOne, 2))
+export const generationFour : number = Math.ceil(Math.pow(generationOne, 2.5))
+export const generationFive : number = Math.ceil(Math.pow(generationOne, 3))
+
+>>>>>>> Calculate game generation stages
 export class Game {
   readonly grid = new Grid(this, 100, 100);
   readonly pawns = new Array<Tardigrade>();
@@ -19,6 +31,9 @@ export class Game {
 
   availableWater = 20;
   debugDrawPaths = false;
+
+  numberToNextGen : number = generationTwo;
+
 
   readonly viewport = {
     x: 0,
@@ -47,8 +62,8 @@ export class Game {
     canvas.addEventListener('mouseout', () => this.heldButtons.clear());
     canvas.addEventListener('wheel', this.zoom.bind(this));
 
-    for (let i = 0; i < 100; i++){
-      this.pawns.push(new Tardigrade(this, Math.random() * 10, Math.random() * 10));
+    for (let i = 0; i < generationOne; i++){
+      this.pawns.push(new Tardigrade(this, Math.random() * 100, Math.random() * 100));
     }
 
     this.popover = RegretPopover(this.ctx);
@@ -60,6 +75,23 @@ export class Game {
     for(let i = 0; i < this.pawns.length; i++) {
       this.pawns[i].tick(dt);
     }
+
+    if (liveTardigrades.size >= generationFour){
+      //Moon Laser Destroy the Earth
+      this.numberToNextGen = generationFive
+    } else if (liveTardigrades.size >= generationThree){
+      //Mine ice
+      this.numberToNextGen = generationFour
+    } else if (liveTardigrades.size >= generationTwo){
+      //Build moss
+      this.numberToNextGen = generationThree;
+    } else if (liveTardigrades.size > 0){
+      this.numberToNextGen = generationTwo;
+    } else if (liveTardigrades.size == 0){
+      //Ded
+      this.numberToNextGen = generationOne;
+    }
+   
   }
 
   draw() {
