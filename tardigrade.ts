@@ -1,8 +1,10 @@
 import {Point, direction, distanceSquared, findNearestVeryExpensive} from './math.js';
+import {Battery} from './battery.js';
 import {Game} from './game.js';
 import {Cell, cellsThatNeedWorkDone} from './cell.js';
-import {TardigradeActivity, IdleActivity, EatActivity, RehydrateActivity, idleTardigrades, BuildActivity, ReproduceActivity} from './tardigradeActivities.js';
+import * as activities from './tardigradeActivities.js';
 
+export const idleTardigrades = new Set<Tardigrade>();
 export const liveTardigrades = new Set<Tardigrade>();
 export const tunTardigrades = new Set<Tardigrade>();
 export const deadTardigrades = new Set<Tardigrade>();
@@ -16,14 +18,19 @@ export class Tardigrade {
 
   currentCell!: Cell;
 
-  private _activity: TardigradeActivity;
+  private _activity: activities.TardigradeActivity;
 
   get activity() {
     return this._activity;
   }
 
-  set activity(a : TardigradeActivity) {
+  set activity(a : activities.TardigradeActivity) {
     this._activity = a;
+    if(a instanceof activities.IdleActivity) {
+      idleTardigrades.add(this);
+    } else {
+      idleTardigrades.delete(this);
+    }
   }
 
   moss = 0.9; // 0 is starved, 1 babby formed from gonad
@@ -44,20 +51,26 @@ export class Tardigrade {
 
   static assignTardigradesToBuild(cell: Cell) {
     const count = cell.type === 'PLANNED_MOSS' ? 2 : 5;
-    for(const t of findIdleTardigrades(cell, count)) {
-      t.activity = new BuildActivity(t, cell);
+    for(const t of findIdleTardigrades(cell.point, count)) {
+      t.activity = new activities.BuildActivity(t, cell);
     }
   }
 
   static assignTardigradeToReproduce(cell: Cell) {
-    for(const t of findIdleTardigrades(cell, 1)) {
-      t.activity = new ReproduceActivity(t, cell);
+    for(const t of findIdleTardigrades(cell.point, 1)) {
+      t.activity = new activities.ReproduceActivity(t, cell);
+    }
+  }
+
+  static assignTardigradeToGetBattery(battery: Battery) {
+    for(const t of findIdleTardigrades(battery.point, 5)) {
+      t.activity = new activities.ObtainBatteryActivity(t, battery);
     }
   }
 
   constructor(readonly game: Game, x: number, y: number) {
     this.point = {x, y};
-    this._activity = new IdleActivity(this);
+    this._activity = new activities.IdleActivity(this);
     idleTardigrades.add(this);
     this.state = 'LIVE';
     liveTardigrades.add(this)
@@ -99,9 +112,9 @@ export class Tardigrade {
     }
 
     if(this.fluid < this.activity.thirstThreshold) {
-      this.activity = new RehydrateActivity(this);
+      this.activity = new activities.RehydrateActivity(this);
     } else if(this.moss < this.activity.hungerThreshold) {
-      this.activity = new EatActivity(this);
+      this.activity = new activities.EatActivity(this);
     }
   }
 
@@ -145,7 +158,7 @@ export class Tardigrade {
       this.point.y * this.game.grid.yPixelsPerCell - image.height/2
     );
 
-    if(!(this.activity instanceof IdleActivity) && this.game.debugDrawPaths) {
+    if(!(this.activity instanceof activities.IdleActivity) && this.game.debugDrawPaths) {
       ctx.strokeStyle = 'red';
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -193,14 +206,14 @@ export class Tardigrade {
   private findSomethingToDo() {
     const cell = findNearestVeryExpensive(Array.from(cellsThatNeedWorkDone), this.point, 1)[0];
     if(cell) {
-      this.activity = new BuildActivity(this, cell);
+      this.activity = new activities.BuildActivity(this, cell);
     } else {
-      this.activity = new IdleActivity(this);
+      this.activity = new activities.IdleActivity(this);
     }
   }
 }
 
-function findIdleTardigrades(cell: Cell, howMany: number) {
-  const point = {x: cell.point.x + 0.5, y: cell.point.y + 0.5};
+function findIdleTardigrades(near: Point, howMany: number) {
+  const point = {x: near.x + 0.5, y: near.y + 0.5};
   return findNearestVeryExpensive(Array.from(idleTardigrades), point, howMany);
 }

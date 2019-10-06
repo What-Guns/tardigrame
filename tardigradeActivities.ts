@@ -1,9 +1,8 @@
 import {Cell, cellsThatNeedWorkDone, hydratedCells, mossyCells} from './cell.js';
-import {Point, distanceSquared, addPoints} from './math.js';
+import {Battery} from './battery.js';
+import {Point, distanceSquared, addPoints, direction} from './math.js';
 import {Tardigrade} from './tardigrade.js';
-import { loadImage } from './loader.js';
-
-export const idleTardigrades = new Set<Tardigrade>();
+import {loadImage} from './loader.js';
 
 export interface TardigradeActivity {
   isValid(): boolean;
@@ -59,7 +58,6 @@ export class IdleActivity implements TardigradeActivity {
 
   constructor(readonly tardigrade: Tardigrade) {
     const {x, y} = tardigrade.point;
-    idleTardigrades.add(tardigrade);
     const game = tardigrade.game;
     this.destination = {
       x: Math.min(Math.max(x + Math.random() * 10 - 5, 0), game.grid.columns),
@@ -68,7 +66,7 @@ export class IdleActivity implements TardigradeActivity {
   }
 
   isValid() {
-    return distanceSquared(this.tardigrade.point, this.destination) > 0.01;
+    return distanceSquared(this.tardigrade.point, this.destination) > 0.02;
   }
 
   perform() {
@@ -88,7 +86,6 @@ export class BuildActivity implements TardigradeActivity {
   constructor(
     private readonly builder: Tardigrade,
     private readonly targetCell: Cell) {
-    idleTardigrades.delete(builder);
     this.destination = createPointInCellPoint(targetCell.point);
   }
 
@@ -107,7 +104,7 @@ export class BuildActivity implements TardigradeActivity {
   hungerThreshold = 0.1;
 }
 
-export abstract class ObtainResourceAnimation implements TardigradeActivity {
+export abstract class ObtainResourceActivity implements TardigradeActivity {
   readonly goal?: Cell;
   readonly destination: Point;
   readonly abstract thirstThreshold: number;
@@ -115,7 +112,10 @@ export abstract class ObtainResourceAnimation implements TardigradeActivity {
   readonly animations = idleAnimations;
   readonly tunImage = tunIdle;
 
+  private readonly thenWhat: TardigradeActivity;
+
   constructor(protected readonly tardigrade: Tardigrade, desireableCells: Cell[]) {
+    this.thenWhat = tardigrade.activity;
     const nearestWater = desireableCells
       .map(cell => ({cell, dist2: distanceSquared(tardigrade.point, cell.point)}))
       .sort((a, b) => a.dist2 - b.dist2)
@@ -124,17 +124,24 @@ export abstract class ObtainResourceAnimation implements TardigradeActivity {
     this.destination = this.goal
       ? createPointInCellPoint(this.goal.point)
       : {...tardigrade.point};
-    idleTardigrades.delete(tardigrade);
   }
 
-  perform() {
-    return false;
-  }
+  abstract perform(): boolean;
 
   abstract isValid(): boolean;
+
+  protected complete() {
+    // Tardigrades that were idling should choose new destinations.
+    // This keeps them from just oscillating between two points.
+    if(this.thenWhat instanceof IdleActivity) {
+      this.tardigrade.activity = new IdleActivity(this.tardigrade);
+    } else {
+      this.tardigrade.activity = this.thenWhat;
+    }
+  }
 }
 
-export class RehydrateActivity extends ObtainResourceAnimation {
+export class RehydrateActivity extends ObtainResourceActivity {
   readonly animations = rehydrateAnimations;
   readonly tunImage = tunRehydrate;
 
@@ -143,8 +150,12 @@ export class RehydrateActivity extends ObtainResourceAnimation {
   }
 
   isValid() {
-    if(!this.goal) return false;
-    return this.goal.hydration && this.tardigrade.fluid < 1;
+    return this.goal ? this.goal.hydration : false;
+  }
+
+  perform() {
+    if(this.tardigrade.fluid >= 1) this.complete();
+    return false;
   }
 
   thirstThreshold = -Infinity;
@@ -152,7 +163,7 @@ export class RehydrateActivity extends ObtainResourceAnimation {
   hungerThreshold = 0;
 }
 
-export class EatActivity extends ObtainResourceAnimation {
+export class EatActivity extends ObtainResourceActivity {
   readonly animations = eatAnimations;
   readonly tunImage = tunEat;
 
@@ -161,8 +172,12 @@ export class EatActivity extends ObtainResourceAnimation {
   }
 
   isValid() {
-    if(!this.goal) return false;
-    return this.goal.type === 'MOSS' && this.tardigrade.moss < 1;
+    return this.goal ? this.goal.type === 'MOSS' : false;
+  }
+
+  perform() {
+    if(this.tardigrade.moss >= 1) this.complete();
+    return false;
   }
 
   // moss is near water, so this can be pretty low
@@ -186,7 +201,6 @@ export class ReproduceActivity implements TardigradeActivity {
 
   constructor(readonly tardigrade: Tardigrade, readonly goal: Cell) {
     this.destination = createPointInCellPoint(goal.point);
-    idleTardigrades.delete(tardigrade);
   }
 
   isValid() {
@@ -204,6 +218,49 @@ export class ReproduceActivity implements TardigradeActivity {
     // yeah it's weird that we don't consider this "strenuous",
     // but we consume a bunch more moss above instead.
     return false;
+  }
+}
+
+const BATTERY_DESTINATION = {
+  x: 50,
+  y: 50,
+};
+
+export class ObtainBatteryActivity implements TardigradeActivity {
+  readonly destination: Point;
+  readonly animations = buildAnimations;
+  readonly tunImage = tunBuild;
+  readonly hungerThreshold = 0.4;
+  readonly thirstThreshold = 0.1;
+
+  private readonly push = {x: 0, y: 0};
+  private readonly batteryOffset: Point;
+
+  constructor(readonly tardigrade: Tardigrade, readonly battery: Battery) {
+    const direction = Math.random() * 2 * Math.PI;
+    this.batteryOffset = {
+      x: Math.cos(direction) * battery.radius,
+      y: Math.sin(direction) * battery.radius,
+    };
+
+    this.destination = {...battery.point};
+  }
+
+  isValid() {
+    return this.tardigrade.game.batteries.indexOf(this.battery) !== -1;
+  }
+
+  perform(dt: number) {
+    addPoints(this.destination, this.battery.point, this.batteryOffset);
+
+    if(distanceSquared(this.tardigrade.point, this.destination) > 0.01) return false;
+
+    const pushDir = direction(this.battery.point, BATTERY_DESTINATION);
+    this.push.x = (dt / 1000) * Math.cos(pushDir) * 0.005;
+    this.push.y = (dt / 1000) * Math.sin(pushDir) * 0.005;
+    addPoints(this.battery.point, this.battery.point, this.push);
+
+    return true;
   }
 }
 

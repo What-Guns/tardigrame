@@ -84,7 +84,7 @@ export class Game {
       if(button !== 0) return;
       const draggedDistance = distanceSquared(this.screenSpaceMousePosition, this.screenSpaceMousePotisionAtLeftClick);
       if(draggedDistance > 20) return;
-      this.grid.clicked(this.worldSpaceMousePosition);
+      this.clicked();
     });
     canvas.addEventListener('mouseout', () => this.heldButtons.clear());
     canvas.addEventListener('wheel', this.zoom.bind(this));
@@ -160,12 +160,13 @@ export class Game {
     this.ctx.setTransform(this.viewport.scale, 0, 0, this.viewport.scale, -this.viewport.x, -this.viewport.y);
 
     this.grid.draw(this.ctx);
-    for (let i = 0; i < this.pawns.length; i++){
-      this.pawns[i].draw(this.ctx);
-    }
 
     for(let i = 0; i < this.batteries.length; i++) {
       this.batteries[i].draw(this.ctx);
+    }
+
+    for (let i = 0; i < this.pawns.length; i++){
+      this.pawns[i].draw(this.ctx);
     }
 
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -206,6 +207,17 @@ export class Game {
     this.mouseMove(ev);
 
     this.updateListener();
+  }
+
+  private clicked() {
+    for(const batt of this.batteries) {
+      const distSquared = distanceSquared(batt.point, this.worldSpaceMousePosition);
+      if(distSquared < Math.pow(batt.radius, 2)) {
+        Tardigrade.assignTardigradeToGetBattery(batt);
+        return;
+      }
+    }
+    this.grid.clicked(this.worldSpaceMousePosition);
   }
 
   private updateListener() {
