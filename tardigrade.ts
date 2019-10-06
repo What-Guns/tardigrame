@@ -2,7 +2,12 @@ import {Point, direction, distanceSquared, findNearestVeryExpensive} from './mat
 import {Battery} from './battery.js';
 import {Game} from './game.js';
 import {Cell, cellsThatNeedWorkDone} from './cell.js';
+<<<<<<< HEAD
 import * as activities from './tardigradeActivities.js';
+=======
+import {TardigradeActivity, IdleActivity, EatActivity, RehydrateActivity, idleTardigrades, BuildActivity, ReproduceActivity} from './tardigradeActivities.js';
+import { createSoundLibrary, playSoundAtLocation } from './audio.js';
+>>>>>>> Play sounds on tun and revivivfication
 
 export const idleTardigrades = new Set<Tardigrade>();
 export const liveTardigrades = new Set<Tardigrade>();
@@ -123,9 +128,11 @@ export class Tardigrade {
     if(this.state === targetState) return;
     this.state = targetState;
     if(this.state === 'LIVE') {
+      playSoundAtLocation(sounds.revive, this.point);
       liveTardigrades.add(this);
       tunTardigrades.delete(this);
     } else {
+      playSoundAtLocation(sounds.tun, this.point);
       liveTardigrades.delete(this);
       tunTardigrades.add(this);
     }
@@ -221,3 +228,8 @@ function findIdleTardigrades(near: Point, howMany: number) {
   const point = {x: near.x + 0.5, y: near.y + 0.5};
   return findNearestVeryExpensive(Array.from(idleTardigrades), point, howMany);
 }
+
+const sounds = createSoundLibrary({
+  'tun': 'assets/audio/sfx/LowSqueak.ogg',
+  'revive': 'assets/audio/sfx/SqueakFixed.ogg',
+})
