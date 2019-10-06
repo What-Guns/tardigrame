@@ -4,6 +4,12 @@ import {Tardigrade} from './tardigrade.js';
 import {Point, addPoints} from './math.js';
 import {Game} from './game.js';
 import {fullCanalImages, fullPoolImage, calculateWetDryCanals, emptyCanalImages, emptyPoolImage} from './water.js';
+import {liveTardigrades} from './tardigrade.js'
+import {generationTwo} from './game.js'
+// import {generationThree} from './game.js'
+// import {generationFour} from './game.js'
+// import {generationFive} from './game.js'
+
 
 export class Grid {
   readonly cells: Cell[][];
@@ -88,13 +94,13 @@ export class Grid {
   }
 
   private startBuildingACanal(cell: Cell) {
-    if(cell.type !== 'BLANK') return;
+    if(cell.type !== 'BLANK' && liveTardigrades.size != 0) return;
     cell.type = 'PLANNED_CANAL';
     Tardigrade.assignTardigradesToBuild(cell);
   }
 
   private startMossingUpARock(cell: Cell) {
-    if(cell.type !== 'BIG_ROCK') return;
+    if(cell.type !== 'BIG_ROCK' && liveTardigrades.size < generationTwo) return;
     const searchPoint = {...cell.point};
     const offset = {x: 0, y: 0};
     let foundWater = false;
