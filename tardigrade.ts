@@ -2,12 +2,9 @@ import {Point, direction, distanceSquared, findNearestVeryExpensive} from './mat
 import {Battery} from './battery.js';
 import {Game} from './game.js';
 import {Cell, cellsThatNeedWorkDone} from './cell.js';
-<<<<<<< HEAD
 import * as activities from './tardigradeActivities.js';
-=======
-import {TardigradeActivity, IdleActivity, EatActivity, RehydrateActivity, idleTardigrades, BuildActivity, ReproduceActivity} from './tardigradeActivities.js';
+
 import { createSoundLibrary, playSoundAtLocation } from './audio.js';
->>>>>>> Play sounds on tun and revivivfication
 
 export const idleTardigrades = new Set<Tardigrade>();
 export const liveTardigrades = new Set<Tardigrade>();
