@@ -176,7 +176,7 @@ export class Grid {
           );
         }
         
-        if (cell.type === 'WATER_SOURCE') {
+        /*if (cell.type === 'WATER_SOURCE') {
           const cellAbove = this.cells[x] && this.cells[x][y-1] && (this.cells[x][y-1].type === 'POOL' || this.cells[x][y-1].type === 'WATER_SOURCE');
           if(cellAbove) ctx.drawImage(puddleImages.PUDDLE_ABOVE, x * this.xPixelsPerCell, y * this.yPixelsPerCell, this.xPixelsPerCell, this.yPixelsPerCell);
           const cellBelow = this.cells[x] && this.cells[x][y+1] && (this.cells[x][y+1].type === 'POOL' || this.cells[x][y+1].type === 'WATER_SOURCE');
@@ -185,7 +185,7 @@ export class Grid {
           if(cellLeft) ctx.drawImage(puddleImages.PUDDLE_LEFT, x * this.xPixelsPerCell, y * this.yPixelsPerCell, this.xPixelsPerCell, this.yPixelsPerCell);
           const cellRight = this.cells[x+1] && this.cells[x+1][y] && (this.cells[x+1][y].type === 'POOL' || this.cells[x+1][y].type === 'WATER_SOURCE');
           if(cellRight) ctx.drawImage(puddleImages.PUDDLE_RIGHT, x * this.xPixelsPerCell, y * this.yPixelsPerCell, this.xPixelsPerCell, this.yPixelsPerCell);
-        }
+        }*/
 
         if(cell.type === 'PLANNED_CANAL') {
           ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
@@ -247,7 +247,7 @@ const gridImages: {[key in CellType]: HTMLImageElement} = {
   BIG_ROCK: loadImage('assets/pictures/Rocks_and_moss/just_a_rock.png'),
   ROAD: loadImage('assets/pictures/nsroad1.png'),
   PLANNED_CANAL: loadImage('assets/pictures/futureCanal.png'),
-  WATER_SOURCE: loadImage('assets/pictures/Puddle_states/water_puddle_full.png'),
+  WATER_SOURCE: loadImage('assets/pictures/Puddle_states/puddle.png'),
   MOSS: loadImage('assets/pictures/Rocks_and_moss/rock_lotsa_moss.png'),
   PLANNED_MOSS: loadImage('assets/pictures/Rocks_and_moss/rock_little_moss.png'),
 }
