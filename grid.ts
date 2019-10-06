@@ -24,18 +24,17 @@ export class Grid {
       this.cells.push([]);
       for (let y=0; y<rows; y++) {
         const cell = new Cell({x, y});
-        this.cells[x].push(cell)
-        cell.type = Math.random() < 0.4 ? 'BLANK' : Math.random() < 0.1 ? 'BIG_ROCK' : 'POOL';
-        //if(cell.type === 'POOL') cell.hydration = true;
+        const rand = Math.random();
+        this.cells[x].push(cell);
+        if(rand > 0.8) {
+          cell.type = 'POOL';
+        } else if(rand > 0.7) {
+          cell.type = 'BIG_ROCK';
+        }
       }
     }
 
     this.bgPattern = ctx.createPattern(background, 'repeat');
-
-    // put a water source somewhere in the top 100 cells
-    this.cells[Math.floor(Math.random() * 10)][Math.floor(Math.random() * 10)].type = 'WATER_SOURCE';
-
-    this.cells[5][5].type = 'MOSS';
   }
 
   tick(dt : number) {

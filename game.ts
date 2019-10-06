@@ -7,6 +7,14 @@ import {liveTardigrades} from './tardigrade.js'
 
 export type Tool = 'WATER'|'PAN'|'MOSS'|'DEBUG_INSPECT_TARDIGRADE';
 
+export interface Viewport {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  scale: number;
+}
+
 export const generationOne : number = 10;
 export const generationTwo : number = Math.ceil(Math.pow(generationOne, 1.5))
 export const generationThree : number = Math.ceil(Math.pow(generationOne, 2))
@@ -31,20 +39,20 @@ export class Game {
 
   numberToNextGen : number = generationTwo;
 
-
-  readonly viewport = {
-    x: 0,
-    y: 0,
-    width: 640,
-    height: 640,
-    scale: 1.0,
-  };
+  readonly viewport: Viewport;
 
   private readonly ctx: CanvasRenderingContext2D;
 
   constructor(canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext('2d')!;
     this.grid = new Grid(this, 100, 100, this.ctx);
+    this.viewport  = {
+      x: this.grid.columns * this.grid.xPixelsPerCell / 2 - 320,
+      y: this.grid.rows * this.grid.yPixelsPerCell / 2 - 320,
+      width: 640,
+      height: 640,
+      scale: 1.0,
+    };
     canvas.addEventListener('mousemove', this.mouseMove.bind(this));
     canvas.addEventListener('mousedown', ({button}) => {
       if(button === 0) assignPoint(this.screenSpaceMousePotisionAtLeftClick, this.screenSpaceMousePosition);
@@ -60,9 +68,18 @@ export class Game {
     canvas.addEventListener('mouseout', () => this.heldButtons.clear());
     canvas.addEventListener('wheel', this.zoom.bind(this));
 
+    // spawn tardigrades in the viewport
     for (let i = 0; i < generationOne; i++){
-      this.pawns.push(new Tardigrade(this, Math.random() * 10, Math.random() * 10));
+      const x = this.grid.columns / 2 + Math.random() * 6 - 3;
+      const y = this.grid.rows / 2 + Math.random() * 6 - 3;
+      this.pawns.push(new Tardigrade(this, x, y));
     }
+
+    // put a water source somewhere near the middle of the game.
+    this.grid.getCell({
+      x: this.grid.columns / 2 + Math.random() * 6 - 3,
+      y: this.grid.rows / 2 + Math.random() * 6 - 3,
+    }).type = 'WATER_SOURCE';
 
     this.popover = RegretPopover(this.ctx);
     // this.popover.show();

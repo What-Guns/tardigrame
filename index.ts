@@ -48,8 +48,17 @@ async function startTheGameAlready() {
   function sizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
+    const oldCenter = {
+      x: game.viewport.x + game.viewport.width / 2,
+      y: game.viewport.y + game.viewport.height / 2,
+    };
+
     game.viewport.width = canvas.width;
     game.viewport.height = canvas.height;
+
+    game.viewport.x = oldCenter.x - game.viewport.width / 2;
+    game.viewport.y  = oldCenter.y - game.viewport.height / 2;
   }
 }
 
