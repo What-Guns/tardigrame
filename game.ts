@@ -3,7 +3,7 @@ import {audioContext} from './audio.js';
 import {Hud} from './hud.js';
 import {Tardigrade} from './tardigrade.js'
 import {Point, distanceSquared, addPoints, assignPoint} from './math.js';
-import {Popover, RegretPopover} from './popover.js';
+import {Popover, EmptyPopover, PausePopover} from './popover.js';
 import {liveTardigrades} from './tardigrade.js'
 
 export interface Viewport {
@@ -41,7 +41,6 @@ export class Game {
 
   private readonly ctx: CanvasRenderingContext2D;
 
-  paused = false;
   notInGameWindow = false;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -55,12 +54,19 @@ export class Game {
       scale: 1.0,
     };
 
+    this.popover = EmptyPopover(this.ctx);
+
     document.addEventListener('visibilitychange', () => {
       this.notInGameWindow = document.hidden;
     });
 
     document.addEventListener('keyup', (ev : KeyboardEvent) => {
-      if(ev.key === 'p' || ev.key === 'Pause') this.paused = !this.paused;
+      if(!(ev.key === 'p' || ev.key === 'Pause')) return;
+      if(!this.popover.visible) {
+        this.showPopover(PausePopover(this.ctx));
+      } else if(this.popover.imageName == 'PAUSE') {
+        this.dismissPopover();
+      }
     });
 
     this.updateListener();
@@ -112,8 +118,6 @@ export class Game {
         }).type = 'WATER_SOURCE';
       }
     }
-    this.popover = RegretPopover(this.ctx);
-    // this.popover.show();
   }
 
   tick(dt: number) {
@@ -200,6 +204,16 @@ export class Game {
   }
 
   isPaused() {
-    return this.paused || this.notInGameWindow;
+    return this.notInGameWindow || this.popover.visible;
+  }
+
+  showPopover(p: Popover) {
+    this.dismissPopover();
+    this.popover = p;
+    this.popover.show();
+  }
+
+  dismissPopover() {
+    this.popover.hide();
   }
 }
