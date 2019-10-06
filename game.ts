@@ -1,4 +1,5 @@
 import {Grid} from './grid.js';
+import {Battery} from './battery.js';
 import {audioContext} from './audio.js';
 import {Hud} from './hud.js';
 import {Tardigrade} from './tardigrade.js'
@@ -23,6 +24,7 @@ export const generationFive : number = Math.ceil(Math.pow(generationOne, 3))
 export class Game {
   readonly grid : Grid;
   readonly pawns = new Array<Tardigrade>();
+  readonly batteries = new Array<Battery>();
   readonly hud = new Hud(this);
 
   private readonly heldButtons = new Set<number>();
@@ -118,6 +120,11 @@ export class Game {
         }).type = 'WATER_SOURCE';
       }
     }
+
+    this.batteries.push(new Battery(this, {
+      x: 40,
+      y: 40,
+    }));
   }
 
   tick(dt: number) {
@@ -155,6 +162,10 @@ export class Game {
     this.grid.draw(this.ctx);
     for (let i = 0; i < this.pawns.length; i++){
       this.pawns[i].draw(this.ctx);
+    }
+
+    for(let i = 0; i < this.batteries.length; i++) {
+      this.batteries[i].draw(this.ctx);
     }
 
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
