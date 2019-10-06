@@ -89,8 +89,13 @@ export class Tardigrade {
   }
 
   updateState() {
-    if(this.state !== 'TUN' && (this.fluid <= 0 || this.moss <= 0)){
-      this.state = 'TUN'
+    const targetState = (this.fluid <= 0 || this.moss <= 0) ? 'TUN' : 'LIVE';
+    if(this.state === targetState) return;
+    this.state = targetState;
+    if(this.state === 'LIVE') {
+      liveTardigrades.add(this);
+      tunTardigrades.delete(this);
+    } else {
       liveTardigrades.delete(this);
       tunTardigrades.add(this);
     }
