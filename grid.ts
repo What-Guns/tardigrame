@@ -13,7 +13,9 @@ export class Grid {
   readonly yPixelsPerCell = 64;
   drawGridLines = false;
 
-  constructor(readonly game: Game, readonly rows: number, readonly columns: number) {
+  readonly bgPattern: CanvasPattern | null;
+
+  constructor(readonly game: Game, readonly rows: number, readonly columns: number, readonly ctx : CanvasRenderingContext2D) {
     this.rows = rows;
     this.columns = columns;
     this.cells = [];
@@ -27,6 +29,8 @@ export class Grid {
         //if(cell.type === 'POOL') cell.hydration = true;
       }
     }
+
+    this.bgPattern = ctx.createPattern(background, 'repeat');
 
     // put a water source somewhere in the top 100 cells
     this.cells[Math.floor(Math.random() * 10)][Math.floor(Math.random() * 10)].type = 'WATER_SOURCE';
@@ -110,13 +114,17 @@ export class Grid {
   }
 
   private drawBackground(ctx: CanvasRenderingContext2D) {
+    if(!this.bgPattern) return;
+
     ctx.clearRect(0, 0, this.xPixelsPerCell * this.columns, this.yPixelsPerCell * this.rows);
-    //ctx.fillRect(0, 0, this.xPixelsPerCell * this.columns, this.yPixelsPerCell * this.rows);
+    ctx.fillStyle = this.bgPattern;
+    ctx.fillRect(0, 0, this.xPixelsPerCell * this.columns, this.yPixelsPerCell * this.rows);
+    /*
     for(let x=0; x < this.xPixelsPerCell * this.columns / background.width; x++) {
       for(let y=0; y < this.yPixelsPerCell * this.rows / background.height; y++) {
         ctx.drawImage(background, x * background.width, y*background.height)
       }
-    }
+    }*/
 
     const firstVisibleColumn = Math.max(0, Math.floor((this.game.viewport.x / this.game.viewport.scale) / this.xPixelsPerCell));
     const firstVisibleRow = Math.max(0, Math.floor((this.game.viewport.y / this.game.viewport.scale) / this.yPixelsPerCell));

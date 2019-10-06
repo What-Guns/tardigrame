@@ -14,7 +14,7 @@ export const generationFour : number = Math.ceil(Math.pow(generationOne, 2.5))
 export const generationFive : number = Math.ceil(Math.pow(generationOne, 3))
 
 export class Game {
-  readonly grid = new Grid(this, 100, 100);
+  readonly grid : Grid;
   readonly pawns = new Array<Tardigrade>();
   readonly hud = new Hud(this);
 
@@ -44,6 +44,7 @@ export class Game {
 
   constructor(canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext('2d')!;
+    this.grid = new Grid(this, 100, 100, this.ctx);
     canvas.addEventListener('mousemove', this.mouseMove.bind(this));
     canvas.addEventListener('mousedown', ({button}) => {
       if(button === 0) assignPoint(this.screenSpaceMousePotisionAtLeftClick, this.screenSpaceMousePosition);
