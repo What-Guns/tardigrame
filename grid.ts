@@ -41,8 +41,20 @@ export class Grid {
 
   clicked(where: Point) {
     const cell = this.getCell(where);
-    if(cell.type === 'BLANK') this.startBuildingACanal(cell);
-    if(cell.type === 'BIG_ROCK') this.startMossingUpARock(cell);
+    switch(cell.type) {
+      case 'BLANK':
+        this.startBuildingACanal(cell);
+        break;
+      case 'BIG_ROCK':
+        this.startMossingUpARock(cell);
+        break;
+      case 'PLANNED_CANAL':
+        cell.type = 'BLANK';
+        break;
+      case 'PLANNED_MOSS':
+        cell.type = 'BIG_ROCK';
+        break;
+    }
   }
 
   draw(ctx: CanvasRenderingContext2D) {
