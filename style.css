@@ -20,6 +20,6 @@ body, html {
   padding: 1rem;
 }
 
-.toolbar > * {
+.toolbar > label {
   margin: 0 1rem;
 }

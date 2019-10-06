@@ -24,7 +24,7 @@ export class Tardigrade {
 
   private task: Task;
 
-  satiation = 0.4; // 0 is starved, 1 babby formed from gonad
+  moss = 0.4; // 0 is starved, 1 babby formed from gonad
   fluid = Math.random() * 0.5 + 0.5;
   dehydrationSpeed : number = 0.00005; // thirst per millisecond
   hydrationSpeed : number = 0.0001; // antithirst per millisecond
@@ -124,19 +124,19 @@ export class Tardigrade {
   }
 
   isStarved() {
-    return this.satiation <= 0
+    return this.moss <= 0
   }
 
   isHungry(dt: number) {
     if(!this.isStarved()) {
-      this.satiation -= this.starvationRate * dt;
+      this.moss -= this.starvationRate * dt;
     }
   }
 
   isSatiated(){
-    if (!this.isStarved && this.satiation == 1){
+    if (!this.isStarved && this.moss == 1){
       this.game.pawns.push(new Tardigrade(this.game, this.point.x * 10, this.point.y * 10));
-      this.satiation = 0.3;
+      this.moss = 0.3;
     }
   }
 
@@ -168,7 +168,7 @@ export class Tardigrade {
       ctx.stroke();
     }
 
-    if(this.game.debugDrawThirst) {
+    if(this.game.debugDrawResources) {
       ctx.lineWidth = 2;
       ctx.strokeStyle = 'blue';
       ctx.beginPath();
@@ -178,6 +178,17 @@ export class Tardigrade {
         16,
         0,
         2 * Math.PI * this.fluid,
+        false
+      );
+      ctx.stroke();
+      ctx.strokeStyle = 'coral';
+      ctx.beginPath();
+      ctx.arc(
+        this.point.x * this.game.grid.xPixelsPerCell,
+        this.point.y * this.game.grid.yPixelsPerCell,
+        14,
+        0,
+        2 * Math.PI * this.moss,
         false
       );
       ctx.stroke();

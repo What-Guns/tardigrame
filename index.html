@@ -13,25 +13,34 @@
       </canvas>
       <div class="toolbar">
         <label>
-          Pan
           <input data-tool-input type="radio" name="tool" value="PAN" checked autocomplete="off"/>
+          Pan
         </label>
         <label>
-          Canal
           <input data-tool-input type="radio" name="tool" value="WATER" autocomplete="off"/>
+          Canal
         </label>
         <label>
-          Moss
           <input data-tool-input type="radio" name="tool" value="MOSS" autocomplete="off"/>
-        </label>
-        <label>
-          INSPECT
-          <input data-tool-input type="radio" name="tool" value="DEBUG_INSPECT_TARDIGRADE" autocomplete="off"/>
+          Moss
         </label>
         <div>
-          <input type="checkbox" data-debug value="GRIDLINES">Gridlines</input>
-          <input type="checkbox" data-debug value="THIRST">Thirst</input>
-          <input type="checkbox" data-debug value="PATHS">Paths</input>
+          <label>
+            <input data-tool-input type="radio" name="tool" value="DEBUG_INSPECT_TARDIGRADE" autocomplete="off"/>
+            INSPECT
+          </label>
+          <label>
+            <input type="checkbox" data-debug value="GRIDLINES" autocomplete="off"/>
+            Gridlines
+          </label>
+          <label>
+            <input type="checkbox" data-debug value="RESOURCES" autocomplete="off"/>
+            Resources
+          </label>
+          <label>
+            <input type="checkbox" data-debug value="PATHS" autocomplete="off"/>
+            Paths
+          </label>
         </div>
       </div>
     </div>

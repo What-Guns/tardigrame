@@ -20,7 +20,7 @@ export class Game {
   isMouseClicked = false;
 
   availableWater = 20;
-  debugDrawThirst = false;
+  debugDrawResources = false;
   debugDrawPaths = false;
 
   readonly viewport = {
