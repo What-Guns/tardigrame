@@ -33,7 +33,6 @@ export class Tardigrade {
   starvationRate : number = 0;
   state : State = 'LIVE';
 
-
   // in grid cells per second
   readonly speed = 0.2;
 
@@ -86,33 +85,12 @@ export class Tardigrade {
     }
   }
 
-  isTunAndRehydrated(){
-    if (this.state === 'TUN' && this.fluid > 0 )
-    {
-      tunTardigrades.delete(this);
-      liveTardigrades.add(this);
-    }
-  }
-
   isDehydrated() {
     return this.fluid <= 0;
   }
 
   isStarved() {
     return this.moss <= 0
-  }
-
-  isHungry(dt: number) {
-    if(!this.isStarved()) {
-      this.moss -= this.starvationRate * dt;
-    }
-  }
-
-  isSatiated(){
-    if (!this.isStarved && this.moss == 1){
-      this.game.pawns.push(new Tardigrade(this.game, this.point.x * 10, this.point.y * 10));
-      this.moss = 0.3;
-    }
   }
 
   move(dt: number) {
