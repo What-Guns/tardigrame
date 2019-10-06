@@ -55,12 +55,11 @@ export class Game {
     };
 
     document.addEventListener('visibilitychange', () => {
-      console.log('vis change', document.hidden)
       this.notInGameWindow = document.hidden;
     });
 
     document.addEventListener('keyup', (ev : KeyboardEvent) => {
-      if(ev.key === 'p') this.paused = !this.paused;
+      if(ev.key === 'p' || ev.key === 'Pause') this.paused = !this.paused;
     });
 
     // set up all of the mouse stuff
