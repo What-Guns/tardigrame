@@ -26,6 +26,26 @@ const idleAnimations = [
   loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-2.png.png'),
 ];
 
+const buildAnimations = [
+  loadImage('assets/pictures/Tardigrade_animations/tardi_build1.png'),
+  loadImage('assets/pictures/Tardigrade_animations/tardi_build2.png'),
+];
+
+const eatAnimations = [
+  loadImage('assets/pictures/Tardigrade_animations/tardi_eat1.png'),
+  loadImage('assets/pictures/Tardigrade_animations/tardi_eat2.png'),
+];
+
+const rehydrateAnimations = [
+  loadImage('assets/pictures/Tardigrade_animations/tardi_drink1.png'),
+  loadImage('assets/pictures/Tardigrade_animations/tardi_drink2.png'),
+];
+
+const reproduceAnimations = [
+  loadImage('assets/pictures/Tardigrade_animations/tardi_babby1.png'),
+  loadImage('assets/pictures/Tardigrade_animations/tardi_babby2.png'),
+];
+
 export class IdleActivity implements TardigradeActivity {
   readonly destination: Point;
   readonly animations = idleAnimations
@@ -55,7 +75,7 @@ export class IdleActivity implements TardigradeActivity {
 
 export class BuildActivity implements TardigradeActivity {
   readonly destination = {x: 0, y: 0};
-  readonly animations = idleAnimations;
+  readonly animations = buildAnimations;
 
   constructor(
     private readonly builder: Tardigrade,
@@ -106,7 +126,7 @@ export abstract class ObtainResourceAnimation implements TardigradeActivity {
 }
 
 export class RehydrateActivity extends ObtainResourceAnimation {
-  animations = idleAnimations;
+  animations = rehydrateAnimations;
 
   constructor(tardigrade: Tardigrade) {
     super(tardigrade, Array.from(hydratedCells));
@@ -123,7 +143,7 @@ export class RehydrateActivity extends ObtainResourceAnimation {
 }
 
 export class EatActivity extends ObtainResourceAnimation {
-  animations = idleAnimations;
+  animations = eatAnimations;
 
   constructor(tardigrade: Tardigrade) {
     super(tardigrade, Array.from(mossyCells));
@@ -143,10 +163,7 @@ export class EatActivity extends ObtainResourceAnimation {
 const REPRODUCTION_TIME = 10;
 
 export class ReproduceActivity implements TardigradeActivity {
-  readonly animations = [
-    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-1.png.png'),
-    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-2.png.png'),
-  ];
+  readonly animations = reproduceAnimations;
 
   readonly destination: Point;
 
