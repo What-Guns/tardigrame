@@ -5,8 +5,6 @@ import {Point, distanceSquared, addPoints, assignPoint} from './math.js';
 import {Popover, RegretPopover} from './popover.js';
 import {liveTardigrades} from './tardigrade.js'
 
-<<<<<<< HEAD
-=======
 export type Tool = 'WATER'|'PAN'|'MOSS'|'DEBUG_INSPECT_TARDIGRADE';
 
 export const generationOne : number = 10;
@@ -15,7 +13,6 @@ export const generationThree : number = Math.ceil(Math.pow(generationOne, 2))
 export const generationFour : number = Math.ceil(Math.pow(generationOne, 2.5))
 export const generationFive : number = Math.ceil(Math.pow(generationOne, 3))
 
->>>>>>> Calculate game generation stages
 export class Game {
   readonly grid = new Grid(this, 100, 100);
   readonly pawns = new Array<Tardigrade>();
@@ -63,7 +60,7 @@ export class Game {
     canvas.addEventListener('wheel', this.zoom.bind(this));
 
     for (let i = 0; i < generationOne; i++){
-      this.pawns.push(new Tardigrade(this, Math.random() * 100, Math.random() * 100));
+      this.pawns.push(new Tardigrade(this, Math.random() * 10, Math.random() * 10));
     }
 
     this.popover = RegretPopover(this.ctx);
