@@ -1,7 +1,7 @@
 import {Cell, CellType, CONSTRUCTION_REQUIRED_FOR_CANAL, hydratedCells} from './cell.js';
 import {loadImage} from './loader.js';
 import {Tardigrade} from './tardigrade.js';
-import {Point} from './math.js';
+import {Point, addPoints} from './math.js';
 import {Game} from './game.js';
 import {fullCanalImages, fullPoolImage, calculateWetDryCanals, emptyCanalImages, emptyPoolImage} from './water.js';
 
@@ -81,18 +81,20 @@ export class Grid {
 
   private startMossingUpARock(cell: Cell) {
     if(cell.type !== 'BIG_ROCK') return;
-    const point = {x: cell.point.x, y: cell.point.y};
+    const searchPoint = {...cell.point};
+    const offset = {x: 0, y: 0};
     let foundWater = false;
-    for(let y = -1; y <= 1; y++) {
-      for(let x = -1; x <= 1; x++) {
-        point.x = cell.point.x + x;
-        point.y = cell.point.x + y;
-        foundWater = foundWater || this.getCell(point).hydration;
+    for(offset.y = -1; offset.y <= 1; offset.y++) {
+      for(offset.x = -1; offset.x <= -1; offset.x++) {
+        addPoints(searchPoint, cell.point, offset);
+        const neighbor = this.getCell(searchPoint);
+        if(neighbor.hydration) {
+          cell.type = 'PLANNED_MOSS';
+          Tardigrade.assignTardigradesToBuild(cell);
+        }
+        foundWater = foundWater || neighbor.hydration;
       }
     }
-    if(!foundWater) return;
-    cell.type = 'PLANNED_MOSS';
-    Tardigrade.assignTardigradesToBuild(cell);
   }
 
   private drawBackground(ctx: CanvasRenderingContext2D) {
