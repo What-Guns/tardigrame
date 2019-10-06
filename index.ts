@@ -3,7 +3,7 @@ import {isLoaded} from './loader.js';
 
 let lastTick = 0;
 
-type Debug = 'GRIDLINES';
+type Debug = 'GRIDLINES'|'THIRST';
 
 async function startTheGameAlready() {
   console.log('Waiting for everything to load');
@@ -44,6 +44,9 @@ async function startTheGameAlready() {
       switch(debug.value as Debug) {
         case 'GRIDLINES':
           game.grid.drawGridLines = !game.grid.drawGridLines;
+          break;
+        case 'THIRST':
+          game.debugDrawThirst = !game.debugDrawThirst;
           break;
       }
     })

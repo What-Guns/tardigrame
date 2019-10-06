@@ -162,7 +162,7 @@ export class Tardigrade {
       ctx.stroke();
     }
 
-    if((window as any).DEBUG_DRAW_THIRST) {
+    if(this.game.debugDrawThirst) {
       ctx.lineWidth = 2;
       ctx.strokeStyle = 'blue';
       ctx.beginPath();
