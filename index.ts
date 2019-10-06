@@ -40,17 +40,18 @@ async function startTheGameAlready() {
     document.querySelectorAll<HTMLInputElement>('[data-debug]'));
 
   for(const debug of debugControls) {
-    debug.addEventListener('change', () => {
+    debug.addEventListener('change', (ev) => {
+      if(!ev || !ev.target || !(ev.target instanceof HTMLInputElement)) return;
       switch(debug.value as Debug) {
         case 'GRIDLINES':
-          game.grid.drawGridLines = !game.grid.drawGridLines;
+          game.grid.drawGridLines = ev.target.checked;
           break;
-          case 'THIRST':
-            game.debugDrawThirst = !game.debugDrawThirst;
-            break;
-          case 'PATHS':
-            game.debugDrawPaths = !game.debugDrawPaths;
-            break;
+        case 'THIRST':
+          game.debugDrawThirst = ev.target.checked;
+          break;
+        case 'PATHS':
+          game.debugDrawPaths = ev.target.checked;
+          break;
       }
     })
   }
