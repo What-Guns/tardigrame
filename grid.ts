@@ -36,15 +36,13 @@ export class Grid {
 
   tick(dt : number) {
     this.updateHoveredCell();
-    if(this.game.isMouseClicked && this.game.tool === 'WATER' && this.game.availableWater > 0) {
-      const cell = this.getCell(this.hoveredCell);
-      this.startBuildingACanal(cell);
-    }
-    if(this.game.isMouseClicked && this.game.tool === 'MOSS') {
-      const cell = this.getCell(this.hoveredCell);
-      this.startMossingUpARock(cell);
-    }
     calculateWetDryCanals(this.cells, dt);
+  }
+
+  clicked(where: Point) {
+    const cell = this.getCell(where);
+    if(cell.type === 'BLANK') this.startBuildingACanal(cell);
+    if(cell.type === 'BIG_ROCK') this.startMossingUpARock(cell);
   }
 
   draw(ctx: CanvasRenderingContext2D) {

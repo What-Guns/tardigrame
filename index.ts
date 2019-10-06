@@ -1,4 +1,4 @@
-import {Game, Tool} from './game.js';
+import {Game} from './game.js';
 import {isLoaded} from './loader.js';
 
 let lastTick = 0;
@@ -27,14 +27,6 @@ async function startTheGameAlready() {
     requestAnimationFrame(tick);
   }
 
-  const toolControls = Array.from(
-    document.querySelectorAll<HTMLInputElement>('[data-tool-input]'));
-
-  for(const control of toolControls) {
-    control.addEventListener('change', () => {
-      game.tool = control.value as Tool;
-    });
-  }
 
   const debugControls = Array.from(
     document.querySelectorAll<HTMLInputElement>('[data-debug]'));

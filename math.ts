@@ -12,13 +12,18 @@ export function direction(from: Point, to: Point) {
   return Math.atan2(to.y - from.y, to.x - from.x);
 }
 
-export function distanceSquared(from: Point, to: Point) {
+export function distanceSquared(from: Point, to: Point = ZERO) {
   return Math.pow(to.x - from.x, 2) + Math.pow(to.y - from.y, 2);
 }
 
 export function addPoints(out: Point, a: Point, b: Point) {
   out.x = a.x + b.x;
   out.y = a.y + b.y;
+}
+
+export function assignPoint(out: Point, p: Point) {
+  out.x = p.x;
+  out.y = p.y;
 }
 
 export function isPointInBox(pointX: number, pointY: number, boxX: number, boxY: number, boxWidth: number, boxHeight: number) {
@@ -32,3 +37,5 @@ export function findNearestVeryExpensive<T extends {point: Point}>(items: T[], n
     .slice(0, howMany)
     .map(item => item.item);
 }
+
+export const ZERO = { x: 0, y: 0, };
