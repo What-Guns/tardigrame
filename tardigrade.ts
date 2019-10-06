@@ -53,6 +53,18 @@ export class Tardigrade {
     if(!this.isDehydrated()) this.move(dt);
     this.currentCell = this.game.grid.getCell(this.point);
 
+    if(this.isDehydrated()){
+      this.state = 'TUN'
+      liveTardigrades.delete(this);
+      tunTardigrades.add(this);
+    }
+
+    if(this.isStarved()){
+      this.state = 'TUN'
+      liveTardigrades.delete(this);
+      tunTardigrades.add(this);
+    }
+
     if(this.fluid < 0.3 && this.task.type !== 'REHYDRATE') {
       const nearestWater = Array.from(hydratedCells)
         .map(cell => ({cell, dist2: distanceSquared(this.point, cell.point)}))
@@ -108,16 +120,10 @@ export class Tardigrade {
   }
 
   isDehydrated() {
-    this.state = 'TUN'
-    liveTardigrades.delete(this);
-    tunTardigrades.add(this);
     return this.fluid <= 0;
   }
 
   isStarved() {
-    this.state = 'TUN'
-    liveTardigrades.delete(this);
-    tunTardigrades.add(this);
     return this.satiation <= 0
   }
 
