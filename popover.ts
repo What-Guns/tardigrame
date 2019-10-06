@@ -19,7 +19,6 @@ export class PopoverButton {
         popover.hide()
       }
     }
-    console.log(new Date())
     ctx.canvas.addEventListener('mouseup', this.cb);
   }
 

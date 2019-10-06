@@ -49,6 +49,7 @@ export class Grid {
   }
 
   clicked(where: Point) {
+    if(this.game.isPaused()) return;
     const cell = this.getCell(where);
     switch(cell.type) {
       case 'BLANK':
