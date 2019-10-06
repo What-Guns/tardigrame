@@ -106,10 +106,7 @@ export abstract class ObtainResourceAnimation implements TardigradeActivity {
 }
 
 export class RehydrateActivity extends ObtainResourceAnimation {
-  readonly animations = [
-    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-1.png.png'),
-    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-2.png.png'),
-  ]
+  animations = idleAnimations;
 
   constructor(tardigrade: Tardigrade) {
     super(tardigrade, Array.from(hydratedCells));
@@ -126,10 +123,7 @@ export class RehydrateActivity extends ObtainResourceAnimation {
 }
 
 export class EatActivity extends ObtainResourceAnimation {
-  readonly animations = [
-    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-1.png.png'),
-    loadImage('assets/pictures/Tardigrade_animations/tardigrade_orig-2.png.png'),
-  ]
+  animations = idleAnimations;
 
   constructor(tardigrade: Tardigrade) {
     super(tardigrade, Array.from(mossyCells));

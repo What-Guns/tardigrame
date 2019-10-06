@@ -59,7 +59,7 @@ export const emptyCanalImages = [[[[
 export const fullPoolImage = loadImage('assets/pictures/full_canals/full_canals__0000_full.png');
 export const emptyPoolImage = loadImage('assets/pictures/Empty Canals/empty_canals_0016_bigsquare.png');
 
-const sounds = createSoundLibrary({splash: 'assets/audio/splash.ogg'});
+const sounds = createSoundLibrary({splash: 'assets/audio/sfx/Water2.ogg'});
 
 let timeSinceLastWetDryCalc = 0;
 export function calculateWetDryCanals(cells: Array<Array<Cell>>, dt : number) : void {
