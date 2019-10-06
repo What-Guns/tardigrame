@@ -93,8 +93,8 @@ export class Game {
     this.screenSpaceMousePosition.x = ev.offsetX;
     this.screenSpaceMousePosition.y = ev.offsetY;
 
-    this.worldSpaceMousePosition.x = (ev.offsetX + this.viewport.x) / this.viewport.scale;
-    this.worldSpaceMousePosition.y = (ev.offsetY + this.viewport.y) / this.viewport.scale;
+    this.worldSpaceMousePosition.x = (ev.offsetX + this.viewport.x) / this.viewport.scale / this.grid.xPixelsPerCell;
+    this.worldSpaceMousePosition.y = (ev.offsetY + this.viewport.y) / this.viewport.scale / this.grid.yPixelsPerCell;
   }
 
   zoom(ev: WheelEvent) {

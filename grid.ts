@@ -191,8 +191,8 @@ export class Grid {
   }
 
   private updateHoveredCell() {
-    this.hoveredCell.x = Math.floor(this.game.worldSpaceMousePosition.x / this.xPixelsPerCell);
-    this.hoveredCell.y = Math.floor(this.game.worldSpaceMousePosition.y / this.yPixelsPerCell);
+    this.hoveredCell.x = Math.floor(this.game.worldSpaceMousePosition.x);
+    this.hoveredCell.y = Math.floor(this.game.worldSpaceMousePosition.y);
   }
 }
 
