@@ -1,5 +1,5 @@
 import {Game} from './game.js';
-import {Point} from './math.js';
+import {Point, distanceSquared} from './math.js';
 
 export class Battery {
   readonly radius = (372/2) / this.game.grid.xPixelsPerCell;
@@ -8,6 +8,12 @@ export class Battery {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
+    const mouseDistSquared = distanceSquared(this.point, this.game.worldSpaceMousePosition);
+
+    if(mouseDistSquared < Math.pow(this.radius, 2)) {
+      ctx.globalAlpha = 0.5;
+    }
+
     ctx.beginPath();
     ctx.lineWidth = 8;
     ctx.arc(
@@ -18,5 +24,7 @@ export class Battery {
     ctx.strokeStyle = '#333';
     ctx.fill();
     ctx.stroke();
+
+    ctx.globalAlpha = 1;
   }
 }
