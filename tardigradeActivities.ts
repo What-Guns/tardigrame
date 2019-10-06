@@ -7,14 +7,17 @@ export const idleTardigrades = new Set<Tardigrade>();
 
 export interface TardigradeActivity {
   isValid(): boolean;
-  perform(dt: number): void;
+
+  /** Returns whether the tardigrade did strenuous work. */
+  perform(dt: number): boolean;
+
   readonly destination: Point;
   readonly animations: Array<HTMLImageElement>;
 
-  // a tardigrade with less fluid than this will abandon this activity
+  /** a tardigrade with less fluid than this will abandon this activity */
   readonly thirstThreshold: number;
 
-  // a tardigrade with less moss than this will abandon this activity
+  /** a tardigrade with less moss than this will abandon this activity */
   readonly hungerThreshold: number;
 }
 
@@ -39,7 +42,9 @@ export class IdleActivity implements TardigradeActivity {
     return distanceSquared(this.tardigrade.point, this.destination) > 0.01;
   }
 
-  perform() {}
+  perform() {
+    return false;
+  }
 
   thirstThreshold = 0.6;
 
@@ -65,10 +70,9 @@ export class BuildActivity implements TardigradeActivity {
   }
 
   perform(dt: number) {
-    if(this.builder.game.grid.getCell(this.builder.point) !== this.targetCell) return;
-
-    this.builder.moss = Math.max(0, this.builder.moss - dt * 0.000025);
+    if(this.builder.game.grid.getCell(this.builder.point) !== this.targetCell) return false;
     this.targetCell.addConstruction(dt);
+    return true;
   }
 
   thirstThreshold = 0.4;
@@ -95,7 +99,9 @@ export abstract class ObtainResourceAnimation implements TardigradeActivity {
     idleTardigrades.delete(tardigrade);
   }
 
-  perform() {}
+  perform() {
+    return false;
+  }
 
   abstract isValid(): boolean;
 }

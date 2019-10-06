@@ -32,6 +32,7 @@ export class Tardigrade {
   dehydrationSpeed = 0.00005; // thirst per millisecond
   hydrationSpeed = 0.0001; // antithirst per millisecond
   eatSpeed = 0.0001;
+  appetite = 0.000025; // how hungry working makes tardigrades
 
   nutrientConsumptionRate = 0.1;
   starvationRate = 0;
@@ -113,7 +114,10 @@ export class Tardigrade {
 
   updateActivity(dt: number) {
     if(this.activity.isValid()) {
-      this.activity.perform(dt);
+      const didWork = this.activity.perform(dt);
+      if(didWork) {
+        this.moss = Math.max(0, this.moss - dt * this.appetite);
+      }
     } else {
       this.findSomethingToDo();
     }
