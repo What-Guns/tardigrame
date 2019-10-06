@@ -1,6 +1,7 @@
 import { loadImage } from "./loader.js";
 import { Cell } from "./cell.js";
-import { playSound, createSoundLibrary } from "./audio.js";
+import { playSoundAtLocation, createSoundLibrary } from "./audio.js";
+import {Point} from './math.js';
 
 // 0 is right, 1 is left, 2 is bottom, index 3 is top
 
@@ -69,7 +70,7 @@ export function calculateWetDryCanals(cells: Array<Array<Cell>>, dt : number) : 
   }
   timeSinceLastWetDryCalc -= 250;
 
-  let playSplash = false;
+  let playSplashLocation: Point|null = null;
   for(let x=0; x<cells.length; x++) {
     for(let y=0; y<cells[x].length; y++) {
       const cell = cells[x][y];
@@ -85,13 +86,13 @@ export function calculateWetDryCanals(cells: Array<Array<Cell>>, dt : number) : 
       const right = cells[x] && cells[x][y+1] && ((cells[x][y+1].type === 'POOL' && cells[x][y+1].hydration) || cells[x][y+1].type === 'WATER_SOURCE');
       if(above || below || left || right) {
         cell.hydration = true;
-        playSplash = true;
+        playSplashLocation = cell.point;
         break;
       };
     }
   }
 
-  if(playSplash) {
-    playSound(sounds['splash']);
+  if(playSplashLocation) {
+    playSoundAtLocation(sounds['splash'], playSplashLocation);
   }
 }

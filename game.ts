@@ -1,4 +1,5 @@
 import {Grid} from './grid.js';
+import {audioContext} from './audio.js';
 import {Hud} from './hud.js';
 import {Tardigrade} from './tardigrade.js'
 import {Point, distanceSquared, addPoints, assignPoint} from './math.js';
@@ -61,6 +62,8 @@ export class Game {
     document.addEventListener('keyup', (ev : KeyboardEvent) => {
       if(ev.key === 'p' || ev.key === 'Pause') this.paused = !this.paused;
     });
+
+    this.updateListener();
 
     // set up all of the mouse stuff
     canvas.addEventListener('mousemove', this.mouseMove.bind(this));
@@ -163,6 +166,7 @@ export class Game {
         y: this.screenSpaceMousePosition.y - ev.offsetY
       };
       addPoints(this.viewport, this.viewport, delta);
+      this.updateListener();
     }
 
     this.screenSpaceMousePosition.x = ev.offsetX;
@@ -185,6 +189,14 @@ export class Game {
     this.viewport.y -= this.viewport.height / 2;
 
     this.mouseMove(ev);
+
+    this.updateListener();
+  }
+
+  private updateListener() {
+    const centerX = (this.viewport.x + this.viewport.width / 2) / (this.grid.xPixelsPerCell * this.viewport.scale);
+    const centerY = (this.viewport.y + this.viewport.height / 2) / (this.grid.yPixelsPerCell * this.viewport.scale);
+    audioContext.listener.setPosition(centerX, centerY, 1);
   }
 
   isPaused() {
