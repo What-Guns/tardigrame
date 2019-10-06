@@ -161,7 +161,7 @@ export class Tardigrade {
   }
 
   chooseImageToDraw() : HTMLImageElement {
-    if(this.state === 'DEAD') return deadImage;
+    if(this.state === 'DEAD' || this.state === 'TUN') return deadImage;
     return this.activity.animations[Math.floor(this.animationState / this.animationRate)];
   }
 
