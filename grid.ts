@@ -28,8 +28,10 @@ export class Grid {
       }
     }
 
-    // put a water source somewhere
+    // put a water source somewhere in the top 100 cells
     this.cells[Math.floor(Math.random() * 10)][Math.floor(Math.random() * 10)].type = 'WATER_SOURCE';
+
+    this.cells[5][5].type = 'MOSS';
   }
 
   tick(dt : number) {
@@ -37,6 +39,10 @@ export class Grid {
     if(this.game.isMouseClicked && this.game.tool === 'WATER' && this.game.availableWater > 0) {
       const cell = this.getCell(this.hoveredCell);
       this.startBuildingACanal(cell);
+    }
+    if(this.game.isMouseClicked && this.game.tool === 'MOSS') {
+      const cell = this.getCell(this.hoveredCell);
+      this.startMossingUpARock(cell);
     }
     calculateWetDryCanals(this.cells, dt);
   }
@@ -78,6 +84,21 @@ export class Grid {
         type: "BUILDING_A_CANAL"
       });
     }
+  }
+
+  private startMossingUpARock(cell: Cell) {
+    if(cell.type !== 'BIG_ROCK') return;
+    const point = {x: cell.point.x, y: cell.point.y};
+    let foundWater = false;
+    for(let y = -1; y <= 1; y++) {
+      for(let x = -1; x <= 1; x++) {
+        point.x = cell.point.x + x;
+        point.y = cell.point.x + y;
+        foundWater = foundWater || this.getCell(point).hydration;
+      }
+    }
+    if(!foundWater) return;
+    cell.type = 'PLANNED_MOSS';
   }
 
   private drawBackground(ctx: CanvasRenderingContext2D) {
@@ -174,4 +195,6 @@ const gridImages: {[key in CellType]: HTMLImageElement} = {
   ROAD: loadImage('assets/pictures/nsroad1.png'),
   PLANNED_CANAL: loadImage('assets/pictures/futureCanal.png'),
   WATER_SOURCE: loadImage('assets/pictures/full_canals/full_canals__0000_full.png'),
+  MOSS: loadImage('assets/pictures/mossrock.png'),
+  PLANNED_MOSS: loadImage('assets/pictures/futureMoss.png'),
 }

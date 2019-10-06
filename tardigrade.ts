@@ -9,7 +9,7 @@ export const tunTardigrades = new Set<Tardigrade>();
 export const deadTardigrades = new Set<Tardigrade>();
 
 interface Task {
-  type: 'IDLE' | 'BUILDING_A_CANAL' | 'REHYDRATE';
+  type: 'IDLE' | 'BUILDING_A_CANAL' | 'PLANTING_MOSS' | 'REHYDRATE';
   destination: Point;
 }
 
@@ -192,23 +192,24 @@ export class Tardigrade {
       if(distanceSquared(this.point, this.task.destination) <= DESTINATION_THRESHOLD) {
         this.findSomethingToDo();
       }
-    } else if(this.task.type === 'BUILDING_A_CANAL') {
+    } else if(this.task.type === 'BUILDING_A_CANAL' || this.task.type === 'PLANTING_MOSS') {
       const targetCell = this.game.grid.getCell(this.task.destination);
-      if(targetCell.type !== 'PLANNED_CANAL') {
+      if(!cellsThatNeedWorkDone.has(targetCell)) {
         this.findSomethingToDo();
         return;
       }
 
       const myCell = this.game.grid.getCell(this.point);
       if(myCell === targetCell) {
-        const cell = this.game.grid.getCell(this.task.destination);
-        cell.amountConstructed += dt;
+        myCell.amountConstructed += dt;
 
-        if(cell.amountConstructed >= CONSTRUCTION_REQUIRED_FOR_CANAL) {
-          cell.type = 'POOL';
+        if(myCell.type === 'PLANNED_CANAL' && myCell.amountConstructed >= CONSTRUCTION_REQUIRED_FOR_CANAL) {
+          myCell.type = 'POOL';
+          this.findSomethingToDo();
         }
 
-        if(cell.type !== 'PLANNED_CANAL') {
+        if(myCell.type === 'PLANNED_MOSS') {
+          myCell.type = 'MOSS';
           this.findSomethingToDo();
         }
       }
@@ -222,7 +223,7 @@ export class Tardigrade {
     if(cell) {
       this.assignTask({
         destination: {x: cell.point.x + 0.5, y: cell.point.y + 0.5},
-        type: "BUILDING_A_CANAL"
+        type: cell.type === 'PLANNED_CANAL' ? 'BUILDING_A_CANAL' : 'PLANTING_MOSS',
       });
     } else {
       this.assignTask({

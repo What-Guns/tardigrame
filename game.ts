@@ -4,7 +4,7 @@ import {Tardigrade} from './tardigrade.js'
 import {Point, findNearestVeryExpensive} from './math.js';
 import {Popover, RegretPopover} from './popover.js';
 
-export type Tool = 'WATER'|'PAN'|'DEBUG_INSPECT_TARDIGRADE';
+export type Tool = 'WATER'|'PAN'|'MOSS'|'DEBUG_INSPECT_TARDIGRADE';
 
 export class Game {
   readonly grid = new Grid(this, 100, 100);
