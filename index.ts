@@ -7,11 +7,12 @@ let lastTick = 0;
 // any tick longer than this will be split into smaller ticks
 const BIG_TICK = 500;
 
-async function startTheGameAlready() {
+isLoaded().then(() => {
+  (document.getElementById('start') as HTMLButtonElement).disabled = false;
+});
+
+function startTheGameAlready() {
   document.getElementById('start')!.remove();
-  console.log('Waiting for everything to load');
-  await isLoaded();
-  console.log(`Everything has loaded now`);
   const canvas = document.querySelector('canvas')!;
   const game = new Game(canvas);
   sizeCanvas();
