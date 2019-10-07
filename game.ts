@@ -175,11 +175,13 @@ export class Game {
   }
 
   private clicked() {
-    for(const batt of this.batteries) {
-      const distSquared = distanceSquared(batt.point, this.worldSpaceMousePosition);
-      if(distSquared < Math.pow(batt.radius, 2)) {
-        Tardigrade.assignTardigradeToGetBattery(batt);
-        return;
+    if(liveTardigrades.size >= generationThree) {
+      for(const batt of this.batteries) {
+        const distSquared = distanceSquared(batt.point, this.worldSpaceMousePosition);
+        if(distSquared < Math.pow(batt.radius, 2)) {
+          Tardigrade.assignTardigradeToGetBattery(batt);
+          return;
+        }
       }
     }
     this.grid.clicked(this.worldSpaceMousePosition);
