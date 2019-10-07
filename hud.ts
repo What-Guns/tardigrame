@@ -1,13 +1,6 @@
 import {Game} from './game.js';
 import {liveTardigrades, tunTardigrades, idleTardigrades} from './tardigrade.js'
 
-interface PopBar {
-  label: string;
-  color: string;
-  count: number;
-  contributesToGraph: boolean;
-}
-
 export class Hud {
   constructor(private readonly game: Game) {
   }
