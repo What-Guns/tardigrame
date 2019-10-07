@@ -71,7 +71,7 @@ export class Tardigrade {
   static assignTardigradeToGetBattery(battery: Battery) {
     let found = false;
     const point = {x: battery.point.x + 0.5, y: battery.point.y + 0.5};
-    const notCarrying = Array.from(idleTardigrades).filter(t => !(t.activity instanceof activities.ObtainBatteryActivity));
+    const notCarrying = Array.from(idleTardigrades).filter(t => !(willCarryBattery(t.activity)));
     for(const t of findNearestVeryExpensive(Array.from(notCarrying), point, 5)) {
       found = true;
       t.assignActivity(new activities.ObtainBatteryActivity(t, battery));
@@ -312,6 +312,13 @@ export class Tardigrade {
 function findIdleTardigrades(near: Point, howMany: number) {
   const point = {x: near.x + 0.5, y: near.y + 0.5};
   return findNearestVeryExpensive(Array.from(idleTardigrades), point, howMany);
+}
+
+function willCarryBattery(activity: activities.TardigradeActivity|null): boolean {
+  if(!activity) return false;
+  if(activity instanceof activities.ObtainBatteryActivity) return true;
+  if(activity instanceof activities.ObtainResourceActivity) return willCarryBattery(activity.thenWhat);
+  return false;
 }
 
 const sounds = createSoundLibrary({
