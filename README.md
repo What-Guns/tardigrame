@@ -1,5 +1,7 @@
 # Tardigrades on the Moon
 
+Play the game already: https://whatguns.itch.io/tardigrades-on-the-moon
+
 ### Backstory
 This game is a fun interpreation of simulating moon life for tardigrades (aka waterbears) based on a recent event where [a crashed Israeli Lunar lander spilled tardigrades on the moon](https://www.wired.com/story/a-crashed-israeli-lunar-lander-spilled-tardigrades-on-the-moon/).
 
@@ -30,6 +32,6 @@ Once you reach ONE HUNDRED tardigrades you will have the ability to move a batte
 - Click the button in the top right corner of the screen that says 'normal' to increase. Speeds include 'fast' and 'super-fast'. Keep clicking to toggle through the speeds.
 
 ### End game
-You win the game by moving a battery to your capsule. You lose the game by having all tardigrades in tun state. Good luck!
+You win the game by moving a battery to your capsule. You lose the game by having all tardigrades in tun state. Nothing happens, but you feel shame. Good luck!
 
 
