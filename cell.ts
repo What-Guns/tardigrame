@@ -58,6 +58,7 @@ export class Cell {
     }
 
     if(t === 'PLANNED_CANAL' || t === 'PLANNED_MOSS') {
+      playSoundAtLocation(sounds.click1, this.point);
       cellsThatNeedWorkDone.add(this);
     } else {
       cellsThatNeedWorkDone.delete(this);
@@ -113,6 +114,7 @@ const sounds = createSoundLibrary({
   moss2: 'assets/audio/sfx/PlantingMoss2.ogg',
   moss3: 'assets/audio/sfx/PlantingMoss3.ogg',
   mossDone: 'assets/audio/sfx/Sproing.ogg',
+  click1: 'assets/audio/sfx/Click.ogg',
 })
 
 export type CellType =
