@@ -271,7 +271,7 @@ export class ObtainBatteryActivity implements TardigradeActivity {
   isIdle = true;
 
   private playSound() {
-    const rand = Math.floor(Math.random() * 300);
+    const rand = Math.floor(Math.random() * 900);
     switch(rand) {
       case 0:
         playSoundAtLocation(sounds.carrying0, this.tardigrade.point);

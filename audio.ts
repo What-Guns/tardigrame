@@ -1,10 +1,17 @@
 import {loadAudioAsync, loadAudioIntoBuffer} from "./loader.js";
 import {Point} from './math.js';
 
+
 export const audioContext = new AudioContext();
 export const gainNode = new GainNode(audioContext);
+
+export const biquadFilter = audioContext.createBiquadFilter();
+biquadFilter.type = 'lowpass';
+biquadFilter.frequency.setValueAtTime(24000, audioContext.currentTime);
+
 gainNode.gain.value = 0.5;
-gainNode.connect(audioContext.destination);
+gainNode.connect(biquadFilter);
+biquadFilter.connect(audioContext.destination);
 
 audioContext.listener.setOrientation(0, 0, -1, 0, 1, 0);
 

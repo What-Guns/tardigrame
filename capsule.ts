@@ -16,7 +16,7 @@ export class Capsule {
 
   draw(ctx: CanvasRenderingContext2D) {
     const mousePos = this.game.worldSpaceMousePosition;
-    if(isPointInBox(mousePos.x * this.game.grid.xPixelsPerCell, mousePos.y * this.game.grid.yPixelsPerCell, this.drawOrigin.x, this.drawOrigin.y, image.width, image.height)) {
+    if(this.game.viewport.scale > 1.2 || isPointInBox(mousePos.x * this.game.grid.xPixelsPerCell, mousePos.y * this.game.grid.yPixelsPerCell, this.drawOrigin.x, this.drawOrigin.y, image.width, image.height)) {
       ctx.globalAlpha = 0.5
     }
     ctx.drawImage(image, this.drawOrigin.x, this.drawOrigin.y);

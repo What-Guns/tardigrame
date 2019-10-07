@@ -20,7 +20,7 @@ export class Battery {
   draw(ctx: CanvasRenderingContext2D) {
     const mouseDistSquared = distanceSquared(this.point, this.game.worldSpaceMousePosition);
 
-    if(mouseDistSquared < Math.pow(this.radius, 2)) {
+    if(this.game.viewport.scale > 1.2 || mouseDistSquared < Math.pow(this.radius, 2)) {
       ctx.globalAlpha = 0.5;
     }
 

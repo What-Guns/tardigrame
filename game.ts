@@ -1,6 +1,6 @@
 import {Grid} from './grid.js';
 import {Battery} from './battery.js';
-import {audioContext, startBGM, fadeInBGM0, fadeInBGM1, fadeInBGM2} from './audio.js';
+import {audioContext, startBGM, fadeInBGM0, fadeInBGM1, fadeInBGM2, biquadFilter, gainNode} from './audio.js';
 import {Hud} from './hud.js';
 import {Tardigrade} from './tardigrade.js'
 import {Point, distanceSquared, addPoints, assignPoint} from './math.js';
@@ -236,6 +236,9 @@ export class Game {
     const centerX = (this.viewport.x + this.viewport.width / 2) / (this.grid.xPixelsPerCell * this.viewport.scale);
     const centerY = (this.viewport.y + this.viewport.height / 2) / (this.grid.yPixelsPerCell * this.viewport.scale);
     audioContext.listener.setPosition(centerX, centerY, 1);
+    const unquietness = Math.min(0.5, this.viewport.scale - 0.23) / 0.5;
+    biquadFilter.frequency.setValueAtTime(unquietness * 24000, audioContext.currentTime);
+    gainNode.gain.setValueAtTime(unquietness * 0.25 + 0.25, audioContext.currentTime);
   }
 
   isPaused() {
