@@ -1,5 +1,3 @@
-import {audioContext} from './audio.js';
-
 let loaded = Promise.resolve();
 
 export function loadImage(url: string): HTMLImageElement {
@@ -12,7 +10,7 @@ export function loadImage(url: string): HTMLImageElement {
   return image;
 }
 
-export function loadAudioIntoBuffer(url: string, target: any, propertyKey: string) {
+export function loadAudioIntoBuffer(url: string, target: any, propertyKey: string, audioContext: AudioContext) {
   loaded = loaded.then(() => new Promise<void>((resolve, reject) => {
     fetch(url)
     .then(data => {

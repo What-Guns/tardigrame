@@ -1,6 +1,6 @@
 import {Grid} from './grid.js';
 import {Battery} from './battery.js';
-import {audioContext, startBGM, fadeInBGM1} from './audio.js';
+import {audioContext, startBGM, fadeInBGM1, createSoundLibrary} from './audio.js';
 import {Hud} from './hud.js';
 import {Tardigrade} from './tardigrade.js'
 import {Point, distanceSquared, addPoints, assignPoint} from './math.js';
@@ -247,4 +247,9 @@ export class Game {
       y: 40,
     }));
   }
+  
+  bgm = createSoundLibrary({
+    track1: 'assets/audio/music/TardigradeMusic1.ogg',
+    track2: 'assets/audio/music/TardigradeMusic2.ogg',
+  });
 }

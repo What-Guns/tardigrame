@@ -1,5 +1,6 @@
 import {Game} from './game.js';
 import {isLoaded} from './loader.js';
+import { audioContext } from './audio.js';
 
 let lastTick = 0;
 
@@ -14,6 +15,8 @@ async function startTheGameAlready() {
   const game = new Game(canvas);
   sizeCanvas();
   requestAnimationFrame(tick);
+
+  audioContext.resume();
 
   addEventListener('resize', sizeCanvas);
 
@@ -48,5 +51,5 @@ async function startTheGameAlready() {
   }
 }
 
-startTheGameAlready();
+window.startTheGameAlready = startTheGameAlready;
 
