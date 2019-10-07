@@ -1,0 +1,174 @@
+import { loadImage } from "./loader.js";
+import { isPointInBox } from './math.js';
+import { fadeInBGM0 } from "./audio.js";
+export class PopoverButton {
+    constructor(popover, x, y, image, ctx, callback) {
+        this.popover = popover;
+        this.x = x;
+        this.y = y;
+        this.image = image;
+        this.callback = callback;
+        this.cb = (ev) => {
+            if (isPointInBox(ev.offsetX, ev.offsetY, x + popover.getOffset().x, y + popover.getOffset().y, image.width, image.height)) {
+                popover.hide(ctx);
+                this.callback(ev);
+            }
+        };
+        ctx.canvas.addEventListener('mouseup', this.cb);
+    }
+    draw(ctx, offset) {
+        ctx.drawImage(this.image, this.x + offset.x, this.y + offset.y);
+    }
+    enable(ctx) {
+        ctx.canvas.addEventListener('mouseup', this.cb);
+    }
+    disable(ctx) {
+        ctx.canvas.removeEventListener('mouseup', this.cb);
+    }
+}
+const defaultButton = loadImage('assets/pictures/button.png');
+const okayButton = loadImage('assets/pictures/buttons/button_okay.png');
+const sorryButton = loadImage('assets/pictures/sorrybutton.png');
+const regretButton = loadImage('assets/pictures/regretButton.png');
+const waitWhatButton = loadImage('assets/pictures/buttons/button_waitwhat.png');
+const uhButton = loadImage('assets/pictures/buttons/button_UH.png');
+export class Popover {
+    constructor(imageName, position) {
+        this.imageName = imageName;
+        this.position = position;
+        this.visible = false;
+        this.visible = false;
+        this.buttons = [];
+        this.offset = { x: 0, y: 0 };
+    }
+    show(ctx) {
+        this.visible = true;
+        this.buttons.forEach(b => {
+            b.enable(ctx);
+        });
+    }
+    hide(ctx) {
+        this.visible = false;
+        this.buttons.forEach(b => {
+            b.disable(ctx);
+        });
+    }
+    draw(ctx) {
+        if (this.visible) {
+            const image = images[this.imageName];
+            switch (this.position) {
+                case 'CENTER':
+                    this.offset = { x: (ctx.canvas.width / 2) - (image.width / 2), y: (ctx.canvas.height / 2) - (image.height / 2) };
+                    break;
+                case 'BOTTOM':
+                    this.offset = { x: (ctx.canvas.width / 2) - (image.width / 2), y: ctx.canvas.height - image.height };
+                    break;
+            }
+            ctx.drawImage(image, this.offset.x, this.offset.y);
+            this.buttons.forEach(b => {
+                b.draw(ctx, this.offset);
+            });
+        }
+    }
+    getOffset() {
+        return this.offset;
+    }
+}
+const images = {
+    'REGRET': loadImage('assets/pictures/popovers/regret.png'),
+    'EMPTY': loadImage('assets/pictures/empty1.png'),
+    'PAUSE': loadImage('assets/pictures/regret.png'),
+    'VICTORY': loadImage('assets/pictures/popovers/victory.png'),
+    'GEN1': loadImage('assets/pictures/popovers/1_minergrade_canals.png'),
+    'INST1': loadImage('assets/pictures/popovers/popover_gen1.png'),
+    'GEN2': loadImage('assets/pictures/popovers/2_farmergrade_mossfarms.png'),
+    'INST2': loadImage('assets/pictures/popovers/popover_gen2.png'),
+    'GEN3': loadImage('assets/pictures/popovers/3_scidigrade_batteryfound.png'),
+    'INST3': loadImage('assets/pictures/popovers/popover_gen3.png'),
+    'END1': loadImage('assets/pictures/popovers/4_miligrade_bioweapon.png'),
+    'END2': loadImage('assets/pictures/popovers/5_launch_the_capsule.png'),
+    'GAMEOVER': loadImage('assets/pictures/popovers/you_win.png'),
+};
+export const RegretPopover = (ctx) => {
+    const p = new Popover('REGRET', 'BOTTOM');
+    p.buttons.push(new PopoverButton(p, 130, 219, defaultButton, ctx, () => { }));
+    p.buttons.push(new PopoverButton(p, 360, 219, sorryButton, ctx, () => { }));
+    return p;
+};
+export const EmptyPopover = () => {
+    return new Popover('EMPTY', 'CENTER');
+};
+export const PausePopover = (ctx) => {
+    const p = new Popover('PAUSE', 'CENTER');
+    p.buttons.push(new PopoverButton(p, 3, 111, regretButton, ctx, () => { }));
+    return p;
+};
+export const GameWinPopover = (game, ctx) => {
+    const p = new Popover('VICTORY', 'BOTTOM');
+    function cb() {
+        game.showPopover(RegretPopover(ctx));
+    }
+    p.buttons.push(new PopoverButton(p, 30, 160, regretButton, ctx, cb));
+    return p;
+};
+export const Gen1Popover = (game, ctx) => {
+    const p = new Popover('GEN1', 'BOTTOM');
+    function cb() {
+        game.showPopover(Inst1Popover(ctx));
+    }
+    p.buttons.push(new PopoverButton(p, 357, 283, okayButton, ctx, cb));
+    return p;
+};
+export const Inst1Popover = (ctx) => {
+    const p = new Popover('INST1', 'BOTTOM');
+    p.buttons.push(new PopoverButton(p, 157, 556, okayButton, ctx, () => { }));
+    return p;
+};
+export const Gen2Popover = (game, ctx) => {
+    const p = new Popover('GEN2', 'BOTTOM');
+    function cb() {
+        game.showPopover(Inst2Popover(ctx));
+    }
+    p.buttons.push(new PopoverButton(p, 88, 302, okayButton, ctx, cb));
+    return p;
+};
+export const Inst2Popover = (ctx) => {
+    const p = new Popover('INST2', 'BOTTOM');
+    p.buttons.push(new PopoverButton(p, 157, 502, okayButton, ctx, () => { }));
+    return p;
+};
+export const Gen3Popover = (game, ctx) => {
+    const p = new Popover('GEN3', 'BOTTOM');
+    function cb() {
+        game.showPopover(Inst3Popover(ctx));
+    }
+    p.buttons.push(new PopoverButton(p, 88, 325, okayButton, ctx, cb));
+    return p;
+};
+export const Inst3Popover = (ctx) => {
+    const p = new Popover('INST3', 'BOTTOM');
+    p.buttons.push(new PopoverButton(p, 165, 517, okayButton, ctx, () => { }));
+    return p;
+};
+export const End1Popover = (game, ctx) => {
+    const p = new Popover('END1', 'BOTTOM');
+    function cb() {
+        game.startCountdown();
+    }
+    p.buttons.push(new PopoverButton(p, 85, 378, waitWhatButton, ctx, cb));
+    return p;
+};
+export const End2Popover = (game, ctx) => {
+    const p = new Popover('END2', 'BOTTOM');
+    function cb() {
+        fadeInBGM0();
+        game.launchComplete = true;
+        game.showPopover(GameOverPopover());
+    }
+    p.buttons.push(new PopoverButton(p, 315, 162, uhButton, ctx, cb));
+    return p;
+};
+export const GameOverPopover = () => {
+    const p = new Popover('GAMEOVER', 'CENTER');
+    return p;
+};

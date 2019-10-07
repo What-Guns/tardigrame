@@ -1,0 +1,293 @@
+import { Grid } from './grid.js';
+import { Battery } from './battery.js';
+import { audioContext, startBGM, fadeInBGM0, fadeInBGM1, fadeInBGM2, biquadFilter, gainNode } from './audio.js';
+import { Hud } from './hud.js';
+import { Tardigrade } from './tardigrade.js';
+import { distanceSquared, addPoints, assignPoint } from './math.js';
+import { EmptyPopover, PausePopover, Gen1Popover, Gen2Popover, Gen3Popover, End1Popover, End2Popover } from './popover.js';
+import { liveTardigrades } from './tardigrade.js';
+import { Capsule } from './capsule.js';
+/** The starting generation. Create canals. */
+export const generationOne = 10;
+/** The second generation. Create moss. */
+export const generationTwo = Math.ceil(Math.pow(generationOne, 1.5));
+/** The third generation. Carry the battery. */
+export const generationThree = Math.ceil(Math.pow(generationOne, 2));
+export const generationFour = Math.ceil(Math.pow(generationOne, 2.5));
+export const generationFive = Math.ceil(Math.pow(generationOne, 3));
+export class Game {
+    constructor(canvas) {
+        this.pawns = new Array();
+        this.batteries = new Array();
+        this.capsules = new Array();
+        this.hud = new Hud(this);
+        this.heldButtons = new Set();
+        this.screenSpaceMousePotisionAtLeftClick = { x: 0, y: 0 };
+        this.screenSpaceMousePosition = { x: 0, y: 0 };
+        this.worldSpaceMousePosition = { x: 0, y: 0 };
+        this.debugDrawPaths = false;
+        this.numberToNextGen = generationTwo;
+        this.notInGameWindow = false;
+        this.generation = -1;
+        this.speed = 1;
+        this.maxGeneration = -1;
+        this.countdownTimer = 9999999999;
+        this.countdownStarted = false;
+        this.launchComplete = false;
+        this.ctx = canvas.getContext('2d');
+        this.grid = new Grid(this, 100, 100, this.ctx);
+        this.viewport = {
+            x: this.grid.columns * this.grid.xPixelsPerCell / 2 - 320,
+            y: this.grid.rows * this.grid.yPixelsPerCell / 2 - 320,
+            width: 640,
+            height: 640,
+            scale: 1.0,
+        };
+        window.game = this;
+        this.popover = EmptyPopover();
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && !this.popover.visible) {
+                this.showPopover(PausePopover(this.ctx));
+            }
+        });
+        document.addEventListener('keyup', (ev) => {
+            if (!(ev.key === 'p' || ev.key === 'Pause'))
+                return;
+            if (!this.popover.visible) {
+                this.showPopover(PausePopover(this.ctx));
+            }
+            else if (this.popover.imageName == 'PAUSE') {
+                this.dismissPopover();
+            }
+        });
+        this.updateListener();
+        // set up all of the mouse stuff
+        canvas.addEventListener('mousemove', this.mouseMove.bind(this));
+        canvas.addEventListener('mousedown', ({ button }) => {
+            if (button === 0)
+                assignPoint(this.screenSpaceMousePotisionAtLeftClick, this.screenSpaceMousePosition);
+            this.heldButtons.add(button);
+        });
+        canvas.addEventListener('mouseup', ({ button }) => {
+            this.heldButtons.delete(button);
+            if (button !== 0)
+                return;
+            const draggedDistance = distanceSquared(this.screenSpaceMousePosition, this.screenSpaceMousePotisionAtLeftClick);
+            if (draggedDistance > 20)
+                return;
+            this.clicked();
+        });
+        canvas.addEventListener('mouseout', () => this.heldButtons.clear());
+        canvas.addEventListener('wheel', this.zoom.bind(this));
+        this.showPopover(Gen1Popover(this, this.ctx));
+        this.populateGrid();
+        startBGM();
+    }
+    tick(dt) {
+        dt *= this.speed;
+        this.grid.tick(dt);
+        for (let i = 0; i < this.pawns.length; i++) {
+            this.pawns[i].tick(dt);
+        }
+        let batteryToDelete = null;
+        for (let i = 0; i < this.batteries.length; i++) {
+            if (this.batteries[i].isAtDestination()) {
+                this.win();
+                batteryToDelete = this.batteries[i];
+            }
+        }
+        if (batteryToDelete)
+            this.batteries.splice(this.batteries.indexOf(batteryToDelete, 1));
+        if (liveTardigrades.size >= generationThree) {
+            //Drag battery
+            if (this.generation !== 2) {
+                fadeInBGM2();
+                if (this.maxGeneration <= this.generation) {
+                    this.maxGeneration = this.generation;
+                    this.showPopover(Gen3Popover(this, this.ctx));
+                }
+            }
+            this.generation = 2;
+            this.numberToNextGen = generationFour;
+        }
+        else if (liveTardigrades.size >= generationTwo) {
+            //Build moss
+            if (this.generation !== 1) {
+                fadeInBGM1();
+                if (this.maxGeneration <= this.generation) {
+                    this.maxGeneration = this.generation;
+                    this.showPopover(Gen2Popover(this, this.ctx));
+                }
+            }
+            this.generation = 1;
+            this.numberToNextGen = generationThree;
+        }
+        else if (liveTardigrades.size > 0) {
+            //Build canals
+            if (this.generation !== 0)
+                fadeInBGM0();
+            this.generation = 0;
+            this.numberToNextGen = generationTwo;
+        }
+        else if (liveTardigrades.size == 0) {
+            //Ded
+            this.numberToNextGen = generationOne;
+        }
+        if (this.countdownStarted) {
+            this.countdownTimer -= dt;
+            if (this.countdownTimer <= 0) {
+                this.capsules.forEach(c => c.stopSound());
+                this.showPopover(End2Popover(this, this.ctx));
+            }
+        }
+    }
+    draw(timestamp) {
+        this.ctx.clearRect(0, 0, this.viewport.width, this.viewport.height);
+        this.ctx.fillStyle = 'black';
+        this.ctx.fillRect(0, 0, this.viewport.width, this.viewport.height);
+        if (this.launchComplete) {
+            this.popover.draw(this.ctx);
+            return;
+        }
+        this.ctx.setTransform(this.viewport.scale, 0, 0, this.viewport.scale, -this.viewport.x, -this.viewport.y);
+        this.grid.draw(this.ctx, timestamp);
+        for (let i = 0; i < this.capsules.length; i++) {
+            this.capsules[i].drawBG(this.ctx);
+        }
+        for (let i = 0; i < this.pawns.length; i++) {
+            this.pawns[i].draw(this.ctx);
+        }
+        for (let i = 0; i < this.batteries.length; i++) {
+            this.batteries[i].draw(this.ctx, timestamp);
+        }
+        for (let i = 0; i < this.capsules.length; i++) {
+            this.capsules[i].draw(this.ctx, timestamp);
+        }
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+        this.hud.draw(this.ctx);
+        this.popover.draw(this.ctx);
+    }
+    mouseMove(ev) {
+        if (this.heldButtons.has(0)) {
+            const delta = {
+                x: this.screenSpaceMousePosition.x - ev.offsetX,
+                y: this.screenSpaceMousePosition.y - ev.offsetY
+            };
+            addPoints(this.viewport, this.viewport, delta);
+            this.updateListener();
+        }
+        this.screenSpaceMousePosition.x = ev.offsetX;
+        this.screenSpaceMousePosition.y = ev.offsetY;
+        this.worldSpaceMousePosition.x = (ev.offsetX + this.viewport.x) / this.viewport.scale / this.grid.xPixelsPerCell;
+        this.worldSpaceMousePosition.y = (ev.offsetY + this.viewport.y) / this.viewport.scale / this.grid.yPixelsPerCell;
+    }
+    zoom(ev) {
+        this.viewport.x += this.screenSpaceMousePosition.x / 2;
+        this.viewport.y += this.screenSpaceMousePosition.y / 2;
+        this.viewport.x /= this.viewport.scale;
+        this.viewport.y /= this.viewport.scale;
+        const oldScale = this.viewport.scale;
+        this.viewport.scale += ev.deltaY * -0.01;
+        this.viewport.scale = Math.max(0.25, this.viewport.scale);
+        this.viewport.x *= this.viewport.scale;
+        this.viewport.y *= this.viewport.scale;
+        this.viewport.x -= (this.screenSpaceMousePosition.x * oldScale / this.viewport.scale) / 2;
+        this.viewport.y -= (this.screenSpaceMousePosition.y * oldScale / this.viewport.scale) / 2;
+        this.mouseMove(ev);
+        this.updateListener();
+    }
+    clicked() {
+        if (liveTardigrades.size >= generationThree) {
+            for (const batt of this.batteries) {
+                const distSquared = distanceSquared(batt.point, this.worldSpaceMousePosition);
+                if (distSquared < Math.pow(batt.radius, 2)) {
+                    Tardigrade.assignTardigradeToGetBattery(batt);
+                    return;
+                }
+            }
+        }
+        if (this.screenSpaceMousePosition.x > this.hud.speedButtonWidth && this.screenSpaceMousePosition.y < 24) {
+            this.speed = this.speed + 1;
+            if (this.speed > 3)
+                this.speed = 1;
+            return;
+        }
+        this.grid.clicked(this.worldSpaceMousePosition);
+    }
+    updateListener() {
+        const centerX = (this.viewport.x + this.viewport.width / 2) / (this.grid.xPixelsPerCell * this.viewport.scale);
+        const centerY = (this.viewport.y + this.viewport.height / 2) / (this.grid.yPixelsPerCell * this.viewport.scale);
+        audioContext.listener.setPosition(centerX, centerY, 1);
+        const unquietness = Math.min(0.5, this.viewport.scale - 0.23) / 0.5;
+        biquadFilter.frequency.setValueAtTime(unquietness * 24000, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(unquietness * 0.25 + 0.25, audioContext.currentTime);
+    }
+    isPaused() {
+        return this.notInGameWindow || this.popover.visible;
+    }
+    showPopover(p) {
+        this.dismissPopover();
+        this.popover = p;
+        this.popover.show(this.ctx);
+    }
+    dismissPopover() {
+        this.popover.hide(this.ctx);
+    }
+    getGoalOfCurrentGeneration() {
+        switch (this.generation) {
+            case 0: return generationTwo;
+            case 1: return generationThree;
+            case 2: return generationFour;
+            case 3: return generationFive;
+        }
+        return generationFive;
+    }
+    win() {
+        this.speed = 1;
+        this.showPopover(End1Popover(this, this.ctx));
+    }
+    startCountdown() {
+        this.capsules.forEach(c => c.reassemble());
+        this.countdownTimer = 5000;
+        this.countdownStarted = true;
+    }
+    populateGrid() {
+        // put a water source somewhere near the middle of the game
+        const waterCell = this.grid.getCell({
+            x: this.grid.columns / 2 + Math.random() * 6 - 3,
+            y: this.grid.rows / 2 + Math.random() * 6 - 3,
+        });
+        waterCell.type = 'CAPSULE';
+        // put a capsule to generate the water source
+        new Capsule(this, waterCell.point);
+        // spawn tardigrades near the capsule
+        for (let i = 0; i < generationOne; i++) {
+            const x = waterCell.point.x + Math.random();
+            const y = waterCell.point.y + 1 - Math.random() * 3;
+            this.pawns.push(new Tardigrade(this, x, y));
+        }
+        // put pools / moss in adjacent sources so it looks right
+        this.grid.getCell({ x: waterCell.point.x - 2, y: waterCell.point.y }).type = 'MOSS';
+        this.grid.getCell({ x: waterCell.point.x - 2, y: waterCell.point.y }).visible = false;
+        this.grid.getCell({ x: waterCell.point.x - 1, y: waterCell.point.y }).type = 'POOL';
+        this.grid.getCell({ x: waterCell.point.x + 1, y: waterCell.point.y }).type = 'POOL';
+        // put a bunch of moss blocks somewhere
+        for (let i = 0; i < 12; i++) {
+            const dir = Math.random() * 2 * Math.PI;
+            this.grid.getCell({
+                x: this.grid.columns / 2 + Math.cos(dir) * 7,
+                y: this.grid.rows / 2 + Math.sin(dir) * 7,
+            }).type = 'MOSS';
+        }
+        // put some water sources in the corners of the map.
+        for (let x = 0; x < 1; x += 0.9) {
+            for (let y = 0; y < 1; y += 0.9) {
+                this.grid.getCell({
+                    x: this.grid.columns * (x + Math.random() * 0.1),
+                    y: this.grid.rows * (y + Math.random() * 0.1)
+                }).type = 'WATER_SOURCE';
+            }
+        }
+        this.batteries.push(new Battery(this, { x: 25, y: 25 }), new Battery(this, { x: 75, y: 75 }));
+    }
+}
