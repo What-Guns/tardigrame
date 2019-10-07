@@ -15,7 +15,7 @@ The tardigrades start out near the capsule that cracked open during the crash on
 You begin with TEN tartigrades who can dig canals by clicking on an open ground tile. Ideally, you want to connect dug canal tiles to water sources so that water available water will flow through the canals. Keep in mind the little fella's get thirsty so they will often retreat from what they are doing to get fluids. If they don't make it back to a water tile before their fluid meter runs out they will go into a [tun state](http://www.bbc.com/earth/story/20150313-the-toughest-animals-on-earth), but not worry the time scale of this game is short enough where you can rehydrate tun state tartigrades by building canals with water underneath them. Tartigrades will also get hungry after working, they will seek out food when they are hungry. Tardigrades that have enough moss will reproduce by clicking on a mossy rock, or sometimes randomly when they are idle.
 
 #### Generation 2
-Once you reach 32 tartigrades you will have the ability to grow moss on rocks near water sources. Click a rock to send tardigrades to grow moss.
+Once you reach 32 tartigrades you will have the ability to grow moss on rocks near water. Click a rock near water to send tardigrades to grow moss.
 
 #### Generation 3
 Once you reach 100 tartigrades you will have the ability to move a battery to your capsule... and see what happens. Click the battery to send tardigrades to move the battery.
