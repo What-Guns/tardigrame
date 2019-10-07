@@ -104,7 +104,7 @@ export class Grid {
   }
 
   private startMossingUpARock(cell: Cell) {
-    if(cell.type !== 'BIG_ROCK' && cell.type !== 'MOSS') return;
+    if(cell.type !== 'BIG_ROCK' && cell.type !== 'MOSS' && liveTardigrades.size < generationTwo) return;
     if(liveTardigrades.size < generationTwo) return;
     const searchPoint = {...cell.point};
     const offset = {x: 0, y: 0};
