@@ -173,6 +173,7 @@ export class Tardigrade {
       this.game.pawns.push(new Tardigrade(this.game, x, y));
       this.moss = 0.1;
       this.reproductionAmount = 0;
+      playSoundAtLocation(sounds.birth, this.point);
     }
   }
 
@@ -296,4 +297,5 @@ function findIdleTardigrades(near: Point, howMany: number) {
 const sounds = createSoundLibrary({
   'tun': 'assets/audio/sfx/LowSqueak.ogg',
   'revive': 'assets/audio/sfx/SqueakFixed.ogg',
+  'birth': 'assets/audio/sfx/AlienChatter.ogg',
 })
