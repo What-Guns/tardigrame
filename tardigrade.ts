@@ -1,7 +1,7 @@
 import {Point, direction, distanceSquared, findNearestVeryExpensive} from './math.js';
 import {Battery} from './battery.js';
 import {Game} from './game.js';
-import {Cell, cellsThatNeedWorkDone} from './cell.js';
+import {Cell, cellsThatNeedWorkDone, mossyCells} from './cell.js';
 import * as activities from './tardigradeActivities.js';
 import {createSoundLibrary, playSoundAtLocation, playSound} from './audio.js';
 
@@ -248,12 +248,20 @@ export class Tardigrade {
       this.assignActivity(this.activity.thenWhat);
       return;
     }
-    const cell = findNearestVeryExpensive(Array.from(cellsThatNeedWorkDone), this.point, 1)[0];
-    if(cell && distanceSquared(this.point, cell.point) < 25) {
-      this.assignActivity(new activities.BuildActivity(this, cell));
-    } else {
-      this.assignActivity(new activities.IdleActivity(this));
+
+    const cellToWorkOn = findNearestVeryExpensive(Array.from(cellsThatNeedWorkDone), this.point, 1)[0];
+    if(cellToWorkOn && distanceSquared(this.point, cellToWorkOn.point) < 25) {
+      this.assignActivity(new activities.BuildActivity(this, cellToWorkOn));
+      return;
     }
+
+    const cellToReproduceOn = findNearestVeryExpensive(Array.from(mossyCells), this.point, 1)[0];
+    if(cellToReproduceOn && distanceSquared(this.point, cellToReproduceOn.point) < 9) {
+      this.assignActivity(new activities.ReproduceActivity(this, cellToReproduceOn));
+      return;
+    }
+
+    this.assignActivity(new activities.IdleActivity(this));
   }
 }
 
