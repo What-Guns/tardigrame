@@ -186,7 +186,7 @@ export class EatActivity extends ObtainResourceActivity {
   hungerThreshold = -Infinity;
 }
 
-const REPRODUCTION_TIME = 10;
+export const REPRODUCTION_TIME = 7;
 
 export class ReproduceActivity implements TardigradeActivity {
   readonly animations = reproduceAnimations;
@@ -204,7 +204,7 @@ export class ReproduceActivity implements TardigradeActivity {
   }
 
   isValid() {
-    return this.progress < REPRODUCTION_TIME && this.goal.type === 'MOSS';
+    return this.progress < REPRODUCTION_TIME && this.goal.type === 'MOSS' && this.goal.moss > REPRODUCTION_TIME - this.progress;
   }
 
   perform(dt: number) {

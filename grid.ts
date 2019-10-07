@@ -1,15 +1,11 @@
 import {Cell, CellType, CONSTRUCTION_REQUIRED_FOR_CANAL, hydratedCells, INITIAL_MOSS} from './cell.js';
 import {loadImage} from './loader.js';
-import {Tardigrade} from './tardigrade.js';
+import {Tardigrade, liveTardigrades} from './tardigrade.js';
 import {Point, addPoints} from './math.js';
 import {Game} from './game.js';
 import {fullCanalImages, fullPoolImage, calculateWetDryCanals, emptyCanalImages, emptyPoolImage} from './water.js';
-import {liveTardigrades} from './tardigrade.js'
 import {generationTwo} from './game.js'
-// import {generationThree} from './game.js'
-// import {generationFour} from './game.js'
-// import {generationFive} from './game.js'
-
+import {REPRODUCTION_TIME} from './tardigradeActivities.js';
 
 export class Grid {
   readonly cells: Cell[][];
@@ -59,7 +55,11 @@ export class Grid {
         this.startMossingUpARock(cell);
         break;
       case 'MOSS':
-        Tardigrade.assignTardigradeToReproduce(cell);
+        if(cell.moss < REPRODUCTION_TIME) {
+          this.startMossingUpARock(cell);
+        } else {
+          Tardigrade.assignTardigradeToReproduce(cell);
+        }
         break;
       case 'PLANNED_CANAL':
         cell.type = 'BLANK';
@@ -104,7 +104,8 @@ export class Grid {
   }
 
   private startMossingUpARock(cell: Cell) {
-    if(cell.type !== 'BIG_ROCK' && liveTardigrades.size < generationTwo) return;
+    if(cell.type !== 'BIG_ROCK' && cell.type !== 'MOSS') return;
+    if(liveTardigrades.size < generationTwo) return;
     const searchPoint = {...cell.point};
     const offset = {x: 0, y: 0};
     let foundWater = false;
