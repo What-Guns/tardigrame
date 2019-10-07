@@ -3,6 +3,7 @@ import {Battery} from './battery.js';
 import {Point, distanceSquared, addPoints, direction} from './math.js';
 import {Tardigrade, REPRODUCTION_TIME, liveTardigrades} from './tardigrade.js';
 import {loadImage} from './loader.js';
+import {generationThree} from './game.js';
 
 export interface TardigradeActivity {
   isValid(): boolean;
@@ -239,6 +240,7 @@ export class ObtainBatteryActivity implements TardigradeActivity {
   }
 
   isValid() {
+    if(liveTardigrades.size < generationThree) return false;
     if(this.tardigrade.game.batteries.indexOf(this.battery) === -1) return false;
     if(distanceSquared(this.battery.point, BATTERY_DESTINATION) < 1) return false;
     return true;
