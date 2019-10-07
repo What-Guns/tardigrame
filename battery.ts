@@ -2,6 +2,11 @@ import {Game} from './game.js';
 import {Point, distanceSquared} from './math.js';
 import {fillWithImage} from './loader.js';
 
+export const BATTERY_DESTINATION = {
+  x: 50,
+  y: 50,
+};
+
 export class Battery {
   // this is the size of the hit region, NOT the image.
   // it's a little bigger than the image so that the
@@ -27,5 +32,9 @@ export class Battery {
     );
 
     ctx.globalAlpha = 1;
+  }
+
+  isAtDestination() {
+    return distanceSquared(this.point, BATTERY_DESTINATION) < 1
   }
 }

@@ -4,7 +4,7 @@ import {audioContext, startBGM, fadeInBGM0, fadeInBGM1, fadeInBGM2} from './audi
 import {Hud} from './hud.js';
 import {Tardigrade} from './tardigrade.js'
 import {Point, distanceSquared, addPoints, assignPoint} from './math.js';
-import {Popover, EmptyPopover, PausePopover} from './popover.js';
+import {Popover, EmptyPopover, PausePopover, GameWinPopover} from './popover.js';
 import {liveTardigrades} from './tardigrade.js'
 import { Capsule } from './capsule.js';
 
@@ -113,12 +113,10 @@ export class Game {
       this.pawns[i].tick(dt);
     }
 
-    if (liveTardigrades.size >= generationFour){
-      //Moon Laser Destroy the Earth
-      this.generation = 3;
-      this.numberToNextGen = generationFive
-    } else if (liveTardigrades.size >= generationThree){
-      //Mine ice for water
+    this.batteries.forEach(b => {if(b.isAtDestination()) this.win()});
+
+    if (liveTardigrades.size >= generationThree){
+      //Drag battery
       if(this.generation !== 2) fadeInBGM2();
       this.generation = 2;
       this.numberToNextGen = generationFour
@@ -246,6 +244,10 @@ export class Game {
       case 3: return generationFive;
     }
     return generationFive;
+  }
+
+  private win() { // it's private to prevent cheaters from cheating!!!!!!
+    this.showPopover(GameWinPopover(this.ctx))
   }
 
   private populateGrid() {

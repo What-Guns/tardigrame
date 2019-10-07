@@ -1,5 +1,5 @@
 import {Cell, cellsThatNeedWorkDone, hydratedCells, mossyCells} from './cell.js';
-import {Battery} from './battery.js';
+import {Battery, BATTERY_DESTINATION} from './battery.js';
 import {Point, distanceSquared, addPoints, direction} from './math.js';
 import {Tardigrade, REPRODUCTION_TIME, liveTardigrades} from './tardigrade.js';
 import {loadImage} from './loader.js';
@@ -213,11 +213,6 @@ export class ReproduceActivity implements TardigradeActivity {
   }
 }
 
-const BATTERY_DESTINATION = {
-  x: 50,
-  y: 50,
-};
-
 export class ObtainBatteryActivity implements TardigradeActivity {
   readonly destination: Point;
   readonly animations = buildAnimations;
@@ -242,7 +237,7 @@ export class ObtainBatteryActivity implements TardigradeActivity {
   isValid() {
     if(liveTardigrades.size < generationThree) return false;
     if(this.tardigrade.game.batteries.indexOf(this.battery) === -1) return false;
-    if(distanceSquared(this.battery.point, BATTERY_DESTINATION) < 1) return false;
+    if(this.battery.isAtDestination()) return false;
     return true;
   }
 
