@@ -41,7 +41,10 @@ export class Cell {
   }
 
   set type(t: CellType) {
+    if(t === this._type) return;
     this._type = t;
+
+    this._amountConstructed = 0;
 
     if(t === 'WATER_SOURCE') this.hydration = true;
 
