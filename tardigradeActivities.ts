@@ -255,7 +255,7 @@ export class ObtainBatteryActivity implements TardigradeActivity {
   perform(dt: number) {
     addPoints(this.destination, this.battery.point, this.batteryOffset);
 
-    if(distanceSquared(this.tardigrade.point, this.destination) > 0.01) return false;
+    if(distanceSquared(this.tardigrade.point, this.battery.point) > Math.pow(this.battery.radius + 0.01, 2)) return false;
 
     const pushDir = direction(this.battery.point, BATTERY_DESTINATION);
     this.push.x = (dt / 1000) * Math.cos(pushDir) * 0.005;
