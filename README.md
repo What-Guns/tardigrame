@@ -1,4 +1,4 @@
-# Tardigrade Moon Simulator
+# Tardigrades on the Moon
 
 ### Backstory
 This game is a fun interpreation of simulating moon life for tardigrades (aka waterbears) based on a recent event where [a crashed Israeli Lunar lander spilled tardigrades on the moon](https://www.wired.com/story/a-crashed-israeli-lunar-lander-spilled-tardigrades-on-the-moon/).
