@@ -258,7 +258,9 @@ export class Game {
     // put a capsule to generate the water source
     new Capsule(this, waterCell.point);
 
-    // put pools in adjacent sources so it looks right
+    // put pools / moss in adjacent sources so it looks right
+    this.grid.getCell({ x:waterCell.point.x-2, y: waterCell.point.y}).type = 'MOSS';
+    this.grid.getCell({ x:waterCell.point.x-2, y: waterCell.point.y}).visible = false;
     this.grid.getCell({ x:waterCell.point.x-1, y: waterCell.point.y}).type = 'POOL';
     this.grid.getCell({ x:waterCell.point.x+1, y: waterCell.point.y}).type = 'POOL';
 

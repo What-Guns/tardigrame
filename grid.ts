@@ -150,6 +150,7 @@ export class Grid {
     for(let x = firstVisibleColumn; x < lastVisibleColumn; x++) {
       for(let y = firstVisibleRow; y < lastVisibleRow; y++) {
         const cell = this.cells[x][y];
+        if(!cell.visible) continue;
         let image = gridImages[cell.type];
         let drawAPool = false;
         if(cell.type === 'POOL' || cell.type === 'PLANNED_CANAL') {

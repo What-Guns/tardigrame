@@ -15,6 +15,7 @@ export class Cell {
   private _hydration = false;
 
   private _amountConstructed = 0;
+  visible = true;
 
   get amountConstructed() {
     return this._amountConstructed;
