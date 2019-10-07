@@ -85,22 +85,32 @@ export async function startBGM() {
   sound2.start(startTime);
 }
 
+function noopAudioEvent() {
+  const time = audioContext.currentTime;
+  track0GainNode.gain.setTargetAtTime(track0GainNode.gain.value,time,0);
+  track1GainNode.gain.setTargetAtTime(track1GainNode.gain.value,time,0);
+  track2GainNode.gain.setTargetAtTime(track2GainNode.gain.value,time,0);
+}
+
 export function fadeInBGM0() {
-  const time = audioContext.currentTime + 5;
+  noopAudioEvent()
+  const time = audioContext.currentTime + 2;
   track0GainNode.gain.linearRampToValueAtTime(1, time);
   track1GainNode.gain.linearRampToValueAtTime(0, time);
   track2GainNode.gain.linearRampToValueAtTime(0, time);
 }
 
 export function fadeInBGM1() {
-  const time = audioContext.currentTime + 5;
+  noopAudioEvent()
+  const time = audioContext.currentTime + 2;
   track0GainNode.gain.linearRampToValueAtTime(0, time);
   track1GainNode.gain.linearRampToValueAtTime(1, time);
   track2GainNode.gain.linearRampToValueAtTime(0, time);
 }
 
 export function fadeInBGM2() {
-  const time = audioContext.currentTime + 5;
+  noopAudioEvent()
+  const time = audioContext.currentTime + 2;
   track0GainNode.gain.linearRampToValueAtTime(0, time);
   track1GainNode.gain.linearRampToValueAtTime(0, time);
   track2GainNode.gain.linearRampToValueAtTime(1, time);
