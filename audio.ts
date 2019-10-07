@@ -49,3 +49,37 @@ export function createSoundLibrary<T extends string>(descriptor: SoundLibraryDes
   }
   return library;
 }
+
+const bgm = createSoundLibrary({
+  track1: 'assets/audio/music/TardigradeMusic1.ogg',
+  track2: 'assets/audio/music/TardigradeMusic2.ogg',
+});
+
+const track1GainNode = new GainNode(audioContext);
+track1GainNode.gain.value = 0;
+const track2GainNode = new GainNode(audioContext);
+track2GainNode.gain.value = 0;
+
+export function startBGM() {
+  const sound1 = audioContext.createBufferSource();
+  sound1.buffer = bgm.track1;
+  sound1.connect(track1GainNode);
+  const sound2 = audioContext.createBufferSource();
+  sound2.buffer = bgm.track2;
+  sound2.connect(track2GainNode);
+  const startTime = audioContext.currentTime + 200;
+  sound1.start(startTime);
+  sound2.start(startTime);
+}
+
+export function fadeInBGM1() {
+  const time = audioContext.currentTime + 2000;
+  track1GainNode.gain.linearRampToValueAtTime(1, time);
+  track2GainNode.gain.linearRampToValueAtTime(0, time);
+}
+
+export function fadeInBGM2() {
+  const time = audioContext.currentTime + 2000;
+  track1GainNode.gain.linearRampToValueAtTime(0, time);
+  track2GainNode.gain.linearRampToValueAtTime(1, time);
+}

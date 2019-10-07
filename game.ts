@@ -1,6 +1,6 @@
 import {Grid} from './grid.js';
 import {Battery} from './battery.js';
-import {audioContext} from './audio.js';
+import {audioContext, startBGM, fadeInBGM1} from './audio.js';
 import {Hud} from './hud.js';
 import {Tardigrade} from './tardigrade.js'
 import {Point, distanceSquared, addPoints, assignPoint} from './math.js';
@@ -90,6 +90,8 @@ export class Game {
     canvas.addEventListener('wheel', this.zoom.bind(this));
 
     this.populateGrid();
+    startBGM();
+    fadeInBGM1();
   }
 
   tick(dt: number) {
