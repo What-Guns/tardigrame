@@ -1,8 +1,15 @@
 import {Game} from './game.js';
 import {Point, distanceSquared} from './math.js';
+import {fillWithImage} from './loader.js';
 
 export class Battery {
-  readonly radius = (372/2) / this.game.grid.xPixelsPerCell;
+  // this is the size of the hit region, NOT the image.
+  // it's a little bigger than the image so that the
+  // water bears carrying it are still visible.
+  readonly radius = (380/2) / this.game.grid.xPixelsPerCell;
+
+  @fillWithImage('assets/pictures/battery.png')
+  static readonly image: HTMLImageElement;
 
   constructor(private readonly game: Game, readonly point: Point) {
   }
@@ -14,16 +21,10 @@ export class Battery {
       ctx.globalAlpha = 0.5;
     }
 
-    ctx.beginPath();
-    ctx.lineWidth = 8;
-    ctx.arc(
-      this.point.x * this.game.grid.xPixelsPerCell,
-      this.point.y * this.game.grid.yPixelsPerCell,
-      this.radius * this.game.grid.xPixelsPerCell, 0, 2 * Math.PI, false);
-    ctx.fillStyle = '#888';
-    ctx.strokeStyle = '#333';
-    ctx.fill();
-    ctx.stroke();
+    ctx.drawImage(Battery.image,
+      this.point.x * this.game.grid.xPixelsPerCell - Battery.image.width / 2,
+      this.point.y * this.game.grid.yPixelsPerCell - Battery.image.height / 2,
+    );
 
     ctx.globalAlpha = 1;
   }
