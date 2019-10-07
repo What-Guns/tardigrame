@@ -19,6 +19,8 @@ export interface TardigradeActivity {
 
   /** a tardigrade with less moss than this will abandon this activity */
   readonly hungerThreshold: number;
+
+  age: number;
 }
 
 const idleAnimations = [
@@ -55,6 +57,7 @@ export class IdleActivity implements TardigradeActivity {
   readonly destination: Point;
   readonly animations = idleAnimations
   readonly tunImage = tunIdle;
+  age = 0;
 
   constructor(readonly tardigrade: Tardigrade) {
     const {x, y} = tardigrade.point;
@@ -82,6 +85,7 @@ export class BuildActivity implements TardigradeActivity {
   readonly destination = {x: 0, y: 0};
   readonly animations = buildAnimations;
   readonly tunImage = tunBuild;
+  age = 0;
 
   constructor(
     private readonly builder: Tardigrade,
@@ -111,6 +115,7 @@ export abstract class ObtainResourceActivity implements TardigradeActivity {
   readonly abstract hungerThreshold: number;
   readonly animations = idleAnimations;
   readonly tunImage = tunIdle;
+  age = 0;
 
   private readonly thenWhat: TardigradeActivity;
 
@@ -144,6 +149,7 @@ export abstract class ObtainResourceActivity implements TardigradeActivity {
 export class RehydrateActivity extends ObtainResourceActivity {
   readonly animations = rehydrateAnimations;
   readonly tunImage = tunRehydrate;
+  age = 0;
 
   constructor(tardigrade: Tardigrade) {
     super(tardigrade, Array.from(hydratedCells));
@@ -166,6 +172,7 @@ export class RehydrateActivity extends ObtainResourceActivity {
 export class EatActivity extends ObtainResourceActivity {
   readonly animations = eatAnimations;
   readonly tunImage = tunEat;
+  age = 0;
 
   constructor(tardigrade: Tardigrade) {
     super(tardigrade, Array.from(mossyCells));
@@ -196,6 +203,7 @@ export class ReproduceActivity implements TardigradeActivity {
 
   hungerThreshold = 0.1;
   thirstThreshold = 0.1;
+  age = 0;
 
   private progress = 0;
 
@@ -232,6 +240,7 @@ export class ObtainBatteryActivity implements TardigradeActivity {
   readonly tunImage = tunBuild;
   readonly hungerThreshold = 0.4;
   readonly thirstThreshold = 0.1;
+  age = 0;
 
   private readonly push = {x: 0, y: 0};
   private readonly batteryOffset: Point;

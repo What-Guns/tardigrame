@@ -28,6 +28,7 @@ export class Tardigrade {
 
   set activity(a : activities.TardigradeActivity) {
     this._activity = a;
+    a.age = 0;
     if(a instanceof activities.IdleActivity) {
       idleTardigrades.add(this);
     } else {
@@ -136,6 +137,7 @@ export class Tardigrade {
   }
 
   updateActivity(dt: number) {
+    this.activity.age += dt;
     if(this.activity.isValid()) {
       const didWork = this.activity.perform(dt);
       if(didWork) {
@@ -196,8 +198,11 @@ export class Tardigrade {
       ctx.globalAlpha = 1;
     }
 
-    if(!(this.activity instanceof activities.IdleActivity) && mouseDistSquared < 0.05) {
-      ctx.strokeStyle = 'white';
+    const activityIsBoring = this.activity instanceof activities.IdleActivity
+      || this.activity instanceof activities.ObtainResourceActivity;
+
+    if(!(activityIsBoring) && (mouseDistSquared < 0.05 || this.activity.age < 1000)) {
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(this.point.x * this.game.grid.xPixelsPerCell, this.point.y * this.game.grid.yPixelsPerCell);
