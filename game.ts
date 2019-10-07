@@ -4,7 +4,7 @@ import {audioContext, startBGM, fadeInBGM0, fadeInBGM1, fadeInBGM2} from './audi
 import {Hud} from './hud.js';
 import {Tardigrade} from './tardigrade.js'
 import {Point, distanceSquared, addPoints, assignPoint} from './math.js';
-import {Popover, EmptyPopover, PausePopover, GameWinPopover, Gen1Popover} from './popover.js';
+import {Popover, EmptyPopover, PausePopover, GameWinPopover, Gen1Popover, Gen2Popover, Gen3Popover} from './popover.js';
 import {liveTardigrades} from './tardigrade.js'
 import { Capsule } from './capsule.js';
 
@@ -53,6 +53,8 @@ export class Game {
   private generation = -1;
 
   speed = 1;
+
+  private maxGeneration = -1;
 
   constructor(canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext('2d')!;
@@ -119,12 +121,24 @@ export class Game {
 
     if (liveTardigrades.size >= generationThree){
       //Drag battery
-      if(this.generation !== 2) fadeInBGM2();
+      if(this.generation !== 2){
+        fadeInBGM2();
+        if(this.maxGeneration <= this.generation) {
+          this.maxGeneration = this.generation;
+          this.showPopover(Gen3Popover(this, this.ctx))
+        }
+      }
       this.generation = 2;
       this.numberToNextGen = generationFour
     } else if (liveTardigrades.size >= generationTwo){
       //Build moss
-      if(this.generation !== 1) fadeInBGM1();
+      if(this.generation !== 1){
+        fadeInBGM1();
+        if(this.maxGeneration <= this.generation) {
+          this.maxGeneration = this.generation;
+          this.showPopover(Gen2Popover(this, this.ctx))
+        }
+      }
       this.generation = 1;
       this.numberToNextGen = generationThree;
     } else if (liveTardigrades.size > 0){
