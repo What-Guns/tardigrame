@@ -5,7 +5,7 @@ export class Hud {
   constructor(private readonly game: Game) {
   }
 
-  private readonly popBars = [
+  private readonly popBars: PopBar[] = [
     {label: 'tun', color: 'red', count: 0, contributesToGraph: false},
     {label: 'idle', color: 'yellow', count: 0, contributesToGraph: true},
     {label: 'busy', color: 'white', count: 0, contributesToGraph: true},
