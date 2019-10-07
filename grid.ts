@@ -89,7 +89,9 @@ export class Grid {
   }
 
   getCell(point: Point) {
-    return this.cells[Math.floor(point.x)][Math.floor(point.y)];
+    const x = Math.min(Math.floor(point.x), this.columns - 1);
+    const y = Math.min(Math.floor(point.y), this.rows - 1);
+    return this.cells[x][y];
   }
 
   setCellType(point: Point, type: CellType) {
