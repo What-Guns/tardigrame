@@ -25,11 +25,8 @@ function startTheGameAlready() {
 
   function tick(timestamp: number) {
     if(lastTick !== 0) {
-      let dt = timestamp - lastTick;
-      while(dt > 0 && !game.isPaused()) {
-        game.tick(Math.min(BIG_TICK, dt));
-        dt = Math.max(0, dt - BIG_TICK);
-      }
+      const dt = Math.min(timestamp - lastTick, BIG_TICK);
+      if(!game.isPaused()) game.tick(dt);
       game.draw(timestamp);
     }
 
