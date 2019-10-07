@@ -255,6 +255,10 @@ export class Game {
     // put a capsule to generate the water source
     new Capsule(this, waterCell.point);
 
+    // put pools in adjacent sources so it looks right
+    this.grid.getCell({ x:waterCell.point.x-1, y: waterCell.point.y}).type = 'POOL';
+    this.grid.getCell({ x:waterCell.point.x+1, y: waterCell.point.y}).type = 'POOL';
+
     // put a bunch of moss blocks somewhere
     for(let i = 0; i < 12; i++) {
       const dir = Math.random() * 2 * Math.PI;
