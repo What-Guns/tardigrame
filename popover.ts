@@ -44,7 +44,8 @@ type PopoverType = 'REGRET'|'EMPTY'|'PAUSE'|'VICTORY';
 export class Popover {
   buttons : Array<PopoverButton>;
   offset : Point;
-  constructor(readonly imageName: PopoverType, readonly ctx : CanvasRenderingContext2D ) {
+  
+  constructor(readonly imageName: PopoverType, readonly ctx : CanvasRenderingContext2D, readonly position: 'CENTER' | 'BOTTOM' ) {
     this.visible = false;
     this.buttons = [];
     this.offset = {x:0, y:0}
@@ -69,7 +70,14 @@ export class Popover {
   draw(){
     if(this.visible) {
       const image = images[this.imageName];
-      this.offset = {x: (this.ctx.canvas.width) / 2 - (image.width / 2), y:(this.ctx.canvas.height) / 2 - (image.height / 2) }
+      switch(this.position) {
+        case 'CENTER':
+          this.offset = {x: (this.ctx.canvas.width / 2) - (image.width / 2), y:(this.ctx.canvas.height / 2) - (image.height / 2) }
+          break;
+        case 'BOTTOM':
+          this.offset = {x: (this.ctx.canvas.width / 2) - (image.width / 2), y: this.ctx.canvas.height - image.height}
+          break;
+      }
       this.ctx.drawImage(image, this.offset.x, this.offset.y);
       this.buttons.forEach(b => {
         b.draw(this.offset);
@@ -90,7 +98,7 @@ const images: {[key in PopoverType]: HTMLImageElement} = {
 }
 
 export const RegretPopover = (ctx : CanvasRenderingContext2D) => {
-  const p = new Popover('REGRET', ctx);
+  const p = new Popover('REGRET', ctx, 'CENTER');
   p.buttons.push(new PopoverButton(
     p, 130, 219, 159, 35, defaultButton, ctx, () => {}
   ));
@@ -101,11 +109,11 @@ export const RegretPopover = (ctx : CanvasRenderingContext2D) => {
 }
 
 export const EmptyPopover = (ctx : CanvasRenderingContext2D) => {
-  return new Popover('EMPTY', ctx);
+  return new Popover('EMPTY', ctx, 'CENTER');
 }
 
 export const PausePopover = (ctx : CanvasRenderingContext2D) => {
-  const p = new Popover('PAUSE', ctx);
+  const p = new Popover('PAUSE', ctx, 'CENTER');
   p.buttons.push(new PopoverButton(
     p, 3, 111, 113, 28, regretButton, ctx, () => {}
   ));
@@ -113,7 +121,7 @@ export const PausePopover = (ctx : CanvasRenderingContext2D) => {
 }
 
 export const GameWinPopover = (ctx: CanvasRenderingContext2D) => {
-  const p = new Popover('VICTORY', ctx);
+  const p = new Popover('VICTORY', ctx, 'BOTTOM');
   p.buttons.push(new PopoverButton(
     p, 30, 160, 113, 28, regretButton, ctx, () => {}
   ));
