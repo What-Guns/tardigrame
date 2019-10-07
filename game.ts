@@ -263,7 +263,7 @@ export class Game {
     new Capsule(this, waterCell.point);
 
     // spawn tardigrades near the capsule
-    for (let i = 0; i < 100; i++){
+    for (let i = 0; i < generationOne; i++){
       const x = waterCell.point.x + Math.random();
       const y = waterCell.point.y + 1 - Math.random() * 3;
       this.pawns.push(new Tardigrade(this, x, y));
