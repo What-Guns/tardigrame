@@ -98,13 +98,13 @@ export class Grid {
   }
 
   private startBuildingACanal(cell: Cell) {
-    if(cell.type !== 'BLANK' && liveTardigrades.size != 0) return;
+    if(cell.type !== 'BLANK' || liveTardigrades.size != 0) return;
     cell.type = 'PLANNED_CANAL';
     Tardigrade.assignTardigradesToBuild(cell);
   }
 
   private startMossingUpARock(cell: Cell) {
-    if(cell.type !== 'BIG_ROCK' && liveTardigrades.size < generationTwo) return;
+    if(cell.type !== 'BIG_ROCK' || liveTardigrades.size > generationTwo) return;
     const searchPoint = {...cell.point};
     const offset = {x: 0, y: 0};
     let foundWater = false;
