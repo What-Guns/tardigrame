@@ -8,6 +8,7 @@ let lastTick = 0;
 const BIG_TICK = 500;
 
 async function startTheGameAlready() {
+  document.getElementById('start')!.remove();
   console.log('Waiting for everything to load');
   await isLoaded();
   console.log(`Everything has loaded now`);
