@@ -3,8 +3,7 @@ import {Battery} from './battery.js';
 import {Game} from './game.js';
 import {Cell, cellsThatNeedWorkDone} from './cell.js';
 import * as activities from './tardigradeActivities.js';
-
-import { createSoundLibrary, playSoundAtLocation } from './audio.js';
+import {createSoundLibrary, playSoundAtLocation, playSound} from './audio.js';
 
 export const idleTardigrades = new Set<Tardigrade>();
 export const liveTardigrades = new Set<Tardigrade>();
@@ -15,6 +14,10 @@ type State = 'LIVE' | 'TUN' | 'DEAD'
 
 const DESTINATION_THRESHOLD = 0.01;
 
+const guiSounds = createSoundLibrary({
+  selectionFailed: 'assets/audio/sfx/BadJob!.ogg',
+});
+
 export class Tardigrade {
   readonly point: Point;
 
@@ -24,16 +27,6 @@ export class Tardigrade {
 
   get activity() {
     return this._activity;
-  }
-
-  set activity(a : activities.TardigradeActivity) {
-    this._activity = a;
-    a.age = 0;
-    if(a instanceof activities.IdleActivity) {
-      idleTardigrades.add(this);
-    } else {
-      idleTardigrades.delete(this);
-    }
   }
 
   moss = 0.9; // 0 is starved, 1 babby formed from gonad
@@ -55,20 +48,26 @@ export class Tardigrade {
   static assignTardigradesToBuild(cell: Cell) {
     const count = cell.type === 'PLANNED_MOSS' ? 2 : 5;
     for(const t of findIdleTardigrades(cell.point, count)) {
-      t.activity = new activities.BuildActivity(t, cell);
+      t.assignActivity(new activities.BuildActivity(t, cell));
     }
   }
 
   static assignTardigradeToReproduce(cell: Cell) {
+    let found = false;
     for(const t of findIdleTardigrades(cell.point, 1)) {
-      t.activity = new activities.ReproduceActivity(t, cell);
+      found = true;
+      t.assignActivity(new activities.ReproduceActivity(t, cell));
     }
+    if(!found) playSound(guiSounds.selectionFailed);
   }
 
   static assignTardigradeToGetBattery(battery: Battery) {
+    let found = false;
     for(const t of findIdleTardigrades(battery.point, 5)) {
-      t.activity = new activities.ObtainBatteryActivity(t, battery);
+      found = true;
+      t.assignActivity(new activities.ObtainBatteryActivity(t, battery));
     }
+    if(!found) playSound(guiSounds.selectionFailed);
   }
 
   constructor(readonly game: Game, x: number, y: number) {
@@ -114,10 +113,11 @@ export class Tardigrade {
       this.moss += this.currentCell.consumeMoss(maxEat);
     }
 
+    const thenWhat = this.activity instanceof activities.IdleActivity ? null : this.activity;
     if(this.fluid < this.activity.thirstThreshold) {
-      this.activity = new activities.RehydrateActivity(this);
+      this.assignActivity(new activities.RehydrateActivity(this, thenWhat));
     } else if(this.moss < this.activity.hungerThreshold) {
-      this.activity = new activities.EatActivity(this);
+      this.assignActivity(new activities.EatActivity(this, thenWhat));
     }
   }
 
@@ -139,6 +139,9 @@ export class Tardigrade {
 
   updateActivity(dt: number) {
     this.activity.age += dt;
+    if(this.activity instanceof activities.ObtainResourceActivity && this.activity.thenWhat) {
+      this.activity.thenWhat.age += dt;
+    }
     if(this.activity.isValid()) {
       const didWork = this.activity.perform(dt);
       if(didWork) {
@@ -167,6 +170,22 @@ export class Tardigrade {
 
     if(this.state === 'LIVE') this.drawHud(ctx);
   }
+
+  assignActivity(a: activities.TardigradeActivity) {
+    if(this.activity instanceof activities.ObtainResourceActivity && this.activity.isValid()) {
+      this.activity.thenWhat = a;
+    } else {
+      this._activity = a;
+      a.age = 0;
+    }
+    a = this._activity;
+    if(a instanceof activities.IdleActivity || a instanceof activities.ObtainResourceActivity && !a.thenWhat) {
+      idleTardigrades.add(this);
+    } else {
+      idleTardigrades.delete(this);
+    }
+  }
+
 
   private drawHud(ctx: CanvasRenderingContext2D) {
     const mouseDistSquared = distanceSquared(this.point, this.game.worldSpaceMousePosition) * this.game.viewport.scale;
@@ -199,15 +218,22 @@ export class Tardigrade {
       ctx.globalAlpha = 1;
     }
 
-    const activityIsBoring = this.activity instanceof activities.IdleActivity
-      || this.activity instanceof activities.ObtainResourceActivity;
-
-    if(!(activityIsBoring) && (mouseDistSquared < 0.05 || this.activity.age < 1000)) {
+    if(!(this.activity instanceof activities.IdleActivity) && (mouseDistSquared < 0.05 || this.activity.age < 1000)) {
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(this.point.x * this.game.grid.xPixelsPerCell, this.point.y * this.game.grid.yPixelsPerCell);
       ctx.lineTo(this.activity.destination.x * this.game.grid.xPixelsPerCell, this.activity.destination.y * this.game.grid.yPixelsPerCell);
+
+      if(this.activity instanceof activities.ObtainResourceActivity) {
+        const nextActivity = this.activity.thenWhat;
+        if(nextActivity && !(nextActivity instanceof activities.IdleActivity)) {
+          ctx.lineTo(
+            nextActivity.destination.x * this.game.grid.xPixelsPerCell,
+            nextActivity.destination.y * this.game.grid.yPixelsPerCell
+          );
+        }
+      }
       ctx.stroke();
     }
   }
@@ -218,11 +244,15 @@ export class Tardigrade {
   }
 
   private findSomethingToDo() {
+    if(this.activity instanceof activities.ObtainResourceActivity && this.activity.thenWhat) {
+      this.assignActivity(this.activity.thenWhat);
+      return;
+    }
     const cell = findNearestVeryExpensive(Array.from(cellsThatNeedWorkDone), this.point, 1)[0];
     if(cell && distanceSquared(this.point, cell.point) < 25) {
-      this.activity = new activities.BuildActivity(this, cell);
+      this.assignActivity(new activities.BuildActivity(this, cell));
     } else {
-      this.activity = new activities.IdleActivity(this);
+      this.assignActivity(new activities.IdleActivity(this));
     }
   }
 }

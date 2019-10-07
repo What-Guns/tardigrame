@@ -117,10 +117,7 @@ export abstract class ObtainResourceActivity implements TardigradeActivity {
   readonly tunImage = tunIdle;
   age = 0;
 
-  private readonly thenWhat: TardigradeActivity;
-
-  constructor(protected readonly tardigrade: Tardigrade, desireableCells: Cell[]) {
-    this.thenWhat = tardigrade.activity;
+  constructor(protected readonly tardigrade: Tardigrade, desireableCells: Cell[], public thenWhat: TardigradeActivity|null) {
     const nearestWater = desireableCells
       .map(cell => ({cell, dist2: distanceSquared(tardigrade.point, cell.point)}))
       .sort((a, b) => a.dist2 - b.dist2)
@@ -129,21 +126,16 @@ export abstract class ObtainResourceActivity implements TardigradeActivity {
     this.destination = this.goal
       ? createPointInCellPoint(this.goal.point)
       : {...tardigrade.point};
+
+    const tw = thenWhat ? thenWhat.constructor.name : 'nothing';
+    console.log(this.constructor.name + ', then '+tw);
   }
 
   abstract perform(): boolean;
 
   abstract isValid(): boolean;
 
-  protected complete() {
-    // Tardigrades that were idling should choose new destinations.
-    // This keeps them from just oscillating between two points.
-    if(this.thenWhat instanceof IdleActivity) {
-      this.tardigrade.activity = new IdleActivity(this.tardigrade);
-    } else {
-      this.tardigrade.activity = this.thenWhat;
-    }
-  }
+  protected complete() {}
 }
 
 export class RehydrateActivity extends ObtainResourceActivity {
@@ -151,11 +143,12 @@ export class RehydrateActivity extends ObtainResourceActivity {
   readonly tunImage = tunRehydrate;
   age = 0;
 
-  constructor(tardigrade: Tardigrade) {
-    super(tardigrade, Array.from(hydratedCells));
+  constructor(tardigrade: Tardigrade, thenWhat: TardigradeActivity|null) {
+    super(tardigrade, Array.from(hydratedCells), thenWhat);
   }
 
   isValid() {
+    if(this.tardigrade.fluid >= 1) return false;
     return this.goal ? this.goal.hydration : false;
   }
 
@@ -174,11 +167,12 @@ export class EatActivity extends ObtainResourceActivity {
   readonly tunImage = tunEat;
   age = 0;
 
-  constructor(tardigrade: Tardigrade) {
-    super(tardigrade, Array.from(mossyCells));
+  constructor(tardigrade: Tardigrade, thenWhat: TardigradeActivity|null) {
+    super(tardigrade, Array.from(mossyCells), thenWhat);
   }
 
   isValid() {
+    if(this.tardigrade.moss >= 1) return false;
     return this.goal ? this.goal.type === 'MOSS' : false;
   }
 
