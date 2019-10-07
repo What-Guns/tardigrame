@@ -1,4 +1,5 @@
 import {Point} from './math.js';
+import { createSoundLibrary, playSoundAtLocation } from './audio.js';
 
 export const CONSTRUCTION_REQUIRED_FOR_CANAL = 10000;
 
@@ -70,12 +71,15 @@ export class Cell {
 
     this._amountConstructed += amount;
 
+    if(this.type === 'PLANNED_MOSS') this.playMossSound();
+
     if(this.type === 'PLANNED_CANAL' && this.amountConstructed > 10000) {
       this.type = 'POOL';
     }
 
     if(this.type === 'PLANNED_MOSS' && this.amountConstructed > 20000) {
       this.type = 'MOSS';
+      playSoundAtLocation(sounds.mossDone, this.point)
     }
   }
 
@@ -87,7 +91,29 @@ export class Cell {
     if(this.moss <= 0) this.type = 'BLANK';
     return amountConsumed;
   }
+
+  playMossSound() {
+    const rand = Math.floor(Math.random() * 300);
+    switch(rand) {
+      case 0:
+        playSoundAtLocation(sounds.moss1, this.point)
+        break;
+      case 1:
+        playSoundAtLocation(sounds.moss2, this.point)
+        break;
+      case 2:
+        playSoundAtLocation(sounds.moss3, this.point)
+        break;
+    }
+  }
 }
+
+const sounds = createSoundLibrary({
+  moss1: 'assets/audio/sfx/PlantingMoss.ogg',
+  moss2: 'assets/audio/sfx/PlantingMoss2.ogg',
+  moss3: 'assets/audio/sfx/PlantingMoss3.ogg',
+  mossDone: 'assets/audio/sfx/Sproing.ogg',
+})
 
 export type CellType =
   'BLANK'|
