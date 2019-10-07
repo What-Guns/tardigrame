@@ -1,8 +1,8 @@
-import { loadAudioIntoBuffer } from "./loader.js";
+import {loadAudioAsync, loadAudioIntoBuffer} from "./loader.js";
 import {Point} from './math.js';
 
 export const audioContext = new AudioContext();
-const gainNode = new GainNode(audioContext);
+export const gainNode = new GainNode(audioContext);
 gainNode.gain.value = 0.5;
 gainNode.connect(audioContext.destination);
 
@@ -32,11 +32,11 @@ export function playSoundAtLocation(buffer: AudioBuffer, location: Point) {
 }
 
 
-type SoundLibrary<T extends string> = {
+export type SoundLibrary<T extends string> = {
   [key in T]: AudioBuffer
 };
 
-type SoundLibraryDescriptor<T extends string> = {
+export type SoundLibraryDescriptor<T extends string> = {
   [key in T]: string; 
 }
 
@@ -50,12 +50,22 @@ export function createSoundLibrary<T extends string>(descriptor: SoundLibraryDes
   return library;
 }
 
+export async function createSoundLibraryAsync<T extends string>(descriptor: SoundLibraryDescriptor<T>) {
+  const library = {} as SoundLibrary<T>;
+  await Promise.all(Object.keys(descriptor).map(async key => {
+    const name = key as T;
+    const url = descriptor[name];
+    library[name] = await loadAudioAsync(url, audioContext);
+  }));
+  return library;
+}
 
-const bgm = createSoundLibrary({
+const bgm = createSoundLibraryAsync({
   track0: 'assets/audio/music/TardigradeMusic1.ogg',
   track1: 'assets/audio/music/TardigradeMusic1.5.ogg',
   track2: 'assets/audio/music/TardigradeMusic2.ogg',
 });
+
 const track0GainNode = new GainNode(audioContext);
 track0GainNode.gain.value = 0;
 track0GainNode.connect(gainNode);
@@ -67,16 +77,17 @@ track2GainNode.gain.value = 0;
 track2GainNode.connect(gainNode);
 
 export async function startBGM() {
+  const {track0, track1, track2} = await bgm;
   const sound0 = audioContext.createBufferSource();
-  sound0.buffer = bgm.track0;
+  sound0.buffer = track0;
   sound0.connect(track0GainNode);
   sound0.loop = true;
   const sound1 = audioContext.createBufferSource();
-  sound1.buffer = bgm.track1;
+  sound1.buffer = track1;
   sound1.connect(track1GainNode);
   sound1.loop = true;
   const sound2 = audioContext.createBufferSource();
-  sound2.buffer = bgm.track2;
+  sound2.buffer = track2;
   sound2.connect(track2GainNode);
   sound2.loop = true;
   const startTime = audioContext.currentTime + 2;

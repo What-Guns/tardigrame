@@ -1,6 +1,6 @@
 import {Game} from './game.js';
 import {isLoaded} from './loader.js';
-import { audioContext } from './audio.js';
+import {audioContext} from './audio.js';
 
 let lastTick = 0;
 
@@ -13,6 +13,7 @@ isLoaded().then(() => {
 
 function startTheGameAlready() {
   document.getElementById('start')!.remove();
+  document.getElementById('game-container')!.style.display = '';
   const canvas = document.querySelector('canvas')!;
   const game = new Game(canvas);
   sizeCanvas();

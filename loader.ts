@@ -1,3 +1,4 @@
+import {SoundLibrary} from './audio.js';
 let loaded = Promise.resolve();
 
 export function loadImage(url: string): HTMLImageElement {
@@ -15,26 +16,31 @@ export function loadImage(url: string): HTMLImageElement {
   return image;
 }
 
-export function loadAudioIntoBuffer(url: string, target: any, propertyKey: string, audioContext: AudioContext) {
+export async function loadAudioAsync(url: string, audioContext: AudioContext) {
   const row = addLoadingRow(url);
-  const loadIt = (async () => {
-    const response = await fetch(url);
-    row.textContent = `Parsing ${url}`;
-    if(response.status < 200 || response.status > 400) {
-      const msg = `Error parsing ${url}`;
-      row.textContent = msg;
-      throw new Error(msg);
-    }
-    try {
-      const audio = await parseAudio(audioContext, await response.arrayBuffer());
-      console.log(`Assigning ${url}`);
-      target[propertyKey] = audio;
-      row.remove();
-    } catch (e) {
-      row.textContent = e.message;
-    }
-    console.log(`Done loading ${url}`);
-  });
+  const response = await fetch(url);
+  row.textContent = `Parsing ${url}`;
+  if(response.status < 200 || response.status > 400) {
+    const msg = `Error parsing ${url}`;
+    row.textContent = msg;
+    throw new Error(msg);
+  }
+  try {
+    const audio = await parseAudio(audioContext, await response.arrayBuffer());
+    row.remove();
+    return audio;
+  } catch (e) {
+    row.textContent = e.message;
+    throw e;
+  }
+}
+
+export function loadAudioIntoBuffer<T extends string>(url: string, target: SoundLibrary<T>, propertyKey: T, audioContext: AudioContext) {
+  async function loadIt() {
+    const audio = await loadAudioAsync(url, audioContext);
+    target[propertyKey] = audio;
+  }
+
   enqueue(loadIt());
 }
 
