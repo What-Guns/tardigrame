@@ -52,9 +52,13 @@ export function createSoundLibrary<T extends string>(descriptor: SoundLibraryDes
 
 
 const bgm = createSoundLibrary({
-  track1: 'assets/audio/music/TardigradeMusic1.ogg',
+  track0: 'assets/audio/music/TardigradeMusic1.ogg',
+  track1: 'assets/audio/music/TardigradeMusic1.5.ogg',
   track2: 'assets/audio/music/TardigradeMusic2.ogg',
 });
+const track0GainNode = new GainNode(audioContext);
+track0GainNode.gain.value = 0;
+track0GainNode.connect(gainNode);
 const track1GainNode = new GainNode(audioContext);
 track1GainNode.gain.value = 0;
 track1GainNode.connect(gainNode);
@@ -63,6 +67,10 @@ track2GainNode.gain.value = 0;
 track2GainNode.connect(gainNode);
 
 export async function startBGM() {
+  const sound0 = audioContext.createBufferSource();
+  sound0.buffer = bgm.track0;
+  sound0.connect(track1GainNode);
+  sound0.loop = true;
   const sound1 = audioContext.createBufferSource();
   sound1.buffer = bgm.track1;
   sound1.connect(track1GainNode);
@@ -72,21 +80,32 @@ export async function startBGM() {
   sound2.connect(track2GainNode);
   sound2.loop = true;
   const startTime = audioContext.currentTime + 2;
+  sound0.start(startTime);
   sound1.start(startTime);
   sound2.start(startTime);
 }
 
+export function fadeInBGM0() {
+  const time = audioContext.currentTime + 5;
+  track0GainNode.gain.linearRampToValueAtTime(1, time);
+  track1GainNode.gain.linearRampToValueAtTime(0, time);
+  track2GainNode.gain.linearRampToValueAtTime(0, time);
+}
+
 export function fadeInBGM1() {
   const time = audioContext.currentTime + 5;
+  track0GainNode.gain.linearRampToValueAtTime(0, time);
   track1GainNode.gain.linearRampToValueAtTime(1, time);
   track2GainNode.gain.linearRampToValueAtTime(0, time);
 }
 
 export function fadeInBGM2() {
   const time = audioContext.currentTime + 5;
+  track0GainNode.gain.linearRampToValueAtTime(0, time);
   track1GainNode.gain.linearRampToValueAtTime(0, time);
   track2GainNode.gain.linearRampToValueAtTime(1, time);
 }
 
+(window as any).fade0 = fadeInBGM0;
 (window as any).fade1 = fadeInBGM1;
 (window as any).fade2 = fadeInBGM2;
