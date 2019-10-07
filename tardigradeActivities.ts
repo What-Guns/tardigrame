@@ -216,6 +216,7 @@ export class ReproduceActivity implements TardigradeActivity {
       const game = this.tardigrade.game;
       const {x, y} = this.tardigrade.point;
       game.pawns.push(new Tardigrade(game, x, y));
+      this.tardigrade.moss = 0.1;
     }
     // yeah it's weird that we don't consider this "strenuous",
     // but we consume a bunch more moss above instead.
