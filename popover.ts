@@ -39,6 +39,8 @@ const defaultButton = loadImage('assets/pictures/button.png');
 const okayButton = loadImage('assets/pictures/buttons/button_okay.png');
 const sorryButton = loadImage('assets/pictures/sorrybutton.png');
 const regretButton = loadImage('assets/pictures/regretButton.png');
+const waitWhatButton = loadImage('assets/pictures/buttons/button_waitwhat.png');
+const uhButton = loadImage('assets/pictures/buttons/button_UH.png');
 
 type PopoverType = 'REGRET'|'EMPTY'|'PAUSE'|'VICTORY'|'GEN1'|'INST1'|'GEN2'|'INST2'|'GEN3'|'INST3'|'END1'|'END2'|'GAMEOVER';
 
@@ -204,7 +206,7 @@ export const End1Popover = (game: Game, ctx: CanvasRenderingContext2D) => {
     game.startCountdown();
   }
   p.buttons.push(new PopoverButton(
-    p, 30, 160, regretButton, ctx, cb
+    p, 85, 378, waitWhatButton, ctx, cb
   ));
   return p;
 }
@@ -217,7 +219,7 @@ export const End2Popover = (game: Game, ctx: CanvasRenderingContext2D) => {
     game.showPopover(GameOverPopover());
   }
   p.buttons.push(new PopoverButton(
-    p, 30, 160, regretButton, ctx, cb
+    p, 315, 162, uhButton, ctx, cb
   ));
   return p;
 }
