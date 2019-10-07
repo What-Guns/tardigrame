@@ -35,6 +35,7 @@ export class PopoverButton {
 }
 
 const defaultButton = loadImage('assets/pictures/button.png');
+const okayButton = loadImage('assets/pictures/buttons/button_okay.png');
 const sorryButton = loadImage('assets/pictures/sorrybutton.png');
 const regretButton = loadImage('assets/pictures/regretButton.png');
 
@@ -144,7 +145,7 @@ export const Gen1Popover = (game: Game, ctx: CanvasRenderingContext2D) => {
     game.showPopover(Inst1Popover(ctx));
   }
   p.buttons.push(new PopoverButton(
-    p, 30, 160, regretButton, ctx, cb
+    p, 357, 283, okayButton, ctx, cb
   ));
   return p;
 }
@@ -152,7 +153,7 @@ export const Gen1Popover = (game: Game, ctx: CanvasRenderingContext2D) => {
 export const Inst1Popover = (ctx: CanvasRenderingContext2D) => {
   const p = new Popover('INST1', 'BOTTOM');
   p.buttons.push(new PopoverButton(
-    p, 30, 160, regretButton, ctx, () => {}
+    p, 157, 556, okayButton, ctx, () => {}
   ));
   return p;
 }
@@ -163,7 +164,7 @@ export const Gen2Popover = (game: Game, ctx: CanvasRenderingContext2D) => {
     game.showPopover(Inst2Popover(ctx));
   }
   p.buttons.push(new PopoverButton(
-    p, 30, 160, regretButton, ctx, cb
+    p, 88, 302, okayButton, ctx, cb
   ));
   return p;
 }
@@ -171,7 +172,7 @@ export const Gen2Popover = (game: Game, ctx: CanvasRenderingContext2D) => {
 export const Inst2Popover = (ctx: CanvasRenderingContext2D) => {
   const p = new Popover('INST2', 'BOTTOM');
   p.buttons.push(new PopoverButton(
-    p, 30, 160, regretButton, ctx, () => {}
+    p, 157, 502, okayButton, ctx, () => {}
   ));
   return p;
 }
@@ -182,7 +183,7 @@ export const Gen3Popover = (game: Game, ctx: CanvasRenderingContext2D) => {
     game.showPopover(Inst3Popover(ctx));
   }
   p.buttons.push(new PopoverButton(
-    p, 30, 160, regretButton, ctx, cb
+    p, 88, 325, okayButton, ctx, cb
   ));
   return p;
 }
@@ -190,7 +191,7 @@ export const Gen3Popover = (game: Game, ctx: CanvasRenderingContext2D) => {
 export const Inst3Popover = (ctx: CanvasRenderingContext2D) => {
   const p = new Popover('INST3', 'BOTTOM');
   p.buttons.push(new PopoverButton(
-    p, 30, 160, regretButton, ctx, () => {}
+    p, 165, 517, okayButton, ctx, () => {}
   ));
   return p;
 }
