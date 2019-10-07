@@ -89,42 +89,7 @@ export class Game {
     canvas.addEventListener('mouseout', () => this.heldButtons.clear());
     canvas.addEventListener('wheel', this.zoom.bind(this));
 
-    // spawn tardigrades in the viewport
-    for (let i = 0; i < generationOne; i++){
-      const x = this.grid.columns / 2 + Math.random() * 6 - 3;
-      const y = this.grid.rows / 2 + Math.random() * 6 - 3;
-      this.pawns.push(new Tardigrade(this, x, y));
-    }
-
-    // put a water source somewhere near the middle of the game
-    this.grid.getCell({
-      x: this.grid.columns / 2 + Math.random() * 6 - 3,
-      y: this.grid.rows / 2 + Math.random() * 6 - 3,
-    }).type = 'WATER_SOURCE';
-
-    // put four moss blocks a bit further away
-    for(let i = 0; i < 4; i++) {
-      const dir = Math.random() * 2 * Math.PI;
-      this.grid.getCell({
-        x: this.grid.columns / 2 + Math.cos(dir) * 10,
-        y: this.grid.rows / 2 + Math.sin(dir) * 10,
-      }).type = 'MOSS';
-    }
-
-    // put some water sources in the corners of the map.
-    for(let x = 0; x < 1; x += 0.9) {
-      for(let y = 0; y < 1; y += 0.9) {
-        this.grid.getCell({
-          x: this.grid.columns * (x + Math.random() * 0.1),
-          y: this.grid.rows * (y + Math.random() * 0.1)
-        }).type = 'WATER_SOURCE';
-      }
-    }
-
-    this.batteries.push(new Battery(this, {
-      x: 40,
-      y: 40,
-    }));
+    this.populateGrid();
   }
 
   tick(dt: number) {
@@ -238,5 +203,44 @@ export class Game {
 
   dismissPopover() {
     this.popover.hide();
+  }
+
+  private populateGrid() {
+    // spawn tardigrades in the viewport
+    for (let i = 0; i < generationOne; i++){
+      const x = this.grid.columns / 2 + Math.random() * 6 - 3;
+      const y = this.grid.rows / 2 + Math.random() * 6 - 3;
+      this.pawns.push(new Tardigrade(this, x, y));
+    }
+
+    // put a water source somewhere near the middle of the game
+    this.grid.getCell({
+      x: this.grid.columns / 2 + Math.random() * 6 - 3,
+      y: this.grid.rows / 2 + Math.random() * 6 - 3,
+    }).type = 'WATER_SOURCE';
+
+    // put a bunch of moss blocks somewhere
+    for(let i = 0; i < 12; i++) {
+      const dir = Math.random() * 2 * Math.PI;
+      this.grid.getCell({
+        x: this.grid.columns / 2 + Math.cos(dir) * 7,
+        y: this.grid.rows / 2 + Math.sin(dir) * 7,
+      }).type = 'MOSS';
+    }
+
+    // put some water sources in the corners of the map.
+    for(let x = 0; x < 1; x += 0.9) {
+      for(let y = 0; y < 1; y += 0.9) {
+        this.grid.getCell({
+          x: this.grid.columns * (x + Math.random() * 0.1),
+          y: this.grid.rows * (y + Math.random() * 0.1)
+        }).type = 'WATER_SOURCE';
+      }
+    }
+
+    this.batteries.push(new Battery(this, {
+      x: 40,
+      y: 40,
+    }));
   }
 }
