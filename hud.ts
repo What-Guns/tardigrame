@@ -2,6 +2,10 @@ import {Game} from './game.js';
 import {liveTardigrades, tunTardigrades, idleTardigrades, carryingBattery} from './tardigrade.js'
 
 export class Hud {
+  speedButtonWidth = 0;
+
+  private lastSpeed = '';
+
   constructor(private readonly game: Game) {
   }
 
@@ -15,6 +19,8 @@ export class Hud {
 
   draw(ctx: CanvasRenderingContext2D) {
     this.drawTardigraph(ctx);
+
+    this.drawSpeed(ctx);
   }
 
   private drawTardigraph(ctx: CanvasRenderingContext2D) {
@@ -60,5 +66,35 @@ export class Hud {
 
     ctx.fillStyle = 'black';
     if(isHovered) ctx.fillText(`goal: ${goal}`, 12, y);
+  }
+
+  private drawSpeed(ctx: CanvasRenderingContext2D) {
+    let msg = "?????";
+    switch(this.game.speed) {
+      case 1: msg = 'normal';
+        break;
+      case 2: msg = 'fast';
+        break;
+      case 3: msg = 'super-fast';
+        break;
+    }
+
+    if(msg !== this.lastSpeed) {
+      this.lastSpeed = msg;
+      this.speedButtonWidth = ctx.measureText(msg).width + 8;
+    }
+
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'black';
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    ctx.rect(this.game.viewport.width - (this.speedButtonWidth + 8), 8, this.speedButtonWidth, 24);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = 'white';
+    ctx.fillText(msg, this.game.viewport.width - 12, 20);
   }
 }
