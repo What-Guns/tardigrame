@@ -260,7 +260,9 @@ export class Tardigrade {
   }
 
   private findSomethingToDo() {
-    if(this.activity instanceof activities.ObtainResourceActivity && this.activity.thenWhat) {
+    if(this.activity instanceof activities.ObtainResourceActivity
+      && this.activity.thenWhat
+      && this.activity.thenWhat.isValid()) {
       this.assignActivity(this.activity.thenWhat);
       return;
     }
