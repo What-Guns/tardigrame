@@ -1,6 +1,6 @@
 import {Point, direction, distanceSquared, findNearestVeryExpensive} from './math.js';
 import {Battery} from './battery.js';
-import {Game} from './game.js';
+import {Game, generationThree} from './game.js';
 import {Cell, cellsThatNeedWorkDone, mossyCells} from './cell.js';
 import * as activities from './tardigradeActivities.js';
 import {createSoundLibrary, playSoundAtLocation, playSound} from './audio.js';
@@ -9,6 +9,7 @@ export const idleTardigrades = new Set<Tardigrade>();
 export const liveTardigrades = new Set<Tardigrade>();
 export const tunTardigrades = new Set<Tardigrade>();
 export const deadTardigrades = new Set<Tardigrade>();
+export const carryingBattery = new Set<Tardigrade>();
 
 type State = 'LIVE' | 'TUN' | 'DEAD'
 
@@ -69,7 +70,9 @@ export class Tardigrade {
 
   static assignTardigradeToGetBattery(battery: Battery) {
     let found = false;
-    for(const t of findIdleTardigrades(battery.point, 5)) {
+    const point = {x: battery.point.x + 0.5, y: battery.point.y + 0.5};
+    const notCarrying = Array.from(idleTardigrades).filter(t => !(t.activity instanceof activities.ObtainBatteryActivity));
+    for(const t of findNearestVeryExpensive(Array.from(notCarrying), point, 5)) {
       found = true;
       t.assignActivity(new activities.ObtainBatteryActivity(t, battery));
     }
@@ -141,6 +144,7 @@ export class Tardigrade {
       idleTardigrades.delete(this);
       liveTardigrades.delete(this);
       tunTardigrades.add(this);
+      carryingBattery.delete(this);
     }
   }
 
@@ -189,20 +193,27 @@ export class Tardigrade {
   }
 
   assignActivity(a: activities.TardigradeActivity) {
-    if(this.activity instanceof activities.ObtainResourceActivity && this.activity.isValid()) {
+    if(this.activity instanceof activities.ObtainResourceActivity && this.activity.isValid() && !(a instanceof activities.ObtainResourceActivity)) {
       this.activity.thenWhat = a;
     } else {
       this._activity = a;
       a.age = 0;
     }
-    a = this._activity;
-    if(a instanceof activities.IdleActivity || a instanceof activities.ObtainResourceActivity && !a.thenWhat) {
+    if(this._activity.isIdle) {
       idleTardigrades.add(this);
     } else {
       idleTardigrades.delete(this);
     }
-  }
 
+    const isCarrying = this._activity instanceof activities.ObtainBatteryActivity
+      || this._activity instanceof activities.ObtainResourceActivity && this._activity.thenWhat instanceof activities.ObtainBatteryActivity;
+
+    if(isCarrying) {
+      carryingBattery.add(this);
+    } else {
+      carryingBattery.delete(this);
+    }
+  }
 
   private drawHud(ctx: CanvasRenderingContext2D) {
     const mouseDistSquared = distanceSquared(this.point, this.game.worldSpaceMousePosition) * this.game.viewport.scale;
@@ -272,6 +283,15 @@ export class Tardigrade {
     if(cellToWorkOn && distanceSquared(this.point, cellToWorkOn.point) < 25) {
       this.assignActivity(new activities.BuildActivity(this, cellToWorkOn));
       return;
+    }
+
+    if(liveTardigrades.size >= generationThree) {
+      for(const batt of this.game.batteries) {
+        if(distanceSquared(this.point, batt.point) < 25) {
+          this.assignActivity(new activities.ObtainBatteryActivity(this, batt));
+          return;
+        }
+      }
     }
 
     if(Math.random() < 0.2) {

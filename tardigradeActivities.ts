@@ -22,6 +22,8 @@ export interface TardigradeActivity {
   readonly hungerThreshold: number;
 
   age: number;
+
+  isIdle: boolean;
 }
 
 const idleAnimations = [
@@ -80,6 +82,8 @@ export class IdleActivity implements TardigradeActivity {
   thirstThreshold = 0.6;
 
   hungerThreshold = 0.3;
+
+  isIdle = true;
 }
 
 export class BuildActivity implements TardigradeActivity {
@@ -107,6 +111,8 @@ export class BuildActivity implements TardigradeActivity {
   thirstThreshold = 0.4;
 
   hungerThreshold = 0.1;
+
+  isIdle = false;
 }
 
 export abstract class ObtainResourceActivity implements TardigradeActivity {
@@ -127,9 +133,6 @@ export abstract class ObtainResourceActivity implements TardigradeActivity {
     this.destination = this.goal
       ? createPointInCellPoint(this.goal.point)
       : {...tardigrade.point};
-
-    const tw = thenWhat ? thenWhat.constructor.name : 'nothing';
-    console.log(this.constructor.name + ', then '+tw);
   }
 
   abstract perform(): boolean;
@@ -137,6 +140,11 @@ export abstract class ObtainResourceActivity implements TardigradeActivity {
   abstract isValid(): boolean;
 
   protected complete() {}
+
+  get isIdle() {
+    if(!this.thenWhat) return true;
+    return this.thenWhat.isIdle;
+  }
 }
 
 export class RehydrateActivity extends ObtainResourceActivity {
@@ -211,6 +219,8 @@ export class ReproduceActivity implements TardigradeActivity {
     this.tardigrade.reproductionAmount += this.goal.consumeMoss(dt / 1000);
     return false;
   }
+
+  isIdle = false;
 }
 
 export class ObtainBatteryActivity implements TardigradeActivity {
@@ -253,6 +263,9 @@ export class ObtainBatteryActivity implements TardigradeActivity {
 
     return true;
   }
+
+  // This allows tardigrades to *stop* carrying the battery
+  isIdle = true;
 }
 
 /**

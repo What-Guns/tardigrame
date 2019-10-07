@@ -1,5 +1,5 @@
 import {Game} from './game.js';
-import {liveTardigrades, tunTardigrades, idleTardigrades} from './tardigrade.js'
+import {liveTardigrades, tunTardigrades, idleTardigrades, carryingBattery} from './tardigrade.js'
 
 export class Hud {
   constructor(private readonly game: Game) {
@@ -9,6 +9,7 @@ export class Hud {
     {label: 'tun', color: 'red', count: 0, contributesToGraph: false},
     {label: 'idle', color: 'yellow', count: 0, contributesToGraph: true},
     {label: 'busy', color: 'white', count: 0, contributesToGraph: true},
+    {label: 'carrying battery', color: 'blue', count: 0, contributesToGraph: true},
     {label: 'total', color: 'black', count: 0, contributesToGraph: false},
   ];
 
@@ -18,10 +19,12 @@ export class Hud {
 
   private drawTardigraph(ctx: CanvasRenderingContext2D) {
     const goal = this.game.getGoalOfCurrentGeneration();
+
     this.popBars[0].count = tunTardigrades.size;
-    this.popBars[1].count = idleTardigrades.size;
+    this.popBars[1].count = idleTardigrades.size - carryingBattery.size;
     this.popBars[2].count = liveTardigrades.size - idleTardigrades.size;
-    this.popBars[3].count = liveTardigrades.size;
+    this.popBars[3].count = carryingBattery.size;
+    this.popBars[4].count = liveTardigrades.size;
 
     const isHovered = this.game.screenSpaceMousePosition.x <= 300 && this.game.screenSpaceMousePosition.y < 48;
 
@@ -39,6 +42,7 @@ export class Hud {
     let x = 0;
     let y = 36;
     for(let b = 0; b < this.popBars.length; b++) {
+      if(this.popBars[b].count === 0) continue;
       ctx.fillStyle = this.popBars[b].color;
       if(this.popBars[b].contributesToGraph) {
         const width = (this.popBars[b].count / goal) * 200;
