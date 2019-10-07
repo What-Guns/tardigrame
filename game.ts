@@ -4,7 +4,7 @@ import {audioContext, startBGM, fadeInBGM0, fadeInBGM1, fadeInBGM2, biquadFilter
 import {Hud} from './hud.js';
 import {Tardigrade} from './tardigrade.js'
 import {Point, distanceSquared, addPoints, assignPoint} from './math.js';
-import {Popover, EmptyPopover, PausePopover, GameWinPopover, Gen1Popover, Gen2Popover, Gen3Popover} from './popover.js';
+import {Popover, EmptyPopover, PausePopover, Gen1Popover, Gen2Popover, Gen3Popover, End1Popover, End2Popover} from './popover.js';
 import {liveTardigrades} from './tardigrade.js'
 import { Capsule } from './capsule.js';
 
@@ -55,6 +55,10 @@ export class Game {
   speed = 1;
 
   private maxGeneration = -1;
+
+  private countdownTimer = 9999999999;
+  private countdownStarted = false;
+  launchComplete = false;
 
   constructor(canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext('2d')!;
@@ -150,6 +154,13 @@ export class Game {
       //Ded
       this.numberToNextGen = generationOne;
     }
+    if(this.countdownStarted){
+      this.countdownTimer -= dt;
+      if(this.countdownTimer <= 0) {
+        this.capsules.forEach(c => c.stopSound())
+        this.showPopover(End2Popover(this, this.ctx))
+      }
+    }
    
   }
 
@@ -158,6 +169,10 @@ export class Game {
     this.ctx.fillStyle = 'black';
     this.ctx.fillRect(0, 0, this.viewport.width, this.viewport.height);
 
+    if(this.launchComplete) {
+      this.popover.draw(this.ctx);
+      return;
+    }
     this.ctx.setTransform(this.viewport.scale, 0, 0, this.viewport.scale, -this.viewport.x, -this.viewport.y);
 
     this.grid.draw(this.ctx, timestamp);
@@ -175,7 +190,7 @@ export class Game {
     }
 
     for(let i=0; i < this.capsules.length; i++) {
-      this.capsules[i].draw(this.ctx);
+      this.capsules[i].draw(this.ctx, timestamp);
     }
 
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -271,7 +286,13 @@ export class Game {
   }
 
   private win() { // it's private to prevent cheaters from cheating!!!!!!
-    this.showPopover(GameWinPopover(this, this.ctx));
+    this.showPopover(End1Popover(this, this.ctx));
+  }
+
+  startCountdown() {
+    this.capsules.forEach(c => c.reassemble());
+    this.countdownTimer = 5000;
+    this.countdownStarted = true;
   }
 
   private populateGrid() {

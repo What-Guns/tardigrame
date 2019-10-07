@@ -24,6 +24,15 @@ export function playSound(buffer: AudioBuffer) : void {
   sound.start(0);
 };
 
+export function playSoundLooped(buffer: AudioBuffer) : AudioBufferSourceNode {
+  const sound = audioContext.createBufferSource();
+  sound.buffer = buffer;
+  sound.connect(gainNode);
+  sound.loop = true;
+  sound.start(0);
+  return sound;
+};
+
 export function playSoundAtLocation(buffer: AudioBuffer, location: Point) {
   const sound = audioContext.createBufferSource();
   sound.buffer = buffer;

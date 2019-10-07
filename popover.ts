@@ -1,6 +1,7 @@
 import { loadImage } from "./loader.js";
 import {isPointInBox, Point} from './math.js';
 import { Game } from "./game.js";
+import { fadeInBGM0 } from "./audio.js";
 
 export class PopoverButton {
   readonly cb: (ev: MouseEvent) => void;
@@ -39,7 +40,7 @@ const okayButton = loadImage('assets/pictures/buttons/button_okay.png');
 const sorryButton = loadImage('assets/pictures/sorrybutton.png');
 const regretButton = loadImage('assets/pictures/regretButton.png');
 
-type PopoverType = 'REGRET'|'EMPTY'|'PAUSE'|'VICTORY'|'GEN1'|'INST1'|'GEN2'|'INST2'|'GEN3'|'INST3'|'END1'|'END2';
+type PopoverType = 'REGRET'|'EMPTY'|'PAUSE'|'VICTORY'|'GEN1'|'INST1'|'GEN2'|'INST2'|'GEN3'|'INST3'|'END1'|'END2'|'GAMEOVER';
 
 export class Popover {
   buttons : Array<PopoverButton>;
@@ -103,6 +104,7 @@ const images: {[key in PopoverType]: HTMLImageElement} = {
   'INST3' : loadImage('assets/pictures/popovers/popover_gen3.png'),
   'END1' : loadImage('assets/pictures/popovers/4_miligrade_bioweapon.png'),
   'END2' : loadImage('assets/pictures/popovers/5_launch_the_capsule.png'),
+  'GAMEOVER' : loadImage('assets/pictures/popovers/you_win.png'),
 }
 
 export const RegretPopover = (ctx : CanvasRenderingContext2D) => {
@@ -193,6 +195,35 @@ export const Inst3Popover = (ctx: CanvasRenderingContext2D) => {
   p.buttons.push(new PopoverButton(
     p, 165, 517, okayButton, ctx, () => {}
   ));
+  return p;
+}
+
+export const End1Popover = (game: Game, ctx: CanvasRenderingContext2D) => {
+  const p = new Popover('END1', 'BOTTOM');
+  function cb() {
+    game.startCountdown();
+  }
+  p.buttons.push(new PopoverButton(
+    p, 30, 160, regretButton, ctx, cb
+  ));
+  return p;
+}
+
+export const End2Popover = (game: Game, ctx: CanvasRenderingContext2D) => {
+  const p = new Popover('END2', 'BOTTOM');
+  function cb() {
+    fadeInBGM0()
+    game.launchComplete = true;
+    game.showPopover(GameOverPopover());
+  }
+  p.buttons.push(new PopoverButton(
+    p, 30, 160, regretButton, ctx, cb
+  ));
+  return p;
+}
+
+export const GameOverPopover = () => {
+  const p = new Popover('GAMEOVER', 'CENTER');
   return p;
 }
 
