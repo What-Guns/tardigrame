@@ -47,15 +47,19 @@ export class Grid {
   clicked(where: Point) {
     if(this.game.isPaused()) return;
     const cell = this.getCell(where);
-    switch(cell.type) {
+    switch (cell.type) {
       case 'BLANK':
-        this.startBuildingACanal(cell);
+        if (liveTardigrades.size > 0) {
+          this.startBuildingACanal(cell);
+        }
         break;
       case 'BIG_ROCK':
-        this.startMossingUpARock(cell);
-        break;
+        if (liveTardigrades.size >= generationTwo) {
+          this.startMossingUpARock(cell);
+        } 
+          break;
       case 'MOSS':
-        if(cell.moss < REPRODUCTION_TIME) {
+        if (cell.moss < REPRODUCTION_TIME) {
           this.startMossingUpARock(cell);
         } else {
           Tardigrade.assignTardigradeToReproduce(cell);
@@ -104,7 +108,7 @@ export class Grid {
   }
 
   private startMossingUpARock(cell: Cell) {
-    if(cell.type !== 'BIG_ROCK' && cell.type !== 'MOSS' && liveTardigrades.size < generationTwo) return;
+    if(cell.type !== 'BIG_ROCK' && cell.type !== 'MOSS') return;
     if(liveTardigrades.size < generationTwo) return;
     const searchPoint = {...cell.point};
     const offset = {x: 0, y: 0};
