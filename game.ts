@@ -171,7 +171,7 @@ export class Game {
     }
 
     for(let i = 0; i < this.batteries.length; i++) {
-      this.batteries[i].draw(this.ctx);
+      this.batteries[i].draw(this.ctx, timestamp);
     }
 
     for(let i=0; i < this.capsules.length; i++) {
