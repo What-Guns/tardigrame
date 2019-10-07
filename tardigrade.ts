@@ -74,8 +74,8 @@ export class Tardigrade {
   constructor(readonly game: Game, x: number, y: number) {
     this.point = {x, y};
     this._activity = new activities.IdleActivity(this);
-    idleTardigrades.add(this);
     this.state = 'LIVE';
+    idleTardigrades.add(this);
     liveTardigrades.add(this)
     this.currentCell = this.game.grid.getCell(this.point);
   }
@@ -131,6 +131,7 @@ export class Tardigrade {
       tunTardigrades.delete(this);
     } else {
       playSoundAtLocation(sounds.tun, this.point);
+      idleTardigrades.delete(this);
       liveTardigrades.delete(this);
       tunTardigrades.add(this);
     }

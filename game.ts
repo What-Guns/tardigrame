@@ -217,6 +217,16 @@ export class Game {
     this.popover.hide();
   }
 
+  getGoalOfCurrentGeneration() {
+    switch(this.generation) {
+      case 0: return generationTwo;
+      case 1: return generationThree;
+      case 2: return generationFour;
+      case 3: return generationFive;
+    }
+    return generationFive;
+  }
+
   private populateGrid() {
     // spawn tardigrades in the viewport
     for (let i = 0; i < generationOne; i++){
