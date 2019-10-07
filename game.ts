@@ -16,8 +16,11 @@ export interface Viewport {
   scale: number;
 }
 
+/** The starting generation. Create canals. */
 export const generationOne : number = 10;
+/** The second generation. Create moss. */
 export const generationTwo : number = Math.ceil(Math.pow(generationOne, 1.5))
+/** The third generation. Carry the battery. */
 export const generationThree : number = Math.ceil(Math.pow(generationOne, 2))
 export const generationFour : number = Math.ceil(Math.pow(generationOne, 2.5))
 export const generationFive : number = Math.ceil(Math.pow(generationOne, 3))
