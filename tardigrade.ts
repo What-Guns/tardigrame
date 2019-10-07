@@ -155,14 +155,14 @@ export class Tardigrade {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    const image = this.chooseImageToDraw()
+    const image = this.chooseImageToDraw();
     ctx.drawImage(
       image,
       this.point.x * this.game.grid.xPixelsPerCell - image.width/2,
       this.point.y * this.game.grid.yPixelsPerCell - image.height/2
     );
 
-    this.drawHud(ctx);
+    if(this.state === 'LIVE') this.drawHud(ctx);
   }
 
   private drawHud(ctx: CanvasRenderingContext2D) {
