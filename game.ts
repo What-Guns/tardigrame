@@ -121,7 +121,15 @@ export class Game {
       this.pawns[i].tick(dt);
     }
 
-    this.batteries.forEach(b => {if(b.isAtDestination()) this.win()});
+    let batteryToDelete: Battery|null = null;
+    for(let i = 0; i < this.batteries.length; i++) {
+      if(this.batteries[i].isAtDestination()) { 
+        this.win();
+        batteryToDelete = this.batteries[i];
+      }
+    }
+
+    if(batteryToDelete) this.batteries.splice(this.batteries.indexOf(batteryToDelete, 1));
 
     if (liveTardigrades.size >= generationThree){
       //Drag battery
@@ -286,6 +294,7 @@ export class Game {
   }
 
   private win() { // it's private to prevent cheaters from cheating!!!!!!
+    this.speed = 1;
     this.showPopover(End1Popover(this, this.ctx));
   }
 
