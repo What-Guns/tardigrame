@@ -1,7 +1,7 @@
 import {Cell, cellsThatNeedWorkDone, hydratedCells, mossyCells} from './cell.js';
 import {Battery} from './battery.js';
 import {Point, distanceSquared, addPoints, direction} from './math.js';
-import {Tardigrade} from './tardigrade.js';
+import {Tardigrade, REPRODUCTION_TIME, liveTardigrades} from './tardigrade.js';
 import {loadImage} from './loader.js';
 
 export interface TardigradeActivity {
@@ -182,12 +182,10 @@ export class EatActivity extends ObtainResourceActivity {
   }
 
   // moss is near water, so this can be pretty low
-  thirstThreshold = 0.15;
+  thirstThreshold = 0.3;
 
   hungerThreshold = -Infinity;
 }
-
-export const REPRODUCTION_TIME = 7;
 
 export class ReproduceActivity implements TardigradeActivity {
   readonly animations = reproduceAnimations;
@@ -199,27 +197,17 @@ export class ReproduceActivity implements TardigradeActivity {
   thirstThreshold = 0.1;
   age = 0;
 
-  private progress = 0;
-
   constructor(readonly tardigrade: Tardigrade, readonly goal: Cell) {
     this.destination = createPointInCellPoint(goal.point);
   }
 
   isValid() {
-    return this.progress < REPRODUCTION_TIME && this.goal.type === 'MOSS' && this.goal.moss > REPRODUCTION_TIME - this.progress;
+    return this.goal.type === 'MOSS' && this.goal.moss > REPRODUCTION_TIME - this.tardigrade.reproductionAmount;
   }
 
   perform(dt: number) {
     if(this.tardigrade.game.grid.getCell(this.tardigrade.point) !== this.goal) return false;
-    this.progress += this.goal.consumeMoss(dt / 1000);
-    if(this.progress > REPRODUCTION_TIME) {
-      const game = this.tardigrade.game;
-      const {x, y} = this.tardigrade.point;
-      game.pawns.push(new Tardigrade(game, x, y));
-      this.tardigrade.moss = 0.1;
-    }
-    // yeah it's weird that we don't consider this "strenuous",
-    // but we consume a bunch more moss above instead.
+    this.tardigrade.reproductionAmount += this.goal.consumeMoss(dt / 1000);
     return false;
   }
 }

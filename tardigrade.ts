@@ -12,6 +12,10 @@ export const deadTardigrades = new Set<Tardigrade>();
 
 type State = 'LIVE' | 'TUN' | 'DEAD'
 
+
+/** How much moss needs to be eaten to reproduce. */
+export const REPRODUCTION_TIME = 7;
+
 const DESTINATION_THRESHOLD = 0.01;
 
 const guiSounds = createSoundLibrary({
@@ -29,6 +33,8 @@ export class Tardigrade {
     return this._activity;
   }
 
+  /** How much moss has been eaten for reproduction. */
+  reproductionAmount = 0;
   moss = 0.9; // 0 is starved, 1 babby formed from gonad
   fluid = Math.random() * 0.5 + 0.5;
   dehydrationSpeed = 0.00005; // thirst per millisecond
@@ -85,6 +91,7 @@ export class Tardigrade {
     this.updateState();
     this.updateActivity(dt);
     this.updateAnimations(dt);
+    this.updateReproduction();
   }
 
   move(dt: number) {
@@ -157,6 +164,15 @@ export class Tardigrade {
     this.animationState += dt;
     while(this.animationState > cycleLength) {
       this.animationState -= cycleLength;
+    }
+  }
+
+  private updateReproduction() {
+    if(this.reproductionAmount >= REPRODUCTION_TIME) {
+      const {x, y} = this.point;
+      this.game.pawns.push(new Tardigrade(this.game, x, y));
+      this.moss = 0.1;
+      this.reproductionAmount = 0;
     }
   }
 
@@ -255,10 +271,13 @@ export class Tardigrade {
       return;
     }
 
-    const cellToReproduceOn = findNearestVeryExpensive(Array.from(mossyCells), this.point, 1)[0];
-    if(cellToReproduceOn && distanceSquared(this.point, cellToReproduceOn.point) < 9) {
-      this.assignActivity(new activities.ReproduceActivity(this, cellToReproduceOn));
-      return;
+    if(Math.random() < 0.2) {
+      const viableMoss = Array.from(mossyCells).filter(c => c.moss >= REPRODUCTION_TIME);
+      const cellToReproduceOn = findNearestVeryExpensive(viableMoss, this.point, 1)[0];
+      if(cellToReproduceOn && distanceSquared(this.point, cellToReproduceOn.point) < 9) {
+        this.assignActivity(new activities.ReproduceActivity(this, cellToReproduceOn));
+        return;
+      }
     }
 
     this.assignActivity(new activities.IdleActivity(this));

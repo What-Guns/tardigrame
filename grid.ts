@@ -5,7 +5,6 @@ import {Point, addPoints} from './math.js';
 import {Game} from './game.js';
 import {fullCanalImages, fullPoolImage, calculateWetDryCanals, emptyCanalImages, emptyPoolImage} from './water.js';
 import {generationTwo} from './game.js'
-import {REPRODUCTION_TIME} from './tardigradeActivities.js';
 
 export class Grid {
   readonly cells: Cell[][];
