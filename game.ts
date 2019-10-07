@@ -63,7 +63,9 @@ export class Game {
     this.popover = EmptyPopover(this.ctx);
 
     document.addEventListener('visibilitychange', () => {
-      this.notInGameWindow = document.hidden;
+      if(document.hidden && !this.popover.visible) {
+        this.showPopover(PausePopover(this.ctx));
+      }
     });
 
     document.addEventListener('keyup', (ev : KeyboardEvent) => {
