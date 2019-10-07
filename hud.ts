@@ -29,6 +29,13 @@ export class Hud {
     ctx.fillRect(10, 10, 200, 24);
     ctx.font = '18px system-ui';
 
+    if(isHovered) {
+      ctx.globalAlpha = 0.5;
+      ctx.fillStyle = 'white';
+      ctx.fillRect(12,36,200,(this.popBars.length + 1) * 18)
+      ctx.globalAlpha = 1;
+    }
+
     let x = 0;
     let y = 36;
     for(let b = 0; b < this.popBars.length; b++) {
