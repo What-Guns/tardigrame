@@ -6,6 +6,7 @@ import {Tardigrade} from './tardigrade.js'
 import {Point, distanceSquared, addPoints, assignPoint} from './math.js';
 import {Popover, EmptyPopover, PausePopover} from './popover.js';
 import {liveTardigrades} from './tardigrade.js'
+import { Capsule } from './capsule.js';
 
 export interface Viewport {
   x: number;
@@ -25,6 +26,7 @@ export class Game {
   readonly grid : Grid;
   readonly pawns = new Array<Tardigrade>();
   readonly batteries = new Array<Battery>();
+  readonly capsules = new Array<Capsule>();
   readonly hud = new Hud(this);
 
   private readonly heldButtons = new Set<number>();
@@ -136,12 +138,20 @@ export class Game {
 
     this.grid.draw(this.ctx, timestamp);
 
+    for(let i=0; i < this.capsules.length; i++) {
+      this.capsules[i].drawBG(this.ctx);
+    }
+
     for (let i = 0; i < this.pawns.length; i++){
       this.pawns[i].draw(this.ctx);
     }
 
     for(let i = 0; i < this.batteries.length; i++) {
       this.batteries[i].draw(this.ctx);
+    }
+
+    for(let i=0; i < this.capsules.length; i++) {
+      this.capsules[i].draw(this.ctx);
     }
 
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -236,10 +246,14 @@ export class Game {
     }
 
     // put a water source somewhere near the middle of the game
-    this.grid.getCell({
+    const waterCell = this.grid.getCell({
       x: this.grid.columns / 2 + Math.random() * 6 - 3,
       y: this.grid.rows / 2 + Math.random() * 6 - 3,
-    }).type = 'WATER_SOURCE';
+    })
+    waterCell.type = 'WATER_SOURCE';
+
+    // put a capsule to generate the water source
+    new Capsule(this, waterCell.point);
 
     // put a bunch of moss blocks somewhere
     for(let i = 0; i < 12; i++) {

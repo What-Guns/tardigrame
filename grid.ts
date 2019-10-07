@@ -243,7 +243,7 @@ const gridImages: {[key in CellType]: HTMLImageElement} = {
   BIG_ROCK: loadImage('assets/pictures/Rocks_and_moss/just_a_rock.png'),
   ROAD: loadImage('assets/pictures/nsroad1.png'),
   PLANNED_CANAL: loadImage('assets/pictures/futureCanal.png'),
-  WATER_SOURCE: loadImage('assets/pictures/Puddle_states/puddle.png'),
+  WATER_SOURCE: loadImage('assets/pictures/empty1.png'),
   MOSS: loadImage('assets/pictures/Rocks_and_moss/rock_lotsa_moss.png'),
   PLANNED_MOSS: loadImage('assets/pictures/Rocks_and_moss/rock_little_moss.png'),
 }
