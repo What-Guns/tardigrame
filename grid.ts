@@ -70,8 +70,8 @@ export class Grid {
     }
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
-    this.drawBackground(ctx);
+  draw(ctx: CanvasRenderingContext2D, timestamp: number) {
+    this.drawBackground(ctx, timestamp);
     ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
     ctx.fillRect(this.hoveredCell.x * this.xPixelsPerCell,
       this.hoveredCell.y * this.yPixelsPerCell,
@@ -122,7 +122,7 @@ export class Grid {
     }
   }
 
-  private drawBackground(ctx: CanvasRenderingContext2D) {
+  private drawBackground(ctx: CanvasRenderingContext2D, timestamp: number) {
     if(!this.bgPattern) return;
 
     ctx.clearRect(0, 0, this.xPixelsPerCell * this.columns, this.yPixelsPerCell * this.rows);
@@ -148,7 +148,7 @@ export class Grid {
         const cell = this.cells[x][y];
         let image = gridImages[cell.type];
         let drawAPool = false;
-        if(cell.type === 'POOL') {
+        if(cell.type === 'POOL' || cell.type === 'PLANNED_CANAL') {
           const cellAbove = this.cells[x] && this.cells[x][y-1] && (this.cells[x][y-1].type === 'POOL' || this.cells[x][y-1].type === 'WATER_SOURCE') ? 1 : 0;
           const cellBelow = this.cells[x] && this.cells[x][y+1] && (this.cells[x][y+1].type === 'POOL' || this.cells[x][y+1].type === 'WATER_SOURCE') ? 1 : 0;
           const cellLeft = this.cells[x-1] && this.cells[x-1][y] && (this.cells[x-1][y].type === 'POOL' || this.cells[x-1][y].type === 'WATER_SOURCE') ? 1 : 0;
@@ -159,6 +159,7 @@ export class Grid {
             drawAPool = true;
           }
         }
+        if(cell.type === 'PLANNED_CANAL' && Math.floor(timestamp / 500) % 2) ctx.globalAlpha = 0.5;
         ctx.drawImage(
           image,
           x * this.xPixelsPerCell,
@@ -166,6 +167,7 @@ export class Grid {
           this.xPixelsPerCell,
           this.yPixelsPerCell
         );
+        ctx.globalAlpha = 1;
 
         if(drawAPool) {
           ctx.drawImage(

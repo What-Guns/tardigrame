@@ -24,7 +24,7 @@ async function startTheGameAlready() {
         game.tick(Math.min(BIG_TICK, dt));
         dt = Math.max(0, dt - BIG_TICK);
       }
-      game.draw();
+      game.draw(timestamp);
     }
 
     lastTick = timestamp;

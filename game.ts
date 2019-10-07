@@ -119,14 +119,14 @@ export class Game {
    
   }
 
-  draw() {
+  draw(timestamp: number) {
     this.ctx.clearRect(0, 0, this.viewport.width, this.viewport.height);
     this.ctx.fillStyle = 'black';
     this.ctx.fillRect(0, 0, this.viewport.width, this.viewport.height);
 
     this.ctx.setTransform(this.viewport.scale, 0, 0, this.viewport.scale, -this.viewport.x, -this.viewport.y);
 
-    this.grid.draw(this.ctx);
+    this.grid.draw(this.ctx, timestamp);
 
     for(let i = 0; i < this.batteries.length; i++) {
       this.batteries[i].draw(this.ctx);
