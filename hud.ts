@@ -1,15 +1,21 @@
 import {Game} from './game.js';
 import {liveTardigrades, tunTardigrades, idleTardigrades} from './tardigrade.js'
 
-export class Hud {
+interface PopBar {
+  label: string;
+  color: string;
+  count: number;
+  contributesToGraph: boolean;
+}
 
+export class Hud {
   constructor(private readonly game: Game) {
   }
 
   private readonly popBars = [
-    {label: 'tun', color: 'red', count: 0},
-    {label: 'busy', color: 'white', count: 0},
-    {label: 'idle', color: 'yellow', count: 0},
+    {label: 'tun', color: 'red', count: 0, contributesToGraph: false},
+    {label: 'idle', color: 'yellow', count: 0, contributesToGraph: true},
+    {label: 'busy', color: 'white', count: 0, contributesToGraph: true},
   ];
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -31,10 +37,12 @@ export class Hud {
     let x = 0;
     let y = 36;
     for(let b = 0; b < this.popBars.length; b++) {
-      const width = (this.popBars[b].count / goal) * 200;
       ctx.fillStyle = this.popBars[b].color;
-      ctx.fillRect(10 + x, 10, width, 24);
-      x += width;
+      if(this.popBars[b].contributesToGraph) {
+        const width = (this.popBars[b].count / goal) * 200;
+        ctx.fillRect(10 + x, 10, width, 24);
+        x += width;
+      }
       if(isHovered) ctx.fillText(`${this.popBars[b].label}: ${this.popBars[b].count}`, 12, y);
       y += 18;
     }
