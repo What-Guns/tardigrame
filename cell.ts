@@ -93,7 +93,7 @@ export class Cell {
     return amountConsumed;
   }
 
-  playMossSound() {
+  private playMossSound() {
     const rand = Math.floor(Math.random() * 300);
     switch(rand) {
       case 0:

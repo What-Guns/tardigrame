@@ -322,7 +322,7 @@ function willCarryBattery(activity: activities.TardigradeActivity|null): boolean
 }
 
 const sounds = createSoundLibrary({
-  'tun': 'assets/audio/sfx/LowSqueak.ogg',
-  'revive': 'assets/audio/sfx/SqueakFixed.ogg',
-  'birth': 'assets/audio/sfx/AlienChatter.ogg',
-})
+  tun: 'assets/audio/sfx/LowSqueak.ogg',
+  revive: 'assets/audio/sfx/SqueakFixed.ogg',
+  birth: 'assets/audio/sfx/AlienChatter.ogg',
+});

@@ -4,6 +4,7 @@ import {Point, distanceSquared, addPoints, direction} from './math.js';
 import {Tardigrade, REPRODUCTION_TIME, liveTardigrades} from './tardigrade.js';
 import {loadImage} from './loader.js';
 import {generationThree} from './game.js';
+import {createSoundLibrary, playSoundAtLocation} from './audio.js';
 
 export interface TardigradeActivity {
   isValid(): boolean;
@@ -256,6 +257,8 @@ export class ObtainBatteryActivity implements TardigradeActivity {
 
     if(distanceSquared(this.tardigrade.point, this.battery.point) > Math.pow(this.battery.radius + 0.02, 2)) return false;
 
+    this.playSound();
+
     const pushDir = direction(this.battery.point, this.battery.destination);
     this.push.x = (dt / 1000) * Math.cos(pushDir) * 0.005;
     this.push.y = (dt / 1000) * Math.sin(pushDir) * 0.005;
@@ -266,6 +269,21 @@ export class ObtainBatteryActivity implements TardigradeActivity {
 
   // This allows tardigrades to *stop* carrying the battery
   isIdle = true;
+
+  private playSound() {
+    const rand = Math.floor(Math.random() * 300);
+    switch(rand) {
+      case 0:
+        playSoundAtLocation(sounds.carrying0, this.tardigrade.point);
+        break;
+      case 1:
+        playSoundAtLocation(sounds.carrying1, this.tardigrade.point);
+        break;
+      case 2:
+        playSoundAtLocation(sounds.carrying2, this.tardigrade.point);
+        break;
+    }
+  }
 }
 
 /**
@@ -282,3 +300,9 @@ function createPointInCellPoint(point: Point) {
   addPoints(output, point, randomness);
   return output;
 }
+
+const sounds = createSoundLibrary({
+  carrying0: 'assets/audio/sfx/Yip3.ogg',
+  carrying1: 'assets/audio/sfx/Yip5.ogg',
+  carrying2: 'assets/audio/sfx/Yip6.ogg',
+});
