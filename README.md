@@ -27,6 +27,7 @@ Once you reach ONE HUNDRED tardigrades you will have the ability to move a batte
 - You can pause the game by pressing `p` or the `pause` key on your keyboard. YOU WILL REGRET THIS!
 - Cancel building by clicking again on the space that's under construction.
 - Some actions (like reproducing) can be clicked repeatedly to enlist more tardigrades.
+- Click the button in the top right corner of the screen that says 'normal' to increase. Speeds include 'fast' and 'super-fast'. Keep clicking to toggle through the speeds.
 
 ### End game
 You win the game by moving a battery to your capsule. You lose the game by having all tardigrades in tun state. Good luck!
