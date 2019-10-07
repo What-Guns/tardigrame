@@ -51,5 +51,5 @@ async function startTheGameAlready() {
   }
 }
 
-window.startTheGameAlready = startTheGameAlready;
+(window as any).startTheGameAlready = startTheGameAlready;
 
