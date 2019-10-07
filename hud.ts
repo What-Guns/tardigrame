@@ -16,6 +16,7 @@ export class Hud {
     {label: 'tun', color: 'red', count: 0, contributesToGraph: false},
     {label: 'idle', color: 'yellow', count: 0, contributesToGraph: true},
     {label: 'busy', color: 'white', count: 0, contributesToGraph: true},
+    {label: 'total', color: 'black', count: 0, contributesToGraph: false},
   ];
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -27,6 +28,7 @@ export class Hud {
     this.popBars[0].count = tunTardigrades.size;
     this.popBars[1].count = idleTardigrades.size;
     this.popBars[2].count = liveTardigrades.size - idleTardigrades.size;
+    this.popBars[3].count = liveTardigrades.size;
 
     const isHovered = this.game.screenSpaceMousePosition.x <= 300 && this.game.screenSpaceMousePosition.y < 48;
 
