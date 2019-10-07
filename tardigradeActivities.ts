@@ -1,5 +1,5 @@
 import {Cell, cellsThatNeedWorkDone, hydratedCells, mossyCells} from './cell.js';
-import {Battery, BATTERY_DESTINATION} from './battery.js';
+import {Battery} from './battery.js';
 import {Point, distanceSquared, addPoints, direction} from './math.js';
 import {Tardigrade, REPRODUCTION_TIME, liveTardigrades} from './tardigrade.js';
 import {loadImage} from './loader.js';
@@ -237,8 +237,8 @@ export class ObtainBatteryActivity implements TardigradeActivity {
   constructor(readonly tardigrade: Tardigrade, readonly battery: Battery) {
     const direction = Math.random() * 2 * Math.PI;
     this.batteryOffset = {
-      x: Math.cos(direction) * battery.radius,
-      y: Math.sin(direction) * battery.radius,
+      x: Math.cos(direction) * (battery.radius - 0.02),
+      y: Math.sin(direction) * (battery.radius - 0.02),
     };
 
     this.destination = {...battery.point};
@@ -256,7 +256,7 @@ export class ObtainBatteryActivity implements TardigradeActivity {
 
     if(distanceSquared(this.tardigrade.point, this.battery.point) > Math.pow(this.battery.radius + 0.02, 2)) return false;
 
-    const pushDir = direction(this.battery.point, BATTERY_DESTINATION);
+    const pushDir = direction(this.battery.point, this.battery.destination);
     this.push.x = (dt / 1000) * Math.cos(pushDir) * 0.005;
     this.push.y = (dt / 1000) * Math.sin(pushDir) * 0.005;
     addPoints(this.battery.point, this.battery.point, this.push);

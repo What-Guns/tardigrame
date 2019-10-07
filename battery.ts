@@ -2,21 +2,19 @@ import {Game} from './game.js';
 import {Point, distanceSquared} from './math.js';
 import {fillWithImage} from './loader.js';
 
-export const BATTERY_DESTINATION = {
-  x: 50,
-  y: 50,
-};
-
 export class Battery {
   // this is the size of the hit region, NOT the image.
   // it's a little bigger than the image so that the
   // water bears carrying it are still visible.
   readonly radius = (380/2) / this.game.grid.xPixelsPerCell;
 
+  readonly destination: Point;
+
   @fillWithImage('assets/pictures/battery.png')
   static readonly image: HTMLImageElement;
 
   constructor(private readonly game: Game, readonly point: Point) {
+    this.destination = this.findDestination()!.point;
   }
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -35,6 +33,15 @@ export class Battery {
   }
 
   isAtDestination() {
-    return distanceSquared(this.point, BATTERY_DESTINATION) < 1
+    return distanceSquared(this.point, this.destination) < 1
+  }
+
+  private findDestination() {
+    for(const column of this.game.grid.cells) {
+      for(const cell of column) {
+        if(cell.type === 'CAPSULE') return cell;
+      }
+    }
+    throw new Error("Couldn't find the capsule");
   }
 }
