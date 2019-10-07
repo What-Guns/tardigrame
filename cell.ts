@@ -23,12 +23,12 @@ export class Cell {
   constructor(readonly point: Point) {}
 
   get hydration() {
-    if(this.type !== 'POOL' && this.type !== 'WATER_SOURCE') return false;
+    if(this.type !== 'POOL' && this.type !== 'WATER_SOURCE' && this.type !== 'CAPSULE') return false;
     return this._hydration;
   }
 
   set hydration(hydrated: boolean) {
-    if(hydrated && this.type !== 'POOL' && this.type !== 'WATER_SOURCE') {
+    if(hydrated && this.type !== 'POOL' && this.type !== 'WATER_SOURCE' && this.type !== 'CAPSULE') {
       throw new Error('Only pools and water sources can be hydrated');
     }
     if(hydrated) hydratedCells.add(this);
@@ -46,7 +46,7 @@ export class Cell {
 
     this._amountConstructed = 0;
 
-    if(t === 'WATER_SOURCE') this.hydration = true;
+    if(t === 'WATER_SOURCE' || t === 'CAPSULE') this.hydration = true;
 
     if(t === 'MOSS') {
       mossyCells.add(this);
@@ -96,4 +96,5 @@ export type CellType =
   'PLANNED_CANAL'|
   'WATER_SOURCE'|
   'PLANNED_MOSS'|
-  'MOSS';
+  'MOSS'|
+  'CAPSULE';

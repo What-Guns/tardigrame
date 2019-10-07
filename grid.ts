@@ -160,7 +160,7 @@ export class Grid {
           const imagesToUse = cell.hydration ? fullCanalImages : emptyCanalImages;
           image = imagesToUse[cellRight][cellLeft][cellBelow][cellAbove];
           if(cellAbove + cellLeft === 2 && this.cells[x-1] && this.cells[x-1][y-1] && this.cells[x-1][y-1].type === 'POOL') {
-            drawAPool = true;
+            drawAPool = cell.type === 'POOL'; // don't draw a pool if this cell is only planned. It looks weird.
           }
         }
         if(cell.type === 'PLANNED_CANAL' && Math.floor(timestamp / 500) % 2) ctx.globalAlpha = 0.5;
@@ -243,7 +243,8 @@ const gridImages: {[key in CellType]: HTMLImageElement} = {
   BIG_ROCK: loadImage('assets/pictures/Rocks_and_moss/just_a_rock.png'),
   ROAD: loadImage('assets/pictures/nsroad1.png'),
   PLANNED_CANAL: loadImage('assets/pictures/futureCanal.png'),
-  WATER_SOURCE: loadImage('assets/pictures/empty1.png'),
+  WATER_SOURCE: loadImage('assets/pictures/Puddle_states/puddle.png'),
   MOSS: loadImage('assets/pictures/Rocks_and_moss/rock_lotsa_moss.png'),
   PLANNED_MOSS: loadImage('assets/pictures/Rocks_and_moss/rock_little_moss.png'),
+  CAPSULE: loadImage('assets/pictures/empty1.png'),
 }

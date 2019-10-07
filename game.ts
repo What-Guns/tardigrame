@@ -250,7 +250,7 @@ export class Game {
       x: this.grid.columns / 2 + Math.random() * 6 - 3,
       y: this.grid.rows / 2 + Math.random() * 6 - 3,
     })
-    waterCell.type = 'WATER_SOURCE';
+    waterCell.type = 'CAPSULE';
 
     // put a capsule to generate the water source
     new Capsule(this, waterCell.point);

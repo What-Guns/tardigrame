@@ -80,10 +80,10 @@ export function calculateWetDryCanals(cells: Array<Array<Cell>>, dt : number) : 
       if(cells[x][y].hydration) {
         continue;
       }
-      const above = cells[x-1] && cells[x-1][y] && ((cells[x-1][y].type === 'POOL' && cells[x-1][y].hydration) || cells[x-1][y].type === 'WATER_SOURCE'); 
-      const below = cells[x+1] && cells[x+1][y] && ((cells[x+1][y].type === 'POOL' && cells[x+1][y].hydration) || cells[x+1][y].type === 'WATER_SOURCE'); 
-      const left = cells[x] && cells[x][y-1] && ((cells[x][y-1].type === 'POOL' && cells[x][y-1].hydration) || cells[x][y-1].type === 'WATER_SOURCE');
-      const right = cells[x] && cells[x][y+1] && ((cells[x][y+1].type === 'POOL' && cells[x][y+1].hydration) || cells[x][y+1].type === 'WATER_SOURCE');
+      const above = cells[x-1] && cells[x-1][y] && cells[x-1][y].hydration; 
+      const below = cells[x+1] && cells[x+1][y] && cells[x+1][y].hydration; 
+      const left = cells[x] && cells[x][y-1] && cells[x][y-1].hydration;
+      const right = cells[x] && cells[x][y+1] && cells[x][y+1].hydration;
       if(above || below || left || right) {
         cell.hydration = true;
         playSplashLocation = cell.point;
