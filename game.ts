@@ -241,12 +241,6 @@ export class Game {
   }
 
   private populateGrid() {
-    // spawn tardigrades in the viewport
-    for (let i = 0; i < generationOne; i++){
-      const x = this.grid.columns / 2 + Math.random() * 6 - 3;
-      const y = this.grid.rows / 2 + Math.random() * 6 - 3;
-      this.pawns.push(new Tardigrade(this, x, y));
-    }
 
     // put a water source somewhere near the middle of the game
     const waterCell = this.grid.getCell({
@@ -257,6 +251,13 @@ export class Game {
 
     // put a capsule to generate the water source
     new Capsule(this, waterCell.point);
+
+    // spawn tardigrades near the capsule
+    for (let i = 0; i < generationOne; i++){
+      const x = waterCell.point.x + Math.random();
+      const y = waterCell.point.y + 1 - Math.random() * 3;
+      this.pawns.push(new Tardigrade(this, x, y));
+    }
 
     // put pools / moss in adjacent sources so it looks right
     this.grid.getCell({ x:waterCell.point.x-2, y: waterCell.point.y}).type = 'MOSS';
