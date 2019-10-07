@@ -8,11 +8,21 @@ let lastTick = 0;
 const BIG_TICK = 500;
 
 isLoaded().then(() => {
-  (document.getElementById('start') as HTMLButtonElement).disabled = false;
+  //(document.getElementById('start') as HTMLButtonElement).disabled = false;
+  const bg : HTMLImageElement = (document.getElementById('bg') as HTMLImageElement);
+  const button : HTMLImageElement  = (document.getElementById('startButton') as HTMLImageElement);
+  button.style.display = 'inline';
+  button.style.position = 'absolute';
+  button.style.left = `${bg.width / 6}px`
+  button.style.top = `${bg.height * 3 / 5}px`
+  button.style.width = `${bg.width / bg.naturalWidth * button.width}px`
+  button.style.height = `${bg.height / bg.naturalHeight * button.height}px`
+  //= "display: inline; position: absolute; top: 80%; left: 20%"
 });
 
 function startTheGameAlready() {
-  document.getElementById('start')!.remove();
+  document.getElementById('bg')!.remove();
+  document.getElementById('startButton')!.remove();
   document.getElementById('game-container')!.style.display = '';
   const canvas = document.querySelector('canvas')!;
   const game = new Game(canvas);

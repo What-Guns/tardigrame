@@ -7,7 +7,11 @@
     <link rel="stylesheet" href="style.css"/>
   </head>
   <body>
-    <button id="start" onclick="startTheGameAlready()" disabled autocomplete="off">Start The Game Already!</button>
+    <!-- <button id="start" onclick="startTheGameAlready()" disabled autocomplete="off">Start The Game Already!</button> -->
+    <div style="width: 100%">
+      <image src="assets/pictures/Tardigrades_onthe_moon_Startscreen.png" style="width: 100%" id="bg"/>
+      <image src="assets/pictures/buttons/start.png" id="startButton" style="display: none" onclick="startTheGameAlready()"/>
+    </div>
     <div id="game-container" style="display: none">
       <canvas width="640" height="640">
         This game requires canvas support. And also, like, esnext? What year is it?
