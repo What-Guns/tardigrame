@@ -50,10 +50,6 @@ export function createSoundLibrary<T extends string>(descriptor: SoundLibraryDes
   return library;
 }
 
-const bgm = createSoundLibrary({
-  track1: 'assets/audio/music/TardigradeMusic1.ogg',
-  track2: 'assets/audio/music/TardigradeMusic2.ogg',
-});
 
 const track1GainNode = new GainNode(audioContext);
 track1GainNode.gain.value = 0;
@@ -61,6 +57,10 @@ const track2GainNode = new GainNode(audioContext);
 track2GainNode.gain.value = 0;
 
 export function startBGM() {
+  const bgm = createSoundLibrary({
+    track1: 'assets/audio/music/TardigradeMusic1.ogg',
+    track2: 'assets/audio/music/TardigradeMusic2.ogg',
+  });
   const sound1 = audioContext.createBufferSource();
   sound1.buffer = bgm.track1;
   sound1.connect(track1GainNode);
