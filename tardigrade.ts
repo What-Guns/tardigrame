@@ -40,7 +40,7 @@ export class Tardigrade {
   dehydrationSpeed = 0.00005; // thirst per millisecond
   hydrationSpeed = 0.0001; // antithirst per millisecond
   eatSpeed = 0.0001;
-  appetite = 0.000025; // how hungry working makes tardigrades
+  appetite = 0.00005; // how hungry working makes tardigrades
 
   nutrientConsumptionRate = 0.1;
   starvationRate = 0;
