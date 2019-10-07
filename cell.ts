@@ -84,7 +84,7 @@ export class Cell {
 
     const amountConsumed = Math.min(amount, this.moss);
     this.moss -= amountConsumed;
-    if(this.moss <= 0) this.type = 'BIG_ROCK';
+    if(this.moss <= 0) this.type = 'BLANK';
     return amountConsumed;
   }
 }

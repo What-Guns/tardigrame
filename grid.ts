@@ -59,11 +59,7 @@ export class Grid {
         } 
           break;
       case 'MOSS':
-        if (cell.moss < REPRODUCTION_TIME) {
-          this.startMossingUpARock(cell);
-        } else {
-          Tardigrade.assignTardigradeToReproduce(cell);
-        }
+        Tardigrade.assignTardigradeToReproduce(cell);
         break;
       case 'PLANNED_CANAL':
         cell.type = 'BLANK';
