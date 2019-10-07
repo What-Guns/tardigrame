@@ -195,7 +195,7 @@ export class ReproduceActivity implements TardigradeActivity {
   readonly destination: Point;
 
   hungerThreshold = 0.1;
-  thirstThreshold = 0.1;
+  thirstThreshold = 0.3;
   age = 0;
 
   constructor(readonly tardigrade: Tardigrade, readonly goal: Cell) {

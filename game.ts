@@ -52,6 +52,8 @@ export class Game {
 
   private generation = -1;
 
+  speed = 1;
+
   constructor(canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext('2d')!;
     this.grid = new Grid(this, 100, 100, this.ctx);
@@ -62,6 +64,8 @@ export class Game {
       height: 640,
       scale: 1.0,
     };
+
+    (window as any).game = this;
 
     this.popover = EmptyPopover(this.ctx);
 
@@ -103,6 +107,7 @@ export class Game {
   }
 
   tick(dt: number) {
+    dt *= this.speed;
     this.grid.tick(dt);
     for(let i = 0; i < this.pawns.length; i++) {
       this.pawns[i].tick(dt);

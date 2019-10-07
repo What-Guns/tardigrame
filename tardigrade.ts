@@ -274,7 +274,9 @@ export class Tardigrade {
     }
 
     if(Math.random() < 0.2) {
-      const viableMoss = Array.from(mossyCells).filter(c => c.moss >= REPRODUCTION_TIME);
+      const viableMoss = Array.from(mossyCells)
+        .filter(c => c.moss >= REPRODUCTION_TIME)
+        .filter(c => c.visible);
       const cellToReproduceOn = findNearestVeryExpensive(viableMoss, this.point, 1)[0];
       if(cellToReproduceOn && distanceSquared(this.point, cellToReproduceOn.point) < 9) {
         this.assignActivity(new activities.ReproduceActivity(this, cellToReproduceOn));
