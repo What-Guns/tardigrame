@@ -213,7 +213,7 @@ export class Tardigrade {
 
   private findSomethingToDo() {
     const cell = findNearestVeryExpensive(Array.from(cellsThatNeedWorkDone), this.point, 1)[0];
-    if(cell) {
+    if(cell && distanceSquared(this.point, cell.point) < 25) {
       this.activity = new activities.BuildActivity(this, cell);
     } else {
       this.activity = new activities.IdleActivity(this);
