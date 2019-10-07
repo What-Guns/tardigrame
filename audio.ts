@@ -69,7 +69,7 @@ track2GainNode.connect(gainNode);
 export async function startBGM() {
   const sound0 = audioContext.createBufferSource();
   sound0.buffer = bgm.track0;
-  sound0.connect(track1GainNode);
+  sound0.connect(track0GainNode);
   sound0.loop = true;
   const sound1 = audioContext.createBufferSource();
   sound1.buffer = bgm.track1;
