@@ -1,6 +1,6 @@
 import {Grid} from './grid.js';
 import {Battery} from './battery.js';
-import {audioContext, startBGM, fadeInBGM0} from './audio.js';
+import {audioContext, startBGM, fadeInBGM0, fadeInBGM1, fadeInBGM2} from './audio.js';
 import {Hud} from './hud.js';
 import {Tardigrade} from './tardigrade.js'
 import {Point, distanceSquared, addPoints, assignPoint} from './math.js';
@@ -44,6 +44,8 @@ export class Game {
   private readonly ctx: CanvasRenderingContext2D;
 
   notInGameWindow = false;
+
+  private generation = -1;
 
   constructor(canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext('2d')!;
@@ -91,7 +93,6 @@ export class Game {
 
     this.populateGrid();
     startBGM();
-    fadeInBGM0();
   }
 
   tick(dt: number) {
@@ -102,15 +103,22 @@ export class Game {
 
     if (liveTardigrades.size >= generationFour){
       //Moon Laser Destroy the Earth
+      this.generation = 3;
       this.numberToNextGen = generationFive
     } else if (liveTardigrades.size >= generationThree){
       //Mine ice for water
+      if(this.generation !== 2) fadeInBGM2();
+      this.generation = 2;
       this.numberToNextGen = generationFour
     } else if (liveTardigrades.size >= generationTwo){
       //Build moss
+      if(this.generation !== 1) fadeInBGM1();
+      this.generation = 1;
       this.numberToNextGen = generationThree;
     } else if (liveTardigrades.size > 0){
       //Build canals
+      if(this.generation !== 0) fadeInBGM0();
+      this.generation = 0;
       this.numberToNextGen = generationTwo;
     } else if (liveTardigrades.size == 0){
       //Ded
