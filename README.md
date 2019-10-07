@@ -25,6 +25,8 @@ Once you reach ONE HUNDRED tartigrades you will have the ability to move a batte
 - Hover over the bar graph on the top left hand corner of the screen to see game stats.
 - Hover over the tardigrade to see its fluid level (blue circle) and moss level (organge circle).
 - You can pause the game by pressing `p` or the `pause` key on your keyboard. YOU WILL REGRET THIS!
+- Cancel building by clicking again on the space that's under construction.
+- Some actions (like reproducing) can be clicked repeatedly to enlist more tardigrades.
 
 ### End game
 You win the game by moving a battery to your capsule. You lose the game by having all tartigrades in tun state. Good luck!
