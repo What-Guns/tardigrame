@@ -4,7 +4,7 @@ import {audioContext, startBGM, fadeInBGM0, fadeInBGM1, fadeInBGM2} from './audi
 import {Hud} from './hud.js';
 import {Tardigrade} from './tardigrade.js'
 import {Point, distanceSquared, addPoints, assignPoint} from './math.js';
-import {Popover, EmptyPopover, PausePopover, GameWinPopover} from './popover.js';
+import {Popover, EmptyPopover, PausePopover, GameWinPopover, Gen1Popover} from './popover.js';
 import {liveTardigrades} from './tardigrade.js'
 import { Capsule } from './capsule.js';
 
@@ -101,6 +101,8 @@ export class Game {
     });
     canvas.addEventListener('mouseout', () => this.heldButtons.clear());
     canvas.addEventListener('wheel', this.zoom.bind(this));
+
+    this.showPopover(Gen1Popover(this, this.ctx))
 
     this.populateGrid();
     startBGM();

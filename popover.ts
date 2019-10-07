@@ -38,7 +38,7 @@ const defaultButton = loadImage('assets/pictures/button.png');
 const sorryButton = loadImage('assets/pictures/sorrybutton.png');
 const regretButton = loadImage('assets/pictures/regretButton.png');
 
-type PopoverType = 'REGRET'|'EMPTY'|'PAUSE'|'VICTORY';
+type PopoverType = 'REGRET'|'EMPTY'|'PAUSE'|'VICTORY'|'GEN1'|'INST1';
 
 export class Popover {
   buttons : Array<PopoverButton>;
@@ -94,6 +94,8 @@ const images: {[key in PopoverType]: HTMLImageElement} = {
   'EMPTY': loadImage('assets/pictures/empty1.png'),
   'PAUSE' : loadImage('assets/pictures/regret.png'),
   'VICTORY' : loadImage('assets/pictures/popovers/victory.png'),
+  'GEN1' : loadImage('assets/pictures/popovers/1_minergrade_canals.png'),
+  'INST1' : loadImage('assets/pictures/popovers/popover_gen1.png'),
 }
 
 export const RegretPopover = (ctx : CanvasRenderingContext2D) => {
@@ -126,6 +128,25 @@ export const GameWinPopover = (game: Game, ctx : CanvasRenderingContext2D) => {
   }
   p.buttons.push(new PopoverButton(
     p, 30, 160, regretButton, ctx, cb
+  ));
+  return p;
+}
+
+export const Gen1Popover = (game: Game, ctx: CanvasRenderingContext2D) => {
+  const p = new Popover('GEN1', 'BOTTOM');
+  function cb() {
+    game.showPopover(Inst1Popover(ctx));
+  }
+  p.buttons.push(new PopoverButton(
+    p, 30, 160, regretButton, ctx, cb
+  ));
+  return p;
+}
+
+export const Inst1Popover = (ctx: CanvasRenderingContext2D) => {
+  const p = new Popover('INST1', 'BOTTOM');
+  p.buttons.push(new PopoverButton(
+    p, 30, 160, regretButton, ctx, () => {}
   ));
   return p;
 }
