@@ -242,9 +242,9 @@ export class Game {
       }
     }
 
-    this.batteries.push(new Battery(this, {
-      x: 40,
-      y: 40,
-    }));
+    this.batteries.push(
+      new Battery(this, { x: 25, y: 25 }),
+      new Battery(this, { x: 75, y: 75 })
+    );
   }
 }
