@@ -1,5 +1,6 @@
 import { loadImage } from "./loader.js";
 import {isPointInBox, Point} from './math.js';
+import { Game } from "./game.js";
 
 export class PopoverButton {
   readonly cb: (ev: MouseEvent) => void;
@@ -8,28 +9,28 @@ export class PopoverButton {
     readonly x: number,
     readonly y: number,
     readonly image: HTMLImageElement,
-    readonly ctx : CanvasRenderingContext2D,
+    ctx: CanvasRenderingContext2D,
     readonly callback: (ev: MouseEvent) => void
   ) {
     this.cb = (ev: MouseEvent) => {
       if(isPointInBox(ev.offsetX, ev.offsetY, x + popover.getOffset().x, y + popover.getOffset().y, image.width, image.height)) {
+        popover.hide(ctx)
         this.callback(ev);
-        popover.hide()
       }
     }
     ctx.canvas.addEventListener('mouseup', this.cb);
   }
 
-  draw(offset : Point) {
-    this.ctx.drawImage(this.image, this.x + offset.x, this.y + offset.y);
+  draw(ctx: CanvasRenderingContext2D, offset : Point) {
+    ctx.drawImage(this.image, this.x + offset.x, this.y + offset.y);
   }
 
-  enable() {
-    this.ctx.canvas.addEventListener('mouseup', this.cb);
+  enable(ctx: CanvasRenderingContext2D) {
+    ctx.canvas.addEventListener('mouseup', this.cb);
   }
 
-  disable() {
-    this.ctx.canvas.removeEventListener('mouseup',  this.cb);
+  disable(ctx: CanvasRenderingContext2D) {
+    ctx.canvas.removeEventListener('mouseup',  this.cb);
   }
 }
 
@@ -43,7 +44,7 @@ export class Popover {
   buttons : Array<PopoverButton>;
   offset : Point;
   
-  constructor(readonly imageName: PopoverType, readonly ctx : CanvasRenderingContext2D, readonly position: 'CENTER' | 'BOTTOM' ) {
+  constructor(readonly imageName: PopoverType, readonly position: 'CENTER' | 'BOTTOM' ) {
     this.visible = false;
     this.buttons = [];
     this.offset = {x:0, y:0}
@@ -51,34 +52,34 @@ export class Popover {
 
   visible: boolean = false;
 
-  show() {
+  show(ctx: CanvasRenderingContext2D) {
     this.visible = true;
     this.buttons.forEach(b => {
-      b.enable();
+      b.enable(ctx);
     })
   }
 
-  hide() {
+  hide(ctx: CanvasRenderingContext2D) {
     this.visible = false;
     this.buttons.forEach(b => {
-      b.disable();
+      b.disable(ctx);
     })
   }
 
-  draw(){
+  draw(ctx: CanvasRenderingContext2D){
     if(this.visible) {
       const image = images[this.imageName];
       switch(this.position) {
         case 'CENTER':
-          this.offset = {x: (this.ctx.canvas.width / 2) - (image.width / 2), y:(this.ctx.canvas.height / 2) - (image.height / 2) }
+          this.offset = {x: (ctx.canvas.width / 2) - (image.width / 2), y:(ctx.canvas.height / 2) - (image.height / 2) }
           break;
         case 'BOTTOM':
-          this.offset = {x: (this.ctx.canvas.width / 2) - (image.width / 2), y: this.ctx.canvas.height - image.height}
+          this.offset = {x: (ctx.canvas.width / 2) - (image.width / 2), y: ctx.canvas.height - image.height}
           break;
       }
-      this.ctx.drawImage(image, this.offset.x, this.offset.y);
+      ctx.drawImage(image, this.offset.x, this.offset.y);
       this.buttons.forEach(b => {
-        b.draw(this.offset);
+        b.draw(ctx, this.offset);
       });
     }
   }
@@ -96,7 +97,7 @@ const images: {[key in PopoverType]: HTMLImageElement} = {
 }
 
 export const RegretPopover = (ctx : CanvasRenderingContext2D) => {
-  const p = new Popover('REGRET', ctx, 'CENTER');
+  const p = new Popover('REGRET', 'BOTTOM');
   p.buttons.push(new PopoverButton(
     p, 130, 219, defaultButton, ctx, () => {}
   ));
@@ -106,22 +107,25 @@ export const RegretPopover = (ctx : CanvasRenderingContext2D) => {
   return p;
 }
 
-export const EmptyPopover = (ctx : CanvasRenderingContext2D) => {
-  return new Popover('EMPTY', ctx, 'CENTER');
+export const EmptyPopover = () => {
+  return new Popover('EMPTY', 'CENTER');
 }
 
 export const PausePopover = (ctx : CanvasRenderingContext2D) => {
-  const p = new Popover('PAUSE', ctx, 'CENTER');
+  const p = new Popover('PAUSE', 'CENTER');
   p.buttons.push(new PopoverButton(
     p, 3, 111, regretButton, ctx, () => {}
   ));
   return p;
 }
 
-export const GameWinPopover = (ctx: CanvasRenderingContext2D) => {
-  const p = new Popover('VICTORY', ctx, 'BOTTOM');
+export const GameWinPopover = (game: Game, ctx : CanvasRenderingContext2D) => {
+  const p = new Popover('VICTORY', 'BOTTOM');
+  function cb() {
+    game.showPopover(RegretPopover(ctx));
+  }
   p.buttons.push(new PopoverButton(
-    p, 30, 160, regretButton, ctx, () => {}
+    p, 30, 160, regretButton, ctx, cb
   ));
   return p;
 }

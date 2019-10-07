@@ -67,7 +67,7 @@ export class Game {
 
     (window as any).game = this;
 
-    this.popover = EmptyPopover(this.ctx);
+    this.popover = EmptyPopover();
 
     document.addEventListener('visibilitychange', () => {
       if(document.hidden && !this.popover.visible) {
@@ -165,7 +165,7 @@ export class Game {
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     
     this.hud.draw(this.ctx);
-    this.popover.draw();
+    this.popover.draw(this.ctx);
   }
 
   mouseMove(ev: MouseEvent) {
@@ -229,11 +229,11 @@ export class Game {
   showPopover(p: Popover) {
     this.dismissPopover();
     this.popover = p;
-    this.popover.show();
+    this.popover.show(this.ctx)
   }
 
   dismissPopover() {
-    this.popover.hide();
+    this.popover.hide(this.ctx);
   }
 
   getGoalOfCurrentGeneration() {
@@ -247,7 +247,7 @@ export class Game {
   }
 
   private win() { // it's private to prevent cheaters from cheating!!!!!!
-    this.showPopover(GameWinPopover(this.ctx))
+    this.showPopover(GameWinPopover(this, this.ctx));
   }
 
   private populateGrid() {
