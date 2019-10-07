@@ -37,6 +37,7 @@ export class PopoverButton {
 
 const defaultButton = loadImage('assets/pictures/button.png');
 const sorryButton = loadImage('assets/pictures/sorrybutton.png');
+const regretButton = loadImage('assets/pictures/regretButton.png');
 
 type PopoverType = 'REGRET'|'EMPTY'|'PAUSE';
 
@@ -84,7 +85,7 @@ export class Popover {
 const images: {[key in PopoverType]: HTMLImageElement} = {
   'REGRET': loadImage('assets/pictures/popovers/regret.png'),
   'EMPTY': loadImage('assets/pictures/empty1.png'),
-  'PAUSE' : loadImage('assets/pictures/popovers/pause.png'),
+  'PAUSE' : loadImage('assets/pictures/regret.png'),
 }
 
 export const RegretPopover = (ctx : CanvasRenderingContext2D) => {
@@ -105,7 +106,7 @@ export const EmptyPopover = (ctx : CanvasRenderingContext2D) => {
 export const PausePopover = (ctx : CanvasRenderingContext2D) => {
   const p = new Popover('PAUSE', ctx);
   p.buttons.push(new PopoverButton(
-    p, 221, 155, 159, 35, sorryButton, ctx, () => {}
+    p, 3, 111, 113, 28, regretButton, ctx, () => {}
   ));
   return p;
 }
