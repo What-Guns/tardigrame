@@ -251,7 +251,7 @@ export class Game {
         }
       }
     }
-    if(this.screenSpaceMousePosition.x > this.hud.speedButtonWidth && this.screenSpaceMousePosition.y < 24) {
+    if(this.screenSpaceMousePosition.x > this.viewport.width - this.hud.speedButtonWidth && this.screenSpaceMousePosition.y < 24) {
       this.speed = this.speed + 1;
       if(this.speed > 3) this.speed = 1;
       return;
