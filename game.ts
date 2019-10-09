@@ -225,17 +225,16 @@ export class Game {
   }
 
   zoom(ev: WheelEvent) {
-    this.viewport.x += this.screenSpaceMousePosition.x / 2;
-    this.viewport.y += this.screenSpaceMousePosition.y / 2;
+    this.viewport.x += this.viewport.width / 2;
+    this.viewport.y += this.viewport.height / 2;
     this.viewport.x /= this.viewport.scale;
     this.viewport.y /= this.viewport.scale;
-    const oldScale = this.viewport.scale;
     this.viewport.scale += ev.deltaY * - 0.01;
     this.viewport.scale = Math.max(0.25, this.viewport.scale);
     this.viewport.x *= this.viewport.scale;
     this.viewport.y *= this.viewport.scale;
-    this.viewport.x -= (this.screenSpaceMousePosition.x * oldScale / this.viewport.scale) / 2;
-    this.viewport.y -= (this.screenSpaceMousePosition.y * oldScale / this.viewport.scale) / 2;
+    this.viewport.x -= this.viewport.width / 2;
+    this.viewport.y -= this.viewport.height / 2;
 
     this.mouseMove(ev);
 
