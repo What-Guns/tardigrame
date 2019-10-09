@@ -34,6 +34,8 @@ export class Hud {
 
     const isHovered = this.game.screenSpaceMousePosition.x <= 300 && this.game.screenSpaceMousePosition.y < 48;
 
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
     ctx.fillStyle = 'black';
     ctx.fillRect(10, 10, 200, 24);
     ctx.font = '18px system-ui';
