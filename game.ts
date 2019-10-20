@@ -135,23 +135,23 @@ export class Game {
       //Drag battery
       if(this.generation !== 2){
         fadeInBGM2();
-        if(this.maxGeneration <= this.generation) {
-          this.maxGeneration = this.generation;
-          this.showPopover(Gen3Popover(this, this.ctx))
-        }
       }
       this.generation = 2;
+      if(this.maxGeneration < this.generation) {
+        this.maxGeneration = this.generation;
+        this.showPopover(Gen3Popover(this, this.ctx))
+      }
       this.numberToNextGen = generationFour
     } else if (liveTardigrades.size >= generationTwo){
       //Build moss
       if(this.generation !== 1){
         fadeInBGM1();
-        if(this.maxGeneration <= this.generation) {
-          this.maxGeneration = this.generation;
-          this.showPopover(Gen2Popover(this, this.ctx))
-        }
       }
       this.generation = 1;
+      if(this.maxGeneration < this.generation) {
+        this.maxGeneration = this.generation;
+        this.showPopover(Gen2Popover(this, this.ctx))
+      }
       this.numberToNextGen = generationThree;
     } else if (liveTardigrades.size > 0){
       //Build canals
