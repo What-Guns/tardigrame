@@ -173,6 +173,7 @@ export class Game {
   }
 
   draw(timestamp: number) {
+    this.ctx.imageSmoothingEnabled = false;
     this.ctx.clearRect(0, 0, this.viewport.width, this.viewport.height);
     this.ctx.fillStyle = 'black';
     this.ctx.fillRect(0, 0, this.viewport.width, this.viewport.height);
