@@ -30,7 +30,7 @@ export async function loadAudioAsync(url: string, audioContext: AudioContext) {
     row.remove();
     return audio;
   } catch (e) {
-    row.textContent = e.message;
+    row.textContent = e.toString();
     throw e;
   }
 }
