@@ -7,7 +7,7 @@ export const gainNode = new GainNode(audioContext);
 
 export const biquadFilter = audioContext.createBiquadFilter();
 biquadFilter.type = 'lowpass';
-biquadFilter.frequency.setValueAtTime(24000, audioContext.currentTime);
+biquadFilter.frequency.setValueAtTime(22050, audioContext.currentTime);
 
 gainNode.gain.value = 0.5;
 gainNode.connect(biquadFilter);

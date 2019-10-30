@@ -265,7 +265,7 @@ export class Game {
     const centerY = (this.viewport.y + this.viewport.height / 2) / (this.grid.yPixelsPerCell * this.viewport.scale);
     audioContext.listener.setPosition(centerX, centerY, 1);
     const unquietness = Math.min(0.5, this.viewport.scale - 0.23) / 0.5;
-    biquadFilter.frequency.setValueAtTime(unquietness * 24000, audioContext.currentTime);
+    biquadFilter.frequency.setValueAtTime(unquietness * 22050, audioContext.currentTime);
     gainNode.gain.setValueAtTime(unquietness * 0.25 + 0.25, audioContext.currentTime);
   }
 
