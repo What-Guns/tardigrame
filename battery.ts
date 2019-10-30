@@ -61,7 +61,7 @@ export class Battery {
   }
 
   isAtDestination() {
-    return distanceSquared(this.point, this.destination) < 1
+    return distanceSquared(this.point, this.destination) < 10
   }
 
   private findDestination() {
